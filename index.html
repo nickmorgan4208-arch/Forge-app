@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -165,16 +165,16 @@ const SKILL_LADDER = [
 ];
 
 const db = {
-  h: { "apikey": SUPABASE_KEY, "Authorization": ``Bearer `${SUPABASE_KEY}``, "Content-Type": "application/json" },
+  h: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
   async getUser(name, password) {
-    const r = await fetch(```${SUPABASE_URL}/rest/v1/users?name=eq.`${encodeURIComponent(name)}&password=eq.`${encodeURIComponent(password)}&select=*``, { headers: this.h });
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/users?name=eq.${encodeURIComponent(name)}&password=eq.${encodeURIComponent(password)}&select=*`, { headers: this.h });
     const d = await r.json(); return d[0] || null;
   },
   async updateUser(id, fields) {
-    await fetch(```${SUPABASE_URL}/rest/v1/users?id=eq.`${id}``, { method: "PATCH", headers: this.h, body: JSON.stringify(fields) });
+    await fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${id}`, { method: "PATCH", headers: this.h, body: JSON.stringify(fields) });
   },
   async logCompletion(userId, skillId, title) {
-    await fetch(```${SUPABASE_URL}/rest/v1/completions``, { method: "POST", headers: this.h, body: JSON.stringify({ user_id: userId, skill_id: skillId, challenge_title: title }) });
+    await fetch(`${SUPABASE_URL}/rest/v1/completions`, { method: "POST", headers: this.h, body: JSON.stringify({ user_id: userId, skill_id: skillId, challenge_title: title }) });
   }
 };
 
@@ -265,12 +265,12 @@ function StudentApp({ onExit }) {
   const loadChallenge = async (lvl) => {
     setLoading(true); setChallenge(null); setDone(false);
     const skill = SKILL_LADDER[lvl];
-    const prompt = ``You are a coding teacher for a 10-year-old girl named Carley who is a complete beginner. Generate a fresh daily challenge for: "`${skill.name}". Respond ONLY with JSON no markdown: {"title":"max 5 words","explanation":"2-3 sentences simple warm not babyish","task":"specific task achievable in 10-15 minutes"}``;
+    const prompt = `You are a coding teacher for a 10-year-old girl named Carley who is a complete beginner. Generate a fresh daily challenge for: "${skill.name}". Respond ONLY with JSON no markdown: {"title":"max 5 words","explanation":"2-3 sentences simple warm not babyish","task":"specific task achievable in 10-15 minutes"}`;
     try {
       const r = await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:600,messages:[{role:"user",content:prompt}]})});
       const d = await r.json();
       const t = d.content?.find(b=>b.type==="text")?.text||"";
-      setChallenge(JSON.parse(t.replace(/``````json|``````/g,"").trim()));
+      setChallenge(JSON.parse(t.replace(/```json|```/g,"").trim()));
     } catch {
       setChallenge({title:"What Even Is AI?",explanation:"AI stands for Artificial Intelligence — a computer program that learns from examples, kind of like how you learned to recognize dogs by seeing lots of them.",task:"Grab a piece of paper and list 3 things you think AI can do well and 3 things you think it can't. Keep it — you'll look back at this list later."});
     }
@@ -305,7 +305,7 @@ function StudentApp({ onExit }) {
             <div className="stat" style={{"--c":"var(--red)"}}><div className="stat-val">{level+1}/6</div><div className="stat-lbl">Level</div></div>
           </div>
           <div className="sec">This week</div>
-          <div className="streak-row">{streakDots.map((t,i)=><div key={i} className={``sdot `${t}``}>{t==="done"?"✓":t==="today"?"→":""}</div>)}</div>
+          <div className="streak-row">{streakDots.map((t,i)=><div key={i} className={`sdot ${t}`}>{t==="done"?"✓":t==="today"?"→":""}</div>)}</div>
           <div className="sec">Current skill</div>
           <div className="skill-item active" style={{marginBottom:0}}>
             <div className="skill-emoji">{SKILL_LADDER[level].icon}</div>
@@ -367,10 +367,10 @@ function StudentApp({ onExit }) {
             {SKILL_LADDER.map((sk,i)=>{
               const isDone=i<level;const isActive=i===level;const isLocked=i>level;
               return (
-                <div key={sk.id} className={``skill-item `${isActive?"active":""} `${isLocked?"locked":""}``} onClick={()=>!isLocked&&(setLevel(i),loadChallenge(i),setTab("challenge"))}>
+                <div key={sk.id} className={`skill-item ${isActive?"active":""} ${isLocked?"locked":""}`} onClick={()=>!isLocked&&(setLevel(i),loadChallenge(i),setTab("challenge"))}>
                   <div className="skill-emoji">{sk.icon}</div>
                   <div className="skill-info"><div className="skill-name">{sk.name}</div><div className="skill-desc">{sk.desc}</div></div>
-                  <span className={``skill-badge `${isDone?"badge-done":isActive?"badge-active":"badge-locked"}``}>{isDone?"done":isActive?"active":"locked"}</span>
+                  <span className={`skill-badge ${isDone?"badge-done":isActive?"badge-active":"badge-locked"}`}>{isDone?"done":isActive?"active":"locked"}</span>
                 </div>
               );
             })}
@@ -380,7 +380,7 @@ function StudentApp({ onExit }) {
 
       <nav className="bnav">
         {tabs.map(t=>(
-          <button key={t.id} className={``bnav-btn `${tab===t.id?"active":""}``} onClick={()=>setTab(t.id)}>
+          <button key={t.id} className={`bnav-btn ${tab===t.id?"active":""}`} onClick={()=>setTab(t.id)}>
             <span className="bnav-icon">{t.icon}</span>{t.label}
           </button>
         ))}
@@ -407,10 +407,10 @@ function PinScreen({ onSuccess, onBack }) {
     <div className="pin-screen">
       <div className="pin-title">Parent Access</div>
       <div className="pin-sub" style={{color:err?"var(--red)":"var(--muted)"}}>{err?"Incorrect PIN. Try again.":"Enter your PIN"}</div>
-      <div className="pin-dots">{[0,1,2,3].map(i=><div key={i} className={``pin-dot `${i<pin.length?"filled":""}``}/>)}</div>
+      <div className="pin-dots">{[0,1,2,3].map(i=><div key={i} className={`pin-dot ${i<pin.length?"filled":""}`}/>)}</div>
       <div className="pin-pad">
         {["1","2","3","4","5","6","7","8","9","","0","del"].map((k,i)=>(
-          k===""?<div key={i}/>:<button key={i} className={``pin-key `${k==="del"?"del":""}``} onClick={()=>press(k)}>{k==="del"?"⌫":k}</button>
+          k===""?<div key={i}/>:<button key={i} className={`pin-key ${k==="del"?"del":""}`} onClick={()=>press(k)}>{k==="del"?"⌫":k}</button>
         ))}
       </div>
       <button className="btn-ghost-sm" style={{marginTop:28}} onClick={onBack}>← Back</button>
@@ -438,7 +438,7 @@ function ParentPortal({ onExit }) {
     const msg = aiInput.trim(); setAiInput("");
     setAiMessages(m=>[...m,{role:"user",content:msg}]);
     setAiLoading(true);
-    const sys = ``You are a helpful assistant for parents (Nick and Jess) supporting their 10-year-old daughter Carley learning to code and understand AI. She is a complete beginner currently on level `${unlockedLevel+1}/6: "`${SKILL_LADDER[unlockedLevel].name}". She has completed `${activity.length} challenge(s). Give practical specific advice. Keep responses concise and parent-friendly.``;
+    const sys = `You are a helpful assistant for parents (Nick and Jess) supporting their 10-year-old daughter Carley learning to code and understand AI. She is a complete beginner currently on level ${unlockedLevel+1}/6: "${SKILL_LADDER[unlockedLevel].name}". She has completed ${activity.length} challenge(s). Give practical specific advice. Keep responses concise and parent-friendly.`;
     try {
       const r = await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:500,system:sys,messages:aiMessages.concat({role:"user",content:msg})})});
       const d = await r.json();
@@ -507,7 +507,7 @@ function ParentPortal({ onExit }) {
       <div className="p-card">
         <div className="p-card-title">🤖 AI Assistant</div>
         <div className="ai-messages">
-          {aiMessages.map((m,i)=><div key={i} className={``ai-msg `${m.role}``}>{m.content}</div>)}
+          {aiMessages.map((m,i)=><div key={i} className={`ai-msg ${m.role}`}>{m.content}</div>)}
           {aiLoading&&<div className="ai-msg assistant" style={{color:"var(--muted)"}}>thinking...</div>}
           <div ref={messagesEndRef}/>
         </div>
