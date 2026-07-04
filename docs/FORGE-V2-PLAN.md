@@ -85,7 +85,38 @@ create policy "own completions" on completions for all
 - Turn OFF Vercel Deployment Protection for production if the app is meant to be public (it currently 403s for everyone but you).
 - PWA manifest + icons so kids can "install" it from the browser — free, no App Store.
 
-### 4. Later / bigger ideas (from the TikTok backlog themes)
+### 4. Launch readiness (security, legal, accessibility)
+
+**Why sign-ins are broken right now:** the deployed app authenticates against the Supabase `users` table, and that project (`ryhhxdobjjgkbtsrlqxf`) has been **paused** since ~Jul 3 — every login query fails. Restoring the project revives logins short-term; the real fix is Supabase Auth (see §2), because the current table is also the source of the critical security advisors.
+
+**Security (must-do before public launch)**
+- [ ] No API keys in frontend code, ever — all AI through the server proxy with the key in Vercel env vars
+- [ ] Supabase Auth + RLS on every table (schema in §2); delete the plaintext-password `users` table
+- [ ] Rate-limit the AI proxy (per-user daily cap) + set a hard monthly spend limit in the Anthropic console
+- [ ] Turn Vercel Deployment Protection off for production only; keep previews protected
+- [ ] Run `get_advisors` (security + performance) after every schema change
+
+**Legal (the actual lawsuit-avoidance list)**
+- [ ] **COPPA is the big one for a kids' app**: if children under 13 use it, you must minimize data collection, get verifiable parental consent for any personal data, and have a kid-readable privacy policy. Safest architecture: collect nothing beyond a first name and on-device progress (v2 prototype already works this way); parent creates the account.
+- [ ] Privacy Policy + Terms of Service pages (generators like Termly have free tiers; have a lawyer skim before real scale)
+- [ ] **No earnings claims** (FTC): never say or imply users will make money. Frame everything as education. v2 now shows "teaches skills… never promises income; not financial/legal/investment advice" on the welcome screen and under every Money/Business challenge.
+- [ ] Content review: money/credit content must stay educational, not advisory ("here's how credit scores work", never "you should get this card")
+
+**Accessibility (ADA / WCAG 2.1 AA)**
+- [x] Contrast: muted text bumped from #7070a0 (~4.0:1) to #9a9ac4 (~7:1) on the dark background
+- [x] Visible keyboard focus states (`:focus-visible`) on all interactive elements
+- [x] `prefers-reduced-motion` support (all animation effectively disabled)
+- [x] aria-labels on icon-only buttons, `aria-current` on nav, decorative emoji hidden from screen readers
+- [ ] For forge-next: semantic headings hierarchy, form `<label>`s, alt text, test with VoiceOver/TalkBack, touch targets ≥44px, run Lighthouse a11y audit ≥95
+
+**AI provider ("could Hermes or another repo be used?")**
+Short answer: don't self-host an open model — a GPU server runs $100+/month, which kills "basically free." Better options for a broke-budget launch, in order:
+1. **Groq free tier** — runs open models (Llama 3.3 70B etc.) fast, generous free limits, OpenAI-compatible API. $0.
+2. **Google Gemini Flash free tier** — solid free quota. $0.
+3. **Claude Haiku** (`claude-haiku-4-5`) — best quality-per-penny; with daily challenge caching a family costs pennies/month. Set a $5 hard cap.
+The v2 proxy design is provider-agnostic: it's one fetch in one file — swap the URL/key to change providers without touching the app.
+
+### 5. Later / bigger ideas (from the TikTok backlog themes)
 
 - Mentor "personas" (generated once at setup: name, avatar, backstory matched to the kid's interests).
 - Weekly parent email digest (Supabase cron + Resend free tier).

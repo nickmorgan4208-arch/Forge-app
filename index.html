@@ -11,11 +11,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--bg:#080810;--s1:#10101c;--s2:#18182a;--s3:#22223a;--border:#2a2a42;--accent:#e8ff47;--blue:#47c8ff;--red:#ff6b47;--green:#47ffaa;--purple:#c847ff;--orange:#ffaa47;--text:#f0f0ff;--muted:#7070a0;--r:18px;}
+:root{--bg:#080810;--s1:#10101c;--s2:#18182a;--s3:#22223a;--border:#2a2a42;--accent:#e8ff47;--blue:#47c8ff;--red:#ff6b47;--green:#47ffaa;--purple:#c847ff;--orange:#ffaa47;--text:#f0f0ff;--muted:#9a9ac4;--r:18px;}
 html,body{height:100%;background:#080810 !important;color:var(--text);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased;}body{background:#080810 !important;}
+/* Living aurora backdrop — subtle drifting color fields behind everything */
+body::before{content:'';position:fixed;inset:-10%;pointer-events:none;background:radial-gradient(560px 420px at 82% -6%,rgba(232,255,71,.075),transparent 62%),radial-gradient(520px 400px at -8% 34%,rgba(71,200,255,.07),transparent 62%),radial-gradient(620px 520px at 108% 82%,rgba(200,71,255,.06),transparent 62%);animation:drift 16s ease-in-out infinite alternate;}
+@keyframes drift{from{transform:translate3d(-8px,-10px,0) scale(1)}to{transform:translate3d(10px,12px,0) scale(1.06)}}
 input,button,textarea{font-family:'DM Sans',sans-serif;}
 button{cursor:pointer;}
-.root{min-height:100vh;display:flex;flex-direction:column;max-width:540px;margin:0 auto;position:relative;background:#080810;}
+button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}}
+.root{min-height:100vh;display:flex;flex-direction:column;max-width:540px;margin:0 auto;position:relative;}
 .screen{flex:1;display:flex;flex-direction:column;padding:24px 20px 100px;animation:fadeUp .4s ease both;}
 .bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:540px;background:rgba(8,8,16,.94);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;z-index:100;}
 .bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px 22px;border:none;background:none;color:var(--muted);font-size:10px;letter-spacing:.06em;text-transform:uppercase;transition:color .2s;}
@@ -26,7 +31,7 @@ button{cursor:pointer;}
 .avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#080810;}
 .btn-ghost-sm{background:none;border:1px solid var(--border);color:var(--muted);font-size:12px;border-radius:10px;padding:8px 14px;transition:all .2s;}
 .btn-ghost-sm:hover{color:var(--text);border-color:var(--muted);}
-.login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;background:#080810;}
+.login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;}
 .login-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:64px;color:var(--accent);letter-spacing:-3px;margin-bottom:6px;}
 .login-tag{font-size:11px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:52px;text-align:center;}
 .login-box{width:100%;max-width:380px;}
@@ -151,6 +156,17 @@ button{cursor:pointer;}
 .mentor-name{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:2px;}
 .mentor-line{font-size:13px;color:var(--muted);line-height:1.5;}
 .offline-note{font-size:12px;color:var(--muted);text-align:center;padding:10px;line-height:1.6;}
+/* Depth & life: soft shadows, glows, tactile press states */
+.stat,.ccard,.skill-item,.mentor-card,.p-card,.prog-item{box-shadow:0 12px 32px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.04);}
+.btn-main,.btn-complete{box-shadow:0 10px 26px rgba(232,255,71,.16);}
+.btn-main:active,.btn-complete:active,.btn-next:active,.chip:active,.track-pill:active{transform:scale(.97);}
+.skill-item:active{transform:scale(.985);}
+.ccard-icon{filter:drop-shadow(0 6px 16px rgba(232,255,71,.3));}
+.wordmark{text-shadow:0 0 24px rgba(232,255,71,.3);}
+.login-logo{text-shadow:0 0 60px rgba(232,255,71,.4);}
+.mentor-face{box-shadow:0 0 24px rgba(200,71,255,.35);}
+.done-icon{filter:drop-shadow(0 0 26px rgba(232,255,71,.5));}
+.legal{font-size:11px;color:var(--muted);text-align:center;line-height:1.7;margin-top:18px;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
@@ -372,6 +388,7 @@ function Welcome({ onStart }) {
       <div className="login-tag">Real skills for real life — money, business, AI</div>
       <div className="login-box">
         <button className="btn-main" onClick={onStart}>{hasProfile ? "Continue →" : "Get Started →"}</button>
+        <p className="legal">Forge teaches skills for learning purposes only. It never promises income and is not financial, legal, or investment advice.</p>
       </div>
     </div>
   );
@@ -413,7 +430,7 @@ function Onboarding({ onDone }) {
         <div className="ob-step">Step 1 of 5 · Meet your mentor</div>
         <div className="ob-q">What should your mentor call you?</div>
         <div className="ob-sub">Forge builds a mentor around you — how you learn, what you're into, what you want. Takes 30 seconds. You can skip any step.</div>
-        <div className="field"><input className="field-input" placeholder="Your first name..." value={name} autoComplete="off" onChange={e => setName(e.target.value)} onKeyDown={e => e.key === "Enter" && setStep(1)} /></div>
+        <div className="field"><input className="field-input" aria-label="Your first name" placeholder="Your first name..." value={name} autoComplete="off" onChange={e => setName(e.target.value)} onKeyDown={e => e.key === "Enter" && setStep(1)} /></div>
         <button className="btn-main" onClick={() => setStep(1)}>Next →</button>
         <button className="btn-secondary" onClick={() => finish(true)}>Skip setup — use defaults</button>
       </>)}
@@ -440,7 +457,7 @@ function Onboarding({ onDone }) {
         <div className="ob-step">Step 4 of 5 · Interests</div>
         <div className="ob-q">What are you into?</div>
         <div className="ob-sub">Games, sports, music, animals, cars — your mentor uses YOUR world for examples. Money lessons hit different when they're about sneakers you actually want.</div>
-        <div className="field"><input className="field-input" placeholder="e.g. Minecraft, soccer, drawing..." value={interests} autoComplete="off" onChange={e => setInterests(e.target.value)} onKeyDown={e => e.key === "Enter" && setStep(4)} /></div>
+        <div className="field"><input className="field-input" aria-label="Your interests" placeholder="e.g. Minecraft, soccer, drawing..." value={interests} autoComplete="off" onChange={e => setInterests(e.target.value)} onKeyDown={e => e.key === "Enter" && setStep(4)} /></div>
         <button className="btn-main" onClick={() => setStep(4)}>Next →</button>
         <button className="btn-secondary" onClick={() => setStep(4)}>Skip</button>
       </>)}
@@ -579,8 +596,9 @@ function StudentApp({ profile, onProfile, onExit, onParent }) {
                   <div className="task-box"><div className="task-lbl">Your task today</div><div className="task-text">{challenge.task}</div></div>
                   <div className="ccard-actions">
                     <button className="btn-complete" onClick={handleComplete}>Mark Complete ✓</button>
-                    <button className="btn-skip" onClick={loadChallenge} disabled={loading} title="Different challenge">↺</button>
+                    <button className="btn-skip" onClick={loadChallenge} disabled={loading} aria-label="Get a different challenge" title="Different challenge">↺</button>
                   </div>
+                  {track.id !== "ai" && <p className="legal">Educational only — not financial advice. Results depend on you.</p>}
                 </div>
               </>
             )}
@@ -628,10 +646,10 @@ function StudentApp({ profile, onProfile, onExit, onParent }) {
         </div>
       )}
 
-      <nav className="bnav">
+      <nav className="bnav" aria-label="Main navigation">
         {tabs.map(t => (
-          <button key={t.id} className={`bnav-btn ${tab === t.id ? "active" : ""}`} onClick={() => setTab(t.id)}>
-            <span className="bnav-icon">{t.icon}</span>{t.label}
+          <button key={t.id} className={`bnav-btn ${tab === t.id ? "active" : ""}`} onClick={() => setTab(t.id)} aria-current={tab === t.id ? "page" : undefined}>
+            <span className="bnav-icon" aria-hidden="true">{t.icon}</span>{t.label}
           </button>
         ))}
       </nav>
@@ -673,8 +691,8 @@ function MentorChat({ profile, track, level, initial }) {
         <div ref={endRef}/>
       </div>
       <div className="ai-input-row">
-        <input className="ai-input" placeholder="Ask your mentor anything..." value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && send()} />
-        <button className="btn-send" onClick={send} disabled={!input.trim() || busy}>→</button>
+        <input className="ai-input" aria-label="Message your mentor" placeholder="Ask your mentor anything..." value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && send()} />
+        <button className="btn-send" aria-label="Send message" onClick={send} disabled={!input.trim() || busy}>→</button>
       </div>
     </div>
   );
