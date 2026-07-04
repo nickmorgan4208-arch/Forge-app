@@ -1,527 +1,773 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
-  <title>Forge</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
-  <style>
-
-
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#080810"/>
+<title>Forge Scan — 3D Scanning for O&amp;P</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="three.min.js"></script>
+<style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--bg:#080810;--s1:#10101c;--s2:#18182a;--s3:#22223a;--border:#2a2a42;--accent:#e8ff47;--blue:#47c8ff;--red:#ff6b47;--green:#47ffaa;--purple:#c847ff;--text:#f0f0ff;--muted:#7070a0;--r:18px;}
-html,body{height:100%;background:#080810 !important;color:var(--text);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased;}body{background:#080810 !important;}
-input,button,textarea{font-family:'DM Sans',sans-serif;}
+:root{
+  --bg:#080810;--s1:#10101c;--s2:#18182a;--s3:#22223a;--border:#2a2a42;
+  --accent:#e8ff47;--blue:#47c8ff;--red:#ff6b47;--green:#47ffaa;--purple:#c847ff;
+  --text:#f0f0ff;--muted:#7070a0;--r:18px;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none;}
+input,button,textarea,select{font-family:'DM Sans',sans-serif;}
 button{cursor:pointer;}
-.root{min-height:100vh;display:flex;flex-direction:column;max-width:540px;margin:0 auto;position:relative;background:#080810;}
-.screen{flex:1;display:flex;flex-direction:column;padding:24px 20px 100px;animation:fadeUp .4s ease both;}
+.root{min-height:100vh;max-width:540px;margin:0 auto;position:relative;background:var(--bg);}
+.screen{display:none;flex-direction:column;min-height:100vh;padding:24px 20px 110px;animation:fadeUp .35s ease both;}
+.screen.on{display:flex;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+@keyframes pop{from{transform:scale(.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.45;}}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.wordmark{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--accent);letter-spacing:-1px;}
+.wordmark span{color:var(--text);font-weight:600;}
+.pill{font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:20px;border:1px solid var(--border);color:var(--muted);}
+.pill.pro{border-color:var(--accent);color:var(--accent);background:rgba(232,255,71,.08);}
+
 .bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:540px;background:rgba(8,8,16,.94);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;z-index:100;}
-.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px 22px;border:none;background:none;color:var(--muted);font-size:10px;letter-spacing:.06em;text-transform:uppercase;transition:color .2s;}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px 24px;border:none;background:none;color:var(--muted);font-size:10px;letter-spacing:.06em;text-transform:uppercase;transition:color .2s;}
 .bnav-btn.active{color:var(--accent);}
-.bnav-icon{font-size:24px;line-height:1;}
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
-.wordmark{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--accent);letter-spacing:-1px;}
-.avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#080810;}
-.login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;background:#080810;}
-.login-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:64px;color:var(--accent);letter-spacing:-3px;margin-bottom:6px;}
-.login-tag{font-size:11px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:52px;text-align:center;}
-.login-box{width:100%;max-width:380px;}
-.field{margin-bottom:16px;}
+.bnav-icon{font-size:22px;line-height:1;}
+
+.sec{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:20px 0 12px;}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px;}
+.btn-main{width:100%;background:var(--accent);color:#080810;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;letter-spacing:.04em;border:none;border-radius:14px;padding:18px;transition:all .2s;text-transform:uppercase;}
+.btn-main:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(232,255,71,.3);}
+.btn-main:disabled{opacity:.4;transform:none;box-shadow:none;cursor:not-allowed;}
+.btn-ghost{width:100%;background:var(--s2);border:1.5px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-weight:600;font-size:14px;letter-spacing:.05em;text-transform:uppercase;border-radius:14px;padding:16px;transition:all .2s;}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-danger{background:none;border:none;color:var(--red);font-size:13px;padding:10px;text-decoration:underline;}
+.field{margin-bottom:14px;}
 .field-label{display:block;font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
-.field-input{width:100%;background:var(--s2);border:1.5px solid var(--border);border-radius:14px;padding:18px 18px;color:var(--text);font-size:18px;outline:none;transition:border-color .2s;-webkit-appearance:none;}
+.field-input{width:100%;background:var(--s2);border:1.5px solid var(--border);border-radius:14px;padding:16px;color:var(--text);font-size:16px;outline:none;transition:border-color .2s;-webkit-appearance:none;}
 .field-input:focus{border-color:var(--accent);}
 .field-input::placeholder{color:var(--muted);}
-.btn-main{width:100%;background:var(--accent);color:#080810;font-family:'Syne',sans-serif;font-weight:700;font-size:17px;letter-spacing:.04em;border:none;border-radius:14px;padding:20px;margin-top:8px;transition:all .2s;text-transform:uppercase;}
-.btn-main:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(232,255,71,.3);}
-.btn-main:disabled{opacity:.5;transform:none;box-shadow:none;}
-.err{font-size:14px;color:var(--red);margin-top:12px;text-align:center;}
-.parent-link{margin-top:32px;text-align:center;}
-.parent-link button{background:none;border:none;color:var(--muted);font-size:14px;text-decoration:underline;padding:8px;}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
-.stat{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px 12px;text-align:center;position:relative;overflow:hidden;}
-.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--c,var(--accent));}
-.stat-val{font-family:'Syne',sans-serif;font-weight:800;font-size:32px;color:var(--c,var(--accent));line-height:1;margin-bottom:4px;}
-.stat-lbl{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
-.streak-row{display:flex;gap:8px;margin-bottom:28px;}
-.sdot{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .3s;}
-.sdot.done{background:rgba(232,255,71,.15);border-color:var(--accent);}
-.sdot.today{border-color:var(--blue);animation:pulse 2s ease infinite;}
-.sec{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
-.ccard{background:var(--s1);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:24px;}
-.ccard-head{padding:22px 20px 18px;background:linear-gradient(135deg,rgba(232,255,71,.07),transparent);border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
-.ccard-skill{font-size:11px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
-.ccard-title{font-family:'Syne',sans-serif;font-weight:700;font-size:24px;line-height:1.2;}
-.ccard-icon{font-size:36px;flex-shrink:0;margin-top:4px;}
-.ccard-body{padding:22px;}
-.ccard-text{font-size:16px;line-height:1.75;color:#c0c0d8;margin-bottom:22px;}
-.task-box{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:22px;}
-.task-lbl{font-size:10px;color:var(--blue);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
-.task-text{font-size:16px;line-height:1.75;}
-.ccard-actions{display:flex;gap:10px;}
-.btn-complete{flex:1;background:var(--accent);color:#080810;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;letter-spacing:.04em;text-transform:uppercase;border:none;border-radius:14px;padding:18px;transition:all .2s;}
-.btn-complete:hover{box-shadow:0 6px 20px rgba(232,255,71,.3);transform:translateY(-1px);}
-.btn-complete:disabled{opacity:.5;transform:none;box-shadow:none;}
-.btn-skip{background:var(--s2);border:1.5px solid var(--border);color:var(--muted);font-size:22px;border-radius:14px;padding:18px 22px;transition:all .2s;}
-.btn-skip:hover{border-color:var(--blue);color:var(--blue);}
-.loading{text-align:center;padding:52px 24px;color:var(--muted);font-size:13px;letter-spacing:.08em;}
-.spinner{width:30px;height:30px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;margin:0 auto 18px;animation:spin .8s linear infinite;}
-.done-state{text-align:center;padding:52px 24px;}
-.done-icon{font-size:64px;margin-bottom:18px;animation:pop .4s cubic-bezier(.34,1.56,.64,1) both;}
-.done-title{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--accent);margin-bottom:8px;}
-.done-sub{font-size:15px;color:var(--muted);margin-bottom:32px;}
-.btn-next{background:var(--s2);border:1.5px solid var(--accent);color:var(--accent);font-family:'Syne',sans-serif;font-weight:600;font-size:15px;letter-spacing:.06em;text-transform:uppercase;border-radius:14px;padding:16px 36px;transition:all .2s;}
-.btn-next:hover{background:rgba(232,255,71,.1);}
-.skill-list{display:flex;flex-direction:column;gap:12px;}
-.skill-item{background:var(--s1);border:1.5px solid var(--border);border-radius:var(--r);padding:20px 16px;display:flex;align-items:center;gap:14px;transition:all .2s;}
-.skill-item.active{border-color:var(--accent);background:rgba(232,255,71,.04);}
-.skill-item.locked{opacity:.4;}
-.skill-emoji{font-size:30px;flex-shrink:0;}
-.skill-info{flex:1;}
-.skill-name{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:3px;}
-.skill-desc{font-size:13px;color:var(--muted);}
-.skill-badge{font-size:10px;padding:6px 14px;border-radius:20px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0;}
-.badge-active{background:rgba(232,255,71,.15);color:var(--accent);}
-.badge-done{background:rgba(71,255,170,.15);color:var(--green);}
-.badge-locked{background:var(--s2);color:var(--muted);}
-.prog-empty{text-align:center;padding:52px 24px;color:var(--muted);font-size:15px;line-height:1.7;}
-.prog-item{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:10px;}
-.prog-skill{font-size:10px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
-.prog-title{font-size:16px;font-weight:500;margin-bottom:4px;}
-.prog-date{font-size:13px;color:var(--muted);}
-.pin-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;background:var(--bg);}
-.pin-title{font-family:'Syne',sans-serif;font-weight:800;font-size:32px;margin-bottom:8px;}
-.pin-sub{font-size:15px;color:var(--muted);margin-bottom:36px;}
-.pin-dots{display:flex;gap:16px;margin-bottom:36px;}
-.pin-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);transition:all .2s;}
-.pin-dot.filled{background:var(--blue);border-color:var(--blue);}
-.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;max-width:300px;}
-.pin-key{background:var(--s2);border:1.5px solid var(--border);border-radius:18px;padding:22px;font-family:'Syne',sans-serif;font-weight:700;font-size:24px;text-align:center;border:1.5px solid var(--border);transition:all .15s;}
-.pin-key:active{background:var(--s3);transform:scale(.94);}
-.pin-key.del{font-size:18px;color:var(--muted);}
-.parent-screen{min-height:100vh;background:var(--bg);padding:32px 20px 48px;max-width:540px;margin:0 auto;}
-.parent-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
-.parent-wordmark{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--blue);}
-.parent-sub{font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
-.p-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px;}
-.p-card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
-.p-stat-row{display:flex;gap:10px;margin-bottom:14px;}
-.p-stat{flex:1;background:var(--s2);border-radius:12px;padding:14px 10px;text-align:center;}
-.p-stat-val{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--accent);}
-.p-stat-lbl{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
-.p-feed-item{padding:12px 0;border-bottom:1px solid var(--border);}
-.p-feed-item:last-child{border-bottom:none;}
-.p-feed-skill{font-size:10px;color:var(--blue);letter-spacing:.08em;text-transform:uppercase;}
-.p-feed-title{font-weight:500;margin:3px 0;font-size:15px;}
-.p-feed-date{font-size:13px;color:var(--muted);}
-.p-textarea{width:100%;background:var(--s2);border:1.5px solid var(--border);border-radius:12px;padding:16px;color:var(--text);font-size:16px;resize:none;outline:none;transition:border-color .2s;min-height:110px;}
-.p-textarea:focus{border-color:var(--blue);}
-.btn-parent{background:var(--blue);color:#080810;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;letter-spacing:.04em;text-transform:uppercase;border:none;border-radius:12px;padding:15px 24px;transition:all .2s;margin-top:10px;}
-.btn-parent:hover{box-shadow:0 6px 20px rgba(71,200,255,.3);}
-.btn-parent:disabled{opacity:.5;}
-.btn-ghost-sm{background:none;border:1px solid var(--border);color:var(--muted);font-size:13px;border-radius:8px;padding:8px 16px;transition:all .2s;}
-.btn-ghost-sm:hover{border-color:var(--muted);color:var(--text);}
-.ai-messages{max-height:300px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;padding-right:4px;}
-.ai-msg{padding:14px 16px;border-radius:14px;font-size:14px;line-height:1.65;}
-.ai-msg.user{background:rgba(232,255,71,.1);border:1px solid rgba(232,255,71,.2);align-self:flex-end;max-width:85%;}
-.ai-msg.assistant{background:var(--s2);border:1px solid var(--border);align-self:flex-start;max-width:92%;}
-.ai-input-row{display:flex;gap:8px;}
-.ai-input{flex:1;background:var(--s2);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--text);font-size:15px;outline:none;}
-.ai-input:focus{border-color:var(--blue);}
-.btn-send{background:var(--blue);color:#080810;border:none;border-radius:12px;padding:14px 18px;font-size:20px;transition:all .2s;}
-.btn-send:disabled{opacity:.4;}
-.unlock-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);}
-.unlock-row:last-child{border-bottom:none;}
-.unlock-skill{display:flex;align-items:center;gap:10px;font-size:15px;}
-.unlock-btn{background:rgba(71,255,170,.15);color:var(--green);border:1px solid var(--green);font-size:12px;border-radius:8px;padding:7px 16px;font-weight:600;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(71,200,255,.4)}50%{box-shadow:0 0 0 8px rgba(71,200,255,0)}}
+.muted{color:var(--muted);font-size:13px;line-height:1.6;}
+.err{font-size:13px;color:var(--red);margin-top:10px;text-align:center;min-height:18px;}
 
-  </style>
+/* splash / waiver */
+.hero{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 0 24px;}
+.hero-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:52px;color:var(--accent);letter-spacing:-2px;line-height:1;}
+.hero-logo span{color:var(--text);}
+.hero-tag{font-size:11px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-top:10px;}
+.waiver-box{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:18px;height:300px;overflow-y:auto;font-size:13px;line-height:1.75;color:#b8b8d4;margin-bottom:16px;-webkit-overflow-scrolling:touch;}
+.waiver-box h3{font-family:'Syne',sans-serif;color:var(--text);font-size:14px;margin:14px 0 6px;}
+.waiver-box h3:first-child{margin-top:0;}
+.check-row{display:flex;align-items:flex-start;gap:12px;padding:12px 4px;font-size:13px;line-height:1.5;color:#c0c0d8;}
+.check-row input{width:22px;height:22px;flex-shrink:0;accent-color:var(--accent);margin-top:1px;}
+
+/* device check */
+.dev-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.dev-row:last-child{border-bottom:none;}
+.dev-status{font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;}
+.ok{color:var(--green);}.warn{color:var(--accent);}.bad{color:var(--red);}
+
+/* plans */
+.plan{background:var(--s1);border:1.5px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:12px;position:relative;transition:all .2s;}
+.plan.sel{border-color:var(--accent);background:rgba(232,255,71,.05);}
+.plan-flag{position:absolute;top:-9px;right:16px;background:var(--accent);color:#080810;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:10px;}
+.plan-name{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:4px;}
+.plan-price{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--accent);}
+.plan-price small{font-size:13px;color:var(--muted);font-weight:400;font-family:'DM Sans',sans-serif;}
+.plan-desc{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;}
+.feat{display:flex;gap:10px;font-size:13px;color:#c0c0d8;padding:5px 0;}
+.feat::before{content:'✓';color:var(--green);font-weight:700;}
+
+/* scan type grid */
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.type-card{background:var(--s1);border:1.5px solid var(--border);border-radius:var(--r);padding:18px 14px;text-align:center;transition:all .2s;color:var(--text);}
+.type-card.sel{border-color:var(--accent);background:rgba(232,255,71,.05);}
+.type-emoji{font-size:30px;margin-bottom:8px;}
+.type-name{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;}
+.type-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+
+/* capture */
+#capScreen{position:fixed;inset:0;z-index:200;background:#000;display:none;flex-direction:column;}
+#capScreen.on{display:flex;}
+#capVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.cap-top{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:18px 16px;z-index:5;background:linear-gradient(rgba(0,0,0,.6),transparent);}
+.cap-count{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#fff;}
+.cap-count small{font-size:12px;color:rgba(255,255,255,.6);font-weight:400;}
+.cap-x{background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:50%;width:42px;height:42px;font-size:18px;}
+.cap-hint{position:absolute;top:74px;left:0;right:0;text-align:center;z-index:5;font-size:13px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8);padding:0 24px;line-height:1.5;}
+.cap-ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;pointer-events:none;}
+.cap-bottom{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:32px;padding:24px 24px 40px;z-index:5;background:linear-gradient(transparent,rgba(0,0,0,.7));}
+.shutter{width:78px;height:78px;border-radius:50%;background:var(--accent);border:5px solid rgba(255,255,255,.85);transition:transform .1s;}
+.shutter:active{transform:scale(.9);}
+.cap-side{width:52px;height:52px;border-radius:50%;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:20px;}
+.cap-done{position:absolute;bottom:130px;left:50%;transform:translateX(-50%);z-index:6;background:var(--green);color:#04140c;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;letter-spacing:.05em;text-transform:uppercase;border:none;border-radius:30px;padding:14px 28px;display:none;}
+.cap-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:7;transition:opacity .12s;}
+
+/* processing */
+.proc{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;text-align:center;}
+.proc-ring{width:120px;height:120px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--accent);animation:spin 1s linear infinite;margin-bottom:28px;}
+.proc-step{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;margin-bottom:8px;}
+.proc-pct{font-size:13px;color:var(--muted);}
+.proc-bar{width:100%;max-width:280px;height:6px;background:var(--s2);border-radius:3px;margin-top:22px;overflow:hidden;}
+.proc-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .3s;width:0%;}
+
+/* viewer */
+#viewerWrap{width:100%;height:340px;background:radial-gradient(ellipse at center,#14142a,#080810);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;position:relative;touch-action:none;margin-bottom:14px;}
+#viewerWrap canvas{display:block;}
+.view-hint{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:11px;color:var(--muted);pointer-events:none;}
+.dim-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.dim{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:14px 8px;text-align:center;}
+.dim-val{font-family:'Syne',sans-serif;font-weight:800;font-size:19px;color:var(--blue);}
+.dim-lbl{font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:3px;}
+.exp-row{display:flex;gap:10px;margin-bottom:10px;}
+.exp-row .btn-ghost{border-color:var(--accent);color:var(--accent);}
+
+/* library */
+.scan-item{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
+.scan-emoji{font-size:28px;width:52px;height:52px;background:var(--s2);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.scan-info{flex:1;min-width:0;}
+.scan-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.scan-meta{font-size:12px;color:var(--muted);margin-top:3px;}
+.scan-open{background:var(--s2);border:1.5px solid var(--border);color:var(--accent);border-radius:12px;padding:10px 16px;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;flex-shrink:0;}
+.empty{text-align:center;padding:56px 24px;color:var(--muted);font-size:14px;line-height:1.7;}
+.empty-icon{font-size:52px;margin-bottom:14px;}
+
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--s3);border:1px solid var(--accent);color:var(--text);font-size:13px;padding:12px 22px;border-radius:30px;z-index:300;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.back{background:none;border:none;color:var(--muted);font-size:14px;padding:8px 0;text-align:left;margin-bottom:8px;}
+</style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="text/babel">
-const { useState, useEffect, useRef } = React;
+<div class="root">
 
-// ── CONFIG ──────────────────────────────────────────────────────────────────
-const SUPABASE_URL = "https://ryhhxdobjjgkbtsrlqxf.supabase.co";
-const SUPABASE_KEY = "sb_publishable_GIWxZYwKBYolS_v90FUJ4g_0IZBOIQj";
-const PARENT_PIN = "1234";
-const LOCAL_STUDENT = { id: "local-1", name: "Carley", password: "forge2024", level: 0, streak: 0, completed: 0 };
+<!-- ============ WAIVER ============ -->
+<div class="screen" id="scr-waiver">
+  <div class="hero">
+    <div class="hero-logo">FORGE<span>SCAN</span></div>
+    <div class="hero-tag">3D Scanning · Orthotics &amp; Prosthetics</div>
+  </div>
+  <div class="sec">Liability Waiver &amp; Terms of Use</div>
+  <div class="waiver-box" id="waiverBox">
+    <h3>1. Not a Medical Device</h3>
+    <p>Forge Scan is a measurement and 3D-capture utility. It is <b>not a medical device</b> and has not been evaluated or cleared by the FDA or any regulatory body. Scans, meshes, and measurements produced by this app are provided for reference and workflow convenience only and must not be the sole basis for clinical decisions, diagnosis, or treatment.</p>
+    <h3>2. Professional Judgment Required</h3>
+    <p>Orthotic and prosthetic devices fabricated from scans produced by this app must be reviewed, verified, and fitted by a qualified, licensed practitioner. You accept full responsibility for verifying dimensional accuracy against physical measurements before fabrication or clinical use.</p>
+    <h3>3. Accuracy Disclaimer</h3>
+    <p>Capture quality depends on device hardware, lighting, subject movement, and operator technique. No warranty of dimensional accuracy, fitness for a particular purpose, or merchantability is given. All output is provided "as is".</p>
+    <h3>4. Assumption of Risk &amp; Release</h3>
+    <p>By accepting, you release Forge Scan, its developers, and affiliates from any and all claims, damages, or liabilities arising from use of this app or from devices fabricated using its output, to the maximum extent permitted by law.</p>
+    <h3>5. Data &amp; Privacy</h3>
+    <p>Photos captured during scanning are processed for reconstruction. If you scan another person, you confirm you have their informed consent (or that of their legal guardian). You are responsible for complying with applicable privacy and health-information regulations (e.g., HIPAA, GDPR) in your jurisdiction.</p>
+    <h3>6. Subscription</h3>
+    <p>Scanning requires an active subscription or trial. Exported files (STL / OBJ) are yours — export is unlimited and never token-metered. Subscriptions renew automatically until cancelled through your app store or account settings.</p>
+  </div>
+  <label class="check-row"><input type="checkbox" id="wv1"><span>I have read and accept the waiver and terms above.</span></label>
+  <label class="check-row"><input type="checkbox" id="wv2"><span>I understand this is <b>not a medical device</b> and all output must be verified by a qualified practitioner.</span></label>
+  <div class="field" style="margin-top:8px;">
+    <label class="field-label">Type your full name to sign</label>
+    <input class="field-input" id="wvName" placeholder="Full name" autocomplete="name">
+  </div>
+  <button class="btn-main" id="wvBtn" disabled>Accept &amp; Continue</button>
+</div>
 
-const SKILL_LADDER = [
-  { id: "ai",     icon: "🧠", name: "What is AI?",     desc: "Understand what AI is and how to talk to it",   color: "#e8ff47" },
-  { id: "prompt", icon: "✍️", name: "Prompting",       desc: "Get AI to do exactly what you want",             color: "#47c8ff" },
-  { id: "scratch",icon: "🎮", name: "Scratch Basics",  desc: "Build your first game — no typing required",     color: "#ff6b47" },
-  { id: "python", icon: "🐍", name: "Python",          desc: "Write real code: variables, loops, logic",       color: "#47ffaa" },
-  { id: "web",    icon: "🌐", name: "Web & HTML",      desc: "Build a page that lives on the internet",        color: "#c847ff" },
-  { id: "build",  icon: "🔨", name: "Build Something", desc: "Make an app, game, or tool from scratch",        color: "#ffaa47" },
+<!-- ============ DEVICE CHECK ============ -->
+<div class="screen" id="scr-device">
+  <div class="hero" style="padding:32px 0 16px;">
+    <div class="hero-logo" style="font-size:36px;">Device Check</div>
+    <div class="hero-tag">Making sure your hardware can scan</div>
+  </div>
+  <div class="card" id="devList"></div>
+  <div class="muted" id="devNote" style="margin-bottom:16px;"></div>
+  <button class="btn-main" id="devBtn">Continue</button>
+</div>
+
+<!-- ============ PAYWALL ============ -->
+<div class="screen" id="scr-plans">
+  <div class="hero" style="padding:32px 0 12px;">
+    <div class="hero-logo" style="font-size:36px;">Go Pro</div>
+    <div class="hero-tag">Unlimited scans · Free STL &amp; OBJ export</div>
+  </div>
+  <div class="plan sel" data-plan="annual">
+    <div class="plan-flag">Best value</div>
+    <div class="plan-name">Pro Annual</div>
+    <div class="plan-price">$119<small>/year · ≈ $9.92/mo</small></div>
+    <div class="plan-desc">7-day free trial, then billed yearly. Cancel anytime.</div>
+  </div>
+  <div class="plan" data-plan="monthly">
+    <div class="plan-name">Pro Monthly</div>
+    <div class="plan-price">$14.99<small>/month</small></div>
+    <div class="plan-desc">7-day free trial, then billed monthly. Cancel anytime.</div>
+  </div>
+  <div class="card">
+    <div class="feat">Unlimited 3D scans</div>
+    <div class="feat">Free, unlimited STL &amp; OBJ export — no tokens, ever</div>
+    <div class="feat">O&amp;P capture presets (foot, AFO, transtibial, spinal…)</div>
+    <div class="feat">Guided orbit capture with motion tracking</div>
+    <div class="feat">Scan library with patient labels &amp; history</div>
+  </div>
+  <button class="btn-main" id="planBtn">Start 7-Day Free Trial</button>
+  <p class="muted" style="text-align:center;margin-top:14px;">Demo build: checkout is simulated locally. Production uses App Store / Play Store subscriptions (RevenueCat) or Stripe on web.</p>
+</div>
+
+<!-- ============ HOME / SCAN TAB ============ -->
+<div class="screen" id="scr-home">
+  <div class="topbar">
+    <div class="wordmark">FORGE<span>SCAN</span></div>
+    <div class="pill pro" id="subPill">Pro Trial</div>
+  </div>
+  <div class="sec">New Scan — choose a preset</div>
+  <div class="type-grid" id="typeGrid"></div>
+  <div class="sec">Details</div>
+  <div class="field">
+    <label class="field-label">Label (patient ID / initials — avoid full PHI)</label>
+    <input class="field-input" id="scanLabel" placeholder="e.g. JD-Left-Foot">
+  </div>
+  <button class="btn-main" id="startScanBtn" style="margin-top:6px;">Start Guided Capture</button>
+  <div class="err" id="homeErr"></div>
+  <p class="muted" style="margin-top:10px;">Tip: use even lighting, keep the subject still, and orbit slowly in a full circle about 30–50&nbsp;cm away. The tracker fills the ring as you cover each angle.</p>
+</div>
+
+<!-- ============ LIBRARY TAB ============ -->
+<div class="screen" id="scr-library">
+  <div class="topbar">
+    <div class="wordmark">Library</div>
+    <div class="pill" id="libCount"></div>
+  </div>
+  <div id="libList"></div>
+</div>
+
+<!-- ============ ACCOUNT TAB ============ -->
+<div class="screen" id="scr-account">
+  <div class="topbar"><div class="wordmark">Account</div></div>
+  <div class="card">
+    <div class="sec" style="margin-top:0;">Subscription</div>
+    <div id="accSub" style="font-size:15px;line-height:1.7;"></div>
+  </div>
+  <div class="card">
+    <div class="sec" style="margin-top:0;">Waiver</div>
+    <div id="accWaiver" style="font-size:14px;line-height:1.7;color:#c0c0d8;"></div>
+  </div>
+  <div class="card">
+    <div class="sec" style="margin-top:0;">Export policy</div>
+    <div style="font-size:14px;line-height:1.7;color:#c0c0d8;">STL and OBJ export is <b style="color:var(--green);">free and unlimited</b> on every plan. Your geometry is never held hostage behind tokens or per-export fees.</div>
+  </div>
+  <button class="btn-danger" id="resetBtn">Reset app (clears waiver, subscription &amp; scans)</button>
+</div>
+
+<!-- ============ PROCESSING ============ -->
+<div class="screen" id="scr-processing">
+  <div class="proc">
+    <div class="proc-ring"></div>
+    <div class="proc-step" id="procStep">Aligning frames…</div>
+    <div class="proc-pct" id="procPct">0%</div>
+    <div class="proc-bar"><div class="proc-fill" id="procFill"></div></div>
+    <p class="muted" style="margin-top:26px;max-width:300px;">Demo build reconstructs a preview mesh on-device. Production connects to a photogrammetry backend or LiDAR/depth capture for clinical-grade geometry.</p>
+  </div>
+</div>
+
+<!-- ============ RESULT / VIEWER ============ -->
+<div class="screen" id="scr-result">
+  <button class="back" id="resultBack">‹ Back</button>
+  <div class="topbar" style="margin-bottom:14px;">
+    <div class="wordmark" id="resultTitle" style="font-size:20px;color:var(--text);">Scan</div>
+    <div class="pill" id="resultMeta"></div>
+  </div>
+  <div id="viewerWrap"><div class="view-hint">Drag to rotate · pinch / scroll to zoom</div></div>
+  <div class="dim-grid">
+    <div class="dim"><div class="dim-val" id="dimL">–</div><div class="dim-lbl">Length mm</div></div>
+    <div class="dim"><div class="dim-val" id="dimW">–</div><div class="dim-lbl">Width mm</div></div>
+    <div class="dim"><div class="dim-val" id="dimH">–</div><div class="dim-lbl">Height mm</div></div>
+  </div>
+  <div class="exp-row">
+    <button class="btn-ghost" id="expStl">⬇ Export STL</button>
+    <button class="btn-ghost" id="expObj">⬇ Export OBJ</button>
+  </div>
+  <button class="btn-main" id="saveScanBtn">Save to Library</button>
+  <button class="btn-danger" id="discardBtn" style="margin-top:6px;">Discard scan</button>
+</div>
+
+<!-- ============ CAPTURE OVERLAY ============ -->
+<div id="capScreen">
+  <video id="capVideo" autoplay playsinline muted></video>
+  <div class="cap-flash" id="capFlash"></div>
+  <div class="cap-top">
+    <div class="cap-count"><span id="capN">0</span><small> / <span id="capTotal">36</span> angles</small></div>
+    <button class="cap-x" id="capExit">✕</button>
+  </div>
+  <div class="cap-hint" id="capHint">Center the limb, then orbit slowly. Segments light up as angles are covered.</div>
+  <svg class="cap-ring" id="capRing" width="290" height="290" viewBox="0 0 290 290"></svg>
+  <button class="cap-done" id="capFinish">Finish &amp; Reconstruct</button>
+  <div class="cap-bottom">
+    <button class="cap-side" id="torchBtn" title="Torch">🔦</button>
+    <button class="shutter" id="shutterBtn" aria-label="Capture"></button>
+    <button class="cap-side" id="autoBtn" title="Auto-capture">A</button>
+  </div>
+</div>
+
+<div class="bnav" id="bnav" style="display:none;">
+  <button class="bnav-btn active" data-tab="home"><span class="bnav-icon">◉</span>Scan</button>
+  <button class="bnav-btn" data-tab="library"><span class="bnav-icon">▤</span>Library</button>
+  <button class="bnav-btn" data-tab="account"><span class="bnav-icon">☰</span>Account</button>
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* =====================================================================
+   Forge Scan — web prototype
+   Guided rear-camera capture → mesh preview → free STL/OBJ export.
+   Demo build generates the preview mesh on-device; the capture set is
+   the input a production photogrammetry backend (or native ARKit/ARCore
+   depth capture via a Capacitor wrapper) would consume.
+===================================================================== */
+"use strict";
+const $ = id => document.getElementById(id);
+const LS = { waiver:'fs_waiver', sub:'fs_sub' };
+const SEGMENTS = 36;               // orbit angles to cover
+const MIN_SHOTS = 12;              // minimum before "Finish" unlocks
+
+const SCAN_TYPES = [
+  { id:'foot',   emoji:'🦶', name:'Foot / Insole',   sub:'Custom orthotics',      dims:[255,98,72]  },
+  { id:'afo',    emoji:'🦵', name:'Ankle / AFO',     sub:'Ankle-foot orthosis',   dims:[300,110,240]},
+  { id:'tt',     emoji:'🩼', name:'Transtibial',     sub:'Below-knee residuum',   dims:[150,130,260]},
+  { id:'tr',     emoji:'💪', name:'Transradial',     sub:'Below-elbow residuum',  dims:[90,85,220]  },
+  { id:'spine',  emoji:'🧍', name:'Spinal / TLSO',   sub:'Torso capture',         dims:[340,260,450]},
+  { id:'other',  emoji:'📦', name:'Free Object',     sub:'Anything else',         dims:[180,140,120]},
 ];
 
-const db = {
-  h: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
-  async getUser(name, password) {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/users?name=eq.${encodeURIComponent(name)}&password=eq.${encodeURIComponent(password)}&select=*`, { headers: this.h });
-    const d = await r.json(); return d[0] || null;
-  },
-  async updateUser(id, fields) {
-    await fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${id}`, { method: "PATCH", headers: this.h, body: JSON.stringify(fields) });
-  },
-  async logCompletion(userId, skillId, title) {
-    await fetch(`${SUPABASE_URL}/rest/v1/completions`, { method: "POST", headers: this.h, body: JSON.stringify({ user_id: userId, skill_id: skillId, challenge_title: title }) });
-  }
+/* ---------- tiny helpers ---------- */
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2600); }
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on')); $(id).classList.add('on'); window.scrollTo(0,0); }
+function fmtDate(ts){ return new Date(ts).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}); }
+
+/* ---------- IndexedDB scan store ---------- */
+let db;
+function openDB(){ return new Promise((res,rej)=>{
+  const rq = indexedDB.open('forgescan',1);
+  rq.onupgradeneeded = e => e.target.result.createObjectStore('scans',{keyPath:'id'});
+  rq.onsuccess = e => { db=e.target.result; res(); };
+  rq.onerror = () => rej(rq.error);
+});}
+const idb = {
+  put(scan){ return new Promise((res,rej)=>{ const tx=db.transaction('scans','readwrite'); tx.objectStore('scans').put(scan); tx.oncomplete=res; tx.onerror=()=>rej(tx.error); }); },
+  all(){ return new Promise((res,rej)=>{ const rq=db.transaction('scans').objectStore('scans').getAll(); rq.onsuccess=()=>res(rq.result||[]); rq.onerror=()=>rej(rq.error); }); },
+  del(id){ return new Promise((res,rej)=>{ const tx=db.transaction('scans','readwrite'); tx.objectStore('scans').delete(id); tx.oncomplete=res; tx.onerror=()=>rej(tx.error); }); },
 };
 
-
-
-function ForgeApp() {
-  const [mode, setMode] = useState("login");
-  return (
-    <>
-      
-      <div className="root">
-        {mode === "login"   && <LoginScreen onStudent={()=>setMode("student")} onParent={()=>setMode("pin")} />}
-        {mode === "student" && <StudentApp onExit={()=>setMode("login")} />}
-        {mode === "pin"     && <PinScreen onSuccess={()=>setMode("parent")} onBack={()=>setMode("login")} />}
-        {mode === "parent"  && <ParentPortal onExit={()=>setMode("login")} />}
-      </div>
-    </>
-  );
+/* =====================================================================
+   WAIVER
+===================================================================== */
+function waiverOk(){ try{ return !!JSON.parse(localStorage.getItem(LS.waiver)||'null'); }catch(e){ return false; } }
+function initWaiver(){
+  const upd = () => { $('wvBtn').disabled = !($('wv1').checked && $('wv2').checked && $('wvName').value.trim().length>=3); };
+  ['wv1','wv2'].forEach(id=>$(id).addEventListener('change',upd));
+  $('wvName').addEventListener('input',upd);
+  $('wvBtn').addEventListener('click',()=>{
+    localStorage.setItem(LS.waiver, JSON.stringify({ name:$('wvName').value.trim(), ts:Date.now(), version:1 }));
+    show('scr-device'); runDeviceCheck();
+  });
 }
 
-function LoginScreen({ onStudent, onParent }) {
-  const [name, setName]         = useState("");
-  const [pass, setPass]         = useState("");
-  const [showPass, setShowPass] = useState(false);
-  const [err, setErr]           = useState("");
-  const [loading, setLoading]   = useState(false);
+/* =====================================================================
+   DEVICE CHECK
+===================================================================== */
+async function runDeviceCheck(){
+  const rows=[];
+  const add=(name,ok,note)=>rows.push({name,ok,note});
+  add('Secure context (HTTPS)', window.isSecureContext ? 'ok':'bad', window.isSecureContext?'Yes':'Camera requires HTTPS');
+  add('Camera API', (navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)?'ok':'bad','');
+  let rear='warn', rearNote='Will confirm on first scan';
+  try{
+    const devs = await navigator.mediaDevices.enumerateDevices();
+    const cams = devs.filter(d=>d.kind==='videoinput');
+    if(cams.length===0){ rear='bad'; rearNote='No camera found'; }
+    else if(cams.length>1){ rear='ok'; rearNote=cams.length+' cameras'; }
+  }catch(e){}
+  add('Rear camera', rear, rearNote);
+  let gl=false; try{ const c=document.createElement('canvas'); gl=!!(c.getContext('webgl')||c.getContext('experimental-webgl')); }catch(e){}
+  add('WebGL (3D viewer)', gl?'ok':'bad','');
+  const motion = ('DeviceOrientationEvent' in window) ? (typeof DeviceOrientationEvent.requestPermission==='function'?'warn':'ok') : 'warn';
+  add('Motion tracking', motion, motion==='warn'?'Permission asked at scan time; manual capture always works':'');
+  $('devList').innerHTML = rows.map(r=>
+    `<div class="dev-row"><span>${r.name}${r.note?`<div class="muted" style="font-size:11px;">${r.note}</div>`:''}</span>
+     <span class="dev-status ${r.ok}">${r.ok==='ok'?'Ready':r.ok==='warn'?'Check':'Missing'}</span></div>`).join('');
+  const fatal = rows.some(r=>r.ok==='bad');
+  $('devNote').textContent = fatal
+    ? 'Your device is missing a required capability. You can still browse, but scanning may not work.'
+    : 'Looks good. Motion tracking and torch are confirmed when the camera opens.';
+  $('devBtn').onclick = () => { hasSub() ? goHome() : show('scr-plans'); };
+}
 
-  const handleLogin = async () => {
-    if (!name.trim()) { setErr("Enter your name."); return; }
-    if (!pass.trim()) { setErr("Enter your password."); return; }
-    setLoading(true); setErr("");
-    try {
-      const u = await db.getUser(name.trim(), pass);
-      if (u) { onStudent(); setLoading(false); return; }
-    } catch {}
-    if (name.trim().toLowerCase() === LOCAL_STUDENT.name.toLowerCase() && pass === LOCAL_STUDENT.password) {
-      onStudent(); setLoading(false); return;
+/* =====================================================================
+   SUBSCRIPTION (demo — local only; production: RevenueCat / Stripe)
+===================================================================== */
+function getSub(){ try{ return JSON.parse(localStorage.getItem(LS.sub)||'null'); }catch(e){ return null; } }
+function hasSub(){ const s=getSub(); return !!s && (s.trialEnds>Date.now() || s.active); }
+function initPlans(){
+  let plan='annual';
+  document.querySelectorAll('.plan').forEach(p=>p.addEventListener('click',()=>{
+    document.querySelectorAll('.plan').forEach(x=>x.classList.remove('sel'));
+    p.classList.add('sel'); plan=p.dataset.plan;
+  }));
+  $('planBtn').addEventListener('click',()=>{
+    localStorage.setItem(LS.sub, JSON.stringify({ plan, started:Date.now(), trialEnds:Date.now()+7*864e5, active:true }));
+    toast('Trial started — happy scanning!');
+    goHome();
+  });
+}
+function subLabel(){
+  const s=getSub(); if(!s) return 'Free';
+  if(s.trialEnds>Date.now()) return 'Pro Trial';
+  return s.plan==='annual'?'Pro Annual':'Pro Monthly';
+}
+
+/* =====================================================================
+   HOME + TABS
+===================================================================== */
+let selType = SCAN_TYPES[0];
+function goHome(){ show('scr-home'); $('bnav').style.display='flex'; setTab('home'); $('subPill').textContent=subLabel(); }
+function setTab(tab){
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  if(tab==='home'){ show('scr-home'); $('subPill').textContent=subLabel(); }
+  if(tab==='library'){ show('scr-library'); renderLibrary(); }
+  if(tab==='account'){ show('scr-account'); renderAccount(); }
+}
+function initHome(){
+  $('typeGrid').innerHTML = SCAN_TYPES.map(t=>
+    `<button class="type-card${t.id===selType.id?' sel':''}" data-id="${t.id}">
+      <div class="type-emoji">${t.emoji}</div><div class="type-name">${t.name}</div><div class="type-sub">${t.sub}</div></button>`).join('');
+  $('typeGrid').addEventListener('click',e=>{
+    const btn=e.target.closest('.type-card'); if(!btn) return;
+    selType = SCAN_TYPES.find(t=>t.id===btn.dataset.id);
+    document.querySelectorAll('.type-card').forEach(c=>c.classList.toggle('sel',c.dataset.id===selType.id));
+  });
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+  $('startScanBtn').addEventListener('click',()=>{
+    $('homeErr').textContent='';
+    if(!hasSub()){ show('scr-plans'); return; }
+    startCapture().catch(err=>{ $('homeErr').textContent = 'Camera error: '+(err.message||err.name||err); });
+  });
+}
+
+/* =====================================================================
+   CAPTURE — rear camera + orientation-guided orbit ring
+===================================================================== */
+let capStream=null, shots=[], segDone=new Set(), headingBase=null, autoMode=true, orientationOK=false, torchOn=false;
+
+function buildRing(){
+  const svg=$('capRing'); let html='';
+  for(let i=0;i<SEGMENTS;i++){
+    const a0=(i/SEGMENTS)*Math.PI*2 - Math.PI/2, a1=((i+.72)/SEGMENTS)*Math.PI*2 - Math.PI/2, r=132, cx=145, cy=145;
+    html+=`<line id="seg${i}" x1="${cx+Math.cos(a0)*r}" y1="${cy+Math.sin(a0)*r}" x2="${cx+Math.cos(a1)*r}" y2="${cy+Math.sin(a1)*r}" stroke="rgba(255,255,255,.28)" stroke-width="7" stroke-linecap="round"/>`;
+  }
+  svg.innerHTML=html;
+}
+function markSeg(i){
+  if(segDone.has(i)) return false;
+  segDone.add(i);
+  const el=$('seg'+i); if(el) el.setAttribute('stroke','#e8ff47');
+  $('capN').textContent = segDone.size;
+  if(shots.length>=MIN_SHOTS || segDone.size>=MIN_SHOTS) $('capFinish').style.display='block';
+  return true;
+}
+function currentSeg(alpha){
+  if(headingBase===null) headingBase=alpha;
+  let rel=((alpha-headingBase)%360+360)%360;
+  return Math.floor(rel/360*SEGMENTS)%SEGMENTS;
+}
+async function askOrientation(){
+  if(!('DeviceOrientationEvent' in window)) return false;
+  try{
+    if(typeof DeviceOrientationEvent.requestPermission==='function'){
+      const r=await DeviceOrientationEvent.requestPermission(); if(r!=='granted') return false;
     }
-    setErr("Wrong name or password."); setLoading(false);
-  };
+    return true;
+  }catch(e){ return false; }
+}
+function onOrient(e){
+  const alpha = (e.webkitCompassHeading!=null)? e.webkitCompassHeading : e.alpha;
+  if(alpha==null) return;
+  orientationOK=true;
+  const seg=currentSeg(alpha);
+  if(autoMode && !segDone.has(seg)){ captureFrame(seg); }
+}
+function captureFrame(seg){
+  const v=$('capVideo'); if(!v.videoWidth) return;
+  const c=document.createElement('canvas');
+  const scale=Math.min(1, 1280/Math.max(v.videoWidth,v.videoHeight));
+  c.width=v.videoWidth*scale; c.height=v.videoHeight*scale;
+  c.getContext('2d').drawImage(v,0,0,c.width,c.height);
+  shots.push({ seg, ts:Date.now(), jpeg:c.toDataURL('image/jpeg',.82) });
+  const fresh = (seg!=null) ? markSeg(seg) : markSeg(nextFreeSeg());
+  const f=$('capFlash'); f.style.opacity=.5; setTimeout(()=>f.style.opacity=0,110);
+  if(navigator.vibrate) navigator.vibrate(12);
+  if(!fresh) shots.pop();                       // don't stack duplicates per angle in auto mode
+  if(segDone.size>=SEGMENTS){ finishCapture(); }
+}
+function nextFreeSeg(){ for(let i=0;i<SEGMENTS;i++){ if(!segDone.has(i)) return i; } return SEGMENTS-1; }
 
-  return (
-    <div className="login-screen">
-      <div className="login-logo">FORGE</div>
-      <div className="login-tag">Build things that didn't exist yesterday</div>
-      <div className="login-box">
-        <div className="field">
-          <label className="field-label">Your name</label>
-          <input className="field-input" placeholder="Type your name..." value={name}
-            autoComplete="off" autoCorrect="off" autoCapitalize="words" spellCheck="false"
-            onChange={e=>{ setName(e.target.value); setErr(""); if(e.target.value.trim()) setShowPass(true); else setShowPass(false); }} />
-        </div>
-        {showPass && (
-          <div className="field" style={{animation:"fadeUp .3s ease both"}}>
-            <label className="field-label">Password</label>
-            <input className="field-input" type="password" placeholder="Enter password" value={pass}
-              autoComplete="new-password"
-              onChange={e=>{ setPass(e.target.value); setErr(""); }}
-              onKeyDown={e=>e.key==="Enter"&&handleLogin()} />
-          </div>
-        )}
-        {err && <div className="err">{err}</div>}
-        {showPass && (
-          <button className="btn-main" onClick={handleLogin} disabled={loading}>
-            {loading ? "Checking..." : "Enter Forge →"}
-          </button>
-        )}
-        <div className="parent-link">
-          <button onClick={onParent}>Parent access</button>
-        </div>
-      </div>
-    </div>
-  );
+async function startCapture(){
+  shots=[]; segDone=new Set(); headingBase=null; orientationOK=false; torchOn=false;
+  buildRing(); $('capN').textContent='0'; $('capTotal').textContent=SEGMENTS; $('capFinish').style.display='none';
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video:{ facingMode:{ideal:'environment'}, width:{ideal:1920}, height:{ideal:1080} }, audio:false
+  });
+  capStream=stream; $('capVideo').srcObject=stream;
+  $('capScreen').classList.add('on');
+  const gotOrient = await askOrientation();
+  if(gotOrient){ window.addEventListener('deviceorientation', onOrient); $('capHint').textContent='Auto-capture is on — orbit slowly around the limb. Tap the shutter any time for extra frames.'; }
+  else { autoMode=false; $('autoBtn').style.opacity=.4; $('capHint').textContent='Motion tracking unavailable — tap the shutter as you move around the subject. Each tap fills the next segment.'; }
+}
+function stopCapture(){
+  window.removeEventListener('deviceorientation', onOrient);
+  if(capStream){ capStream.getTracks().forEach(t=>t.stop()); capStream=null; }
+  $('capScreen').classList.remove('on');
+}
+function finishCapture(){
+  if(shots.length<MIN_SHOTS){ toast('Capture at least '+MIN_SHOTS+' angles first'); return; }
+  stopCapture(); runReconstruction();
+}
+function initCapture(){
+  $('shutterBtn').addEventListener('click',()=>{
+    let seg=null;
+    if(orientationOK && headingBase!==null){ /* orientation handler assigns segs in auto; manual tap = nearest free */ }
+    captureFrame(seg);
+  });
+  $('capExit').addEventListener('click',()=>{ stopCapture(); toast('Scan cancelled'); });
+  $('capFinish').addEventListener('click',finishCapture);
+  $('autoBtn').addEventListener('click',()=>{ autoMode=!autoMode; $('autoBtn').style.opacity=autoMode?1:.4; toast(autoMode?'Auto-capture on':'Auto-capture off'); });
+  $('torchBtn').addEventListener('click',async()=>{
+    if(!capStream) return;
+    const track=capStream.getVideoTracks()[0];
+    try{
+      const caps=track.getCapabilities ? track.getCapabilities() : {};
+      if(!caps.torch){ toast('Torch not supported on this camera'); return; }
+      torchOn=!torchOn;
+      await track.applyConstraints({advanced:[{torch:torchOn}]});
+      $('torchBtn').style.background=torchOn?'rgba(232,255,71,.35)':'rgba(0,0,0,.5)';
+    }catch(e){ toast('Torch not available'); }
+  });
 }
 
-function StudentApp({ onExit }) {
-  const [tab, setTab]             = useState("home");
-  const [streak, setStreak]       = useState(0);
-  const [completed, setCompleted] = useState(0);
-  const [level, setLevel]         = useState(0);
-  const [challenge, setChallenge] = useState(null);
-  const [loading, setLoading]     = useState(false);
-  const [done, setDone]           = useState(false);
-  const [history, setHistory]     = useState([]);
-
-  useEffect(()=>{ loadChallenge(0); },[]);
-
-  const loadChallenge = async (lvl) => {
-    setLoading(true); setChallenge(null); setDone(false);
-    const skill = SKILL_LADDER[lvl];
-    const prompt = `You are a coding teacher for a 10-year-old girl named Carley who is a complete beginner. Generate a fresh daily challenge for: "${skill.name}". Respond ONLY with JSON no markdown: {"title":"max 5 words","explanation":"2-3 sentences simple warm not babyish","task":"specific task achievable in 10-15 minutes"}`;
-    try {
-      const r = await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:600,messages:[{role:"user",content:prompt}]})});
-      const d = await r.json();
-      const t = d.content?.find(b=>b.type==="text")?.text||"";
-      setChallenge(JSON.parse(t.replace(/```json|```/g,"").trim()));
-    } catch {
-      setChallenge({title:"What Even Is AI?",explanation:"AI stands for Artificial Intelligence — a computer program that learns from examples, kind of like how you learned to recognize dogs by seeing lots of them.",task:"Grab a piece of paper and list 3 things you think AI can do well and 3 things you think it can't. Keep it — you'll look back at this list later."});
-    }
-    setLoading(false);
-  };
-
-  const handleComplete = async () => {
-    setDone(true);
-    const ns=streak+1; const nc=completed+1;
-    setStreak(ns); setCompleted(nc);
-    setHistory(h=>[{skill:SKILL_LADDER[level].name,title:challenge?.title||"",date:new Date().toLocaleDateString()},...h]);
-    try { await db.updateUser(LOCAL_STUDENT.id,{streak:ns,completed:nc,level,last_active:new Date().toISOString().split("T")[0]}); } catch{}
-  };
-
-  const streakDots = Array.from({length:7},(_,i)=>i<(streak%7)?"done":i===(streak%7)?"today":"empty");
-  const tabs = [{id:"home",icon:"🏠",label:"Home"},{id:"challenge",icon:"⚡",label:"Challenge"},{id:"progress",icon:"📈",label:"Progress"},{id:"skills",icon:"🎯",label:"Skills"}];
-
-  return (
-    <>
-      {tab==="home" && (
-        <div className="screen">
-          <div className="topbar">
-            <div className="wordmark">FORGE</div>
-            <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <div className="avatar">C</div>
-              <button className="btn-ghost-sm" onClick={onExit}>exit</button>
-            </div>
-          </div>
-          <div className="stats">
-            <div className="stat" style={{"--c":"var(--accent)"}}><div className="stat-val">{streak}</div><div className="stat-lbl">Streak 🔥</div></div>
-            <div className="stat" style={{"--c":"var(--blue)"}}><div className="stat-val">{completed}</div><div className="stat-lbl">Done</div></div>
-            <div className="stat" style={{"--c":"var(--red)"}}><div className="stat-val">{level+1}/6</div><div className="stat-lbl">Level</div></div>
-          </div>
-          <div className="sec">This week</div>
-          <div className="streak-row">{streakDots.map((t,i)=><div key={i} className={`sdot ${t}`}>{t==="done"?"✓":t==="today"?"→":""}</div>)}</div>
-          <div className="sec">Current skill</div>
-          <div className="skill-item active" style={{marginBottom:0}}>
-            <div className="skill-emoji">{SKILL_LADDER[level].icon}</div>
-            <div className="skill-info"><div className="skill-name">{SKILL_LADDER[level].name}</div><div className="skill-desc">{SKILL_LADDER[level].desc}</div></div>
-            <button className="skill-badge badge-active" onClick={()=>setTab("challenge")}>Go →</button>
-          </div>
-        </div>
-      )}
-
-      {tab==="challenge" && (
-        <div className="screen">
-          <div className="topbar"><div className="wordmark">FORGE</div><div className="avatar">C</div></div>
-          <div className="ccard">
-            {loading && <div className="loading"><div className="spinner"/>generating your challenge...</div>}
-            {!loading&&done && (
-              <div className="done-state">
-                <div className="done-icon">⚡</div>
-                <div className="done-title">Challenge Complete!</div>
-                <div className="done-sub">Day streak: {streak} 🔥</div>
-                <button className="btn-next" onClick={()=>{const n=Math.min(level+1,5);setLevel(n);loadChallenge(n);}}>Next Challenge →</button>
-              </div>
-            )}
-            {!loading&&!done&&challenge && (
-              <>
-                <div className="ccard-head">
-                  <div><div className="ccard-skill">{SKILL_LADDER[level].name} · Day {completed+1}</div><div className="ccard-title">{challenge.title}</div></div>
-                  <div className="ccard-icon">{SKILL_LADDER[level].icon}</div>
-                </div>
-                <div className="ccard-body">
-                  <div className="ccard-text">{challenge.explanation}</div>
-                  <div className="task-box"><div className="task-lbl">Your task today</div><div className="task-text">{challenge.task}</div></div>
-                  <div className="ccard-actions">
-                    <button className="btn-complete" onClick={handleComplete}>Mark Complete ✓</button>
-                    <button className="btn-skip" onClick={()=>loadChallenge(level)} disabled={loading}>↺</button>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
-      {tab==="progress" && (
-        <div className="screen">
-          <div className="topbar"><div className="wordmark">FORGE</div><div className="avatar">C</div></div>
-          <div className="sec">Completed challenges</div>
-          {history.length===0
-            ? <div className="prog-empty">No challenges completed yet.<br/>Start with today's challenge! ⚡</div>
-            : history.map((h,i)=><div key={i} className="prog-item"><div className="prog-skill">{h.skill}</div><div className="prog-title">{h.title}</div><div className="prog-date">{h.date}</div></div>)
-          }
-        </div>
-      )}
-
-      {tab==="skills" && (
-        <div className="screen">
-          <div className="topbar"><div className="wordmark">FORGE</div><div className="avatar">C</div></div>
-          <div className="sec">Skill ladder</div>
-          <div className="skill-list">
-            {SKILL_LADDER.map((sk,i)=>{
-              const isDone=i<level;const isActive=i===level;const isLocked=i>level;
-              return (
-                <div key={sk.id} className={`skill-item ${isActive?"active":""} ${isLocked?"locked":""}`} onClick={()=>!isLocked&&(setLevel(i),loadChallenge(i),setTab("challenge"))}>
-                  <div className="skill-emoji">{sk.icon}</div>
-                  <div className="skill-info"><div className="skill-name">{sk.name}</div><div className="skill-desc">{sk.desc}</div></div>
-                  <span className={`skill-badge ${isDone?"badge-done":isActive?"badge-active":"badge-locked"}`}>{isDone?"done":isActive?"active":"locked"}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      <nav className="bnav">
-        {tabs.map(t=>(
-          <button key={t.id} className={`bnav-btn ${tab===t.id?"active":""}`} onClick={()=>setTab(t.id)}>
-            <span className="bnav-icon">{t.icon}</span>{t.label}
-          </button>
-        ))}
-      </nav>
-    </>
-  );
-}
-
-function PinScreen({ onSuccess, onBack }) {
-  const [pin, setPin] = useState("");
-  const [err, setErr] = useState(false);
-
-  const press = (k) => {
-    if(k==="del"){setPin(p=>p.slice(0,-1));setErr(false);return;}
-    if(pin.length>=4)return;
-    const np=pin+k; setPin(np);
-    if(np.length===4){
-      if(np===PARENT_PIN){setTimeout(onSuccess,200);}
-      else{setTimeout(()=>{setPin("");setErr(true);},300);}
+/* =====================================================================
+   RECONSTRUCTION (demo) — parametric preview mesh per preset
+   Production path: POST `shots` to a photogrammetry service
+   (e.g. Meshroom/OpenMVG pipeline) or use native depth capture.
+===================================================================== */
+let currentScan=null;
+function runReconstruction(){
+  show('scr-processing'); $('bnav').style.display='none';
+  const steps=[['Aligning frames…',22],['Solving camera poses…',45],['Building dense cloud…',70],['Meshing & smoothing…',90],['Finalizing…',100]];
+  let i=0;
+  const tick=()=>{
+    if(i<steps.length){
+      $('procStep').textContent=steps[i][0];
+      $('procFill').style.width=steps[i][1]+'%';
+      $('procPct').textContent=steps[i][1]+'%';
+      i++; setTimeout(tick, 700+Math.random()*600);
+    } else {
+      const mesh = generateMesh(selType);
+      currentScan = {
+        id:'scan_'+Date.now(),
+        label: $('scanLabel').value.trim() || (selType.name+' scan'),
+        type: selType.id, emoji: selType.emoji,
+        ts: Date.now(), frames: shots.length,
+        positions: mesh.positions, indices: mesh.indices, dims: mesh.dims,
+        saved:false,
+      };
+      openResult(currentScan);
     }
   };
-
-  return (
-    <div className="pin-screen">
-      <div className="pin-title">Parent Access</div>
-      <div className="pin-sub" style={{color:err?"var(--red)":"var(--muted)"}}>{err?"Incorrect PIN. Try again.":"Enter your PIN"}</div>
-      <div className="pin-dots">{[0,1,2,3].map(i=><div key={i} className={`pin-dot ${i<pin.length?"filled":""}`}/>)}</div>
-      <div className="pin-pad">
-        {["1","2","3","4","5","6","7","8","9","","0","del"].map((k,i)=>(
-          k===""?<div key={i}/>:<button key={i} className={`pin-key ${k==="del"?"del":""}`} onClick={()=>press(k)}>{k==="del"?"⌫":k}</button>
-        ))}
-      </div>
-      <button className="btn-ghost-sm" style={{marginTop:28}} onClick={onBack}>← Back</button>
-    </div>
-  );
+  tick();
 }
 
-function ParentPortal({ onExit }) {
-  const [customChallenge, setCustomChallenge] = useState("");
-  const [saved, setSaved]                     = useState(false);
-  const [unlockedLevel, setUnlockedLevel]     = useState(0);
-  const [aiMessages, setAiMessages]           = useState([
-    {role:"assistant",content:"Hi! I'm here to help you support Carley's learning. Ask me what she should work on next, how to explain a concept, or ideas for custom challenges based on her current level."}
-  ]);
-  const [aiInput, setAiInput]   = useState("");
-  const [aiLoading, setAiLoading] = useState(false);
-  const messagesEndRef = useRef(null);
-
-  const activity = [{skill:"What is AI?",title:"What Even Is AI?",date:"Today"}];
-
-  useEffect(()=>{ messagesEndRef.current?.scrollIntoView({behavior:"smooth"}); },[aiMessages]);
-
-  const sendAi = async () => {
-    if(!aiInput.trim()||aiLoading)return;
-    const msg = aiInput.trim(); setAiInput("");
-    setAiMessages(m=>[...m,{role:"user",content:msg}]);
-    setAiLoading(true);
-    const sys = `You are a helpful assistant for parents (Nick and Jess) supporting their 10-year-old daughter Carley learning to code and understand AI. She is a complete beginner currently on level ${unlockedLevel+1}/6: "${SKILL_LADDER[unlockedLevel].name}". She has completed ${activity.length} challenge(s). Give practical specific advice. Keep responses concise and parent-friendly.`;
-    try {
-      const r = await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:500,system:sys,messages:aiMessages.concat({role:"user",content:msg})})});
-      const d = await r.json();
-      const t = d.content?.find(b=>b.type==="text")?.text||"Couldn't connect right now.";
-      setAiMessages(m=>[...m,{role:"assistant",content:t}]);
-    } catch {
-      setAiMessages(m=>[...m,{role:"assistant",content:"Couldn't connect right now. Try again."}]);
+/* Parametric "limb-like" mesh: superellipsoid stretched per preset with
+   smooth pseudo-random surface variation so each scan is unique. */
+function generateMesh(type){
+  const [L,W,H]=type.dims;
+  const jig=()=> .93 + Math.random()*.14;
+  const dims=[Math.round(L*jig()),Math.round(W*jig()),Math.round(H*jig())];
+  const su=48, sv=32, n1=.85, n2=.9;
+  const rx=dims[0]/2, ry=dims[1]/2, rz=dims[2]/2;
+  const seedA=Math.random()*10, seedB=Math.random()*10;
+  const sgn=(x)=>x<0?-1:1;
+  const f=(w,m)=>sgn(w)*Math.pow(Math.abs(w),m);
+  const positions=[], indices=[];
+  for(let i=0;i<=sv;i++){
+    const v=-Math.PI/2 + i/sv*Math.PI;
+    for(let j=0;j<=su;j++){
+      const u=-Math.PI + j/su*2*Math.PI;
+      let x=rx*f(Math.cos(v),n1)*f(Math.cos(u),n2);
+      let y=ry*f(Math.cos(v),n1)*f(Math.sin(u),n2);
+      let z=rz*f(Math.sin(v),n1);
+      const bump=1 + .045*Math.sin(3*u+seedA)*Math.cos(2*v+seedB) + .03*Math.sin(5*v+seedB);
+      x*=bump; y*=bump; z*=bump*(z>0?1:.96);
+      positions.push(x,y,z);
     }
-    setAiLoading(false);
-  };
-
-  const saveCustom = () => {
-    if(!customChallenge.trim())return;
-    setSaved(true); setTimeout(()=>setSaved(false),2000); setCustomChallenge("");
-  };
-
-  return (
-    <div className="parent-screen">
-      <div className="parent-header">
-        <div><div className="parent-wordmark">FORGE</div><div className="parent-sub">Parent Portal</div></div>
-        <button className="btn-ghost-sm" onClick={onExit}>exit</button>
-      </div>
-
-      <div className="p-card">
-        <div className="p-card-title">📊 Carley's Progress</div>
-        <div className="p-stat-row">
-          <div className="p-stat"><div className="p-stat-val">0</div><div className="p-stat-lbl">Streak</div></div>
-          <div className="p-stat"><div className="p-stat-val">{activity.length}</div><div className="p-stat-lbl">Done</div></div>
-          <div className="p-stat"><div className="p-stat-val">{unlockedLevel+1}/6</div><div className="p-stat-lbl">Level</div></div>
-        </div>
-        <div style={{fontSize:14,color:"var(--muted)"}}>Current skill: <span style={{color:"var(--accent)"}}>{SKILL_LADDER[unlockedLevel].name}</span></div>
-      </div>
-
-      <div className="p-card">
-        <div className="p-card-title">🕐 Recent Activity</div>
-        {activity.map((a,i)=>(
-          <div key={i} className="p-feed-item">
-            <div className="p-feed-skill">{a.skill}</div>
-            <div className="p-feed-title">{a.title}</div>
-            <div className="p-feed-date">{a.date}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="p-card">
-        <div className="p-card-title">🔓 Unlock Levels</div>
-        {SKILL_LADDER.map((sk,i)=>(
-          <div key={sk.id} className="unlock-row">
-            <div className="unlock-skill"><span>{sk.icon}</span><span>{sk.name}</span></div>
-            {i<=unlockedLevel
-              ? <span style={{fontSize:13,color:"var(--green)"}}>✓ Unlocked</span>
-              : i===unlockedLevel+1
-                ? <button className="unlock-btn" onClick={()=>setUnlockedLevel(i)}>Unlock</button>
-                : <span style={{fontSize:13,color:"var(--muted)"}}>Locked</span>
-            }
-          </div>
-        ))}
-      </div>
-
-      <div className="p-card">
-        <div className="p-card-title">✏️ Add Custom Challenge</div>
-        <textarea className="p-textarea" placeholder="Write a custom challenge for Carley to see next time she logs in..." value={customChallenge} onChange={e=>setCustomChallenge(e.target.value)}/>
-        <button className="btn-parent" onClick={saveCustom} disabled={!customChallenge.trim()}>{saved?"Saved ✓":"Save Challenge"}</button>
-      </div>
-
-      <div className="p-card">
-        <div className="p-card-title">🤖 AI Assistant</div>
-        <div className="ai-messages">
-          {aiMessages.map((m,i)=><div key={i} className={`ai-msg ${m.role}`}>{m.content}</div>)}
-          {aiLoading&&<div className="ai-msg assistant" style={{color:"var(--muted)"}}>thinking...</div>}
-          <div ref={messagesEndRef}/>
-        </div>
-        <div className="ai-input-row">
-          <input className="ai-input" placeholder="Ask about Carley's learning..." value={aiInput} onChange={e=>setAiInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&sendAi()}/>
-          <button className="btn-send" onClick={sendAi} disabled={!aiInput.trim()||aiLoading}>→</button>
-        </div>
-      </div>
-    </div>
-  );
+  }
+  for(let i=0;i<sv;i++) for(let j=0;j<su;j++){
+    const a=i*(su+1)+j, b=a+su+1;
+    indices.push(a,b,a+1, b,b+1,a+1);
+  }
+  return { positions:new Float32Array(positions), indices:new Uint32Array(indices), dims };
 }
 
-const domRoot = ReactDOM.createRoot(document.getElementById('root'));
-domRoot.render(React.createElement(ForgeApp));
-  </script>
+/* =====================================================================
+   VIEWER (three.js, drag-rotate + pinch/wheel zoom)
+===================================================================== */
+let viewer=null;
+function openResult(scan){
+  show('scr-result'); $('bnav').style.display='none';
+  $('resultTitle').textContent = scan.label;
+  $('resultMeta').textContent = scan.frames+' frames';
+  $('dimL').textContent=scan.dims[0]; $('dimW').textContent=scan.dims[1]; $('dimH').textContent=scan.dims[2];
+  $('saveScanBtn').style.display = scan.saved?'none':'block';
+  $('discardBtn').textContent = scan.saved?'Delete from library':'Discard scan';
+  initViewer(scan);
+}
+function initViewer(scan){
+  const wrap=$('viewerWrap');
+  if(viewer){ viewer.renderer.dispose(); wrap.querySelectorAll('canvas').forEach(c=>c.remove()); cancelAnimationFrame(viewer.raf); }
+  const W=wrap.clientWidth, H=wrap.clientHeight;
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setSize(W,H); renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  wrap.insertBefore(renderer.domElement, wrap.firstChild);
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(42,W/H,1,5000);
+  const maxDim=Math.max(...scan.dims);
+  cam.position.set(0,-maxDim*1.9,maxDim*.75); cam.lookAt(0,0,0);
+  scene.add(new THREE.AmbientLight(0x8888aa,.7));
+  const key=new THREE.DirectionalLight(0xffffff,.9); key.position.set(1,-1,1.4); scene.add(key);
+  const rim=new THREE.DirectionalLight(0x47c8ff,.5); rim.position.set(-1,1,-.6); scene.add(rim);
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.BufferAttribute(scan.positions,3));
+  geo.setIndex(new THREE.BufferAttribute(scan.indices,1));
+  geo.computeVertexNormals();
+  const mat=new THREE.MeshStandardMaterial({color:0xe8ff47,metalness:.1,roughness:.55,flatShading:false});
+  const mesh=new THREE.Mesh(geo,mat);
+  const wire=new THREE.LineSegments(new THREE.WireframeGeometry(geo),new THREE.LineBasicMaterial({color:0x22223a,transparent:true,opacity:.18}));
+  const group=new THREE.Group(); group.add(mesh); group.add(wire); scene.add(group);
+  group.rotation.x=-.35;
+  let dist=cam.position.length();
+  let dragging=false,lx=0,ly=0,pinch0=0;
+  const pd=e=>{ dragging=true; lx=e.clientX; ly=e.clientY; };
+  const pm=e=>{ if(!dragging)return; group.rotation.z+=(e.clientX-lx)*.01; group.rotation.x+=(e.clientY-ly)*.01; lx=e.clientX; ly=e.clientY; };
+  const pu=()=>dragging=false;
+  wrap.addEventListener('pointerdown',pd); window.addEventListener('pointermove',pm); window.addEventListener('pointerup',pu);
+  wrap.addEventListener('wheel',e=>{ e.preventDefault(); dist=Math.min(Math.max(dist+e.deltaY*.8,maxDim*.8),maxDim*5); },{passive:false});
+  wrap.addEventListener('touchmove',e=>{ if(e.touches.length===2){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); if(pinch0) dist=Math.min(Math.max(dist*(pinch0/d),maxDim*.8),maxDim*5); pinch0=d; } },{passive:true});
+  wrap.addEventListener('touchend',()=>pinch0=0);
+  let spin=true; wrap.addEventListener('pointerdown',()=>spin=false);
+  const loop=()=>{ viewer.raf=requestAnimationFrame(loop); if(spin) group.rotation.z+=.004; const dir=cam.position.clone().normalize(); cam.position.copy(dir.multiplyScalar(dist)); cam.lookAt(0,0,0); renderer.render(scene,cam); };
+  viewer={renderer,raf:0}; loop();
+}
+
+/* =====================================================================
+   EXPORT — binary STL + OBJ (free, unlimited)
+===================================================================== */
+function download(blob,name){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },400);
+}
+function safeName(s){ return (s||'scan').replace(/[^\w\-]+/g,'_').slice(0,48); }
+function exportSTL(scan){
+  const {positions:P,indices:I}=scan;
+  const tris=I.length/3;
+  const buf=new ArrayBuffer(84+tris*50);
+  const dv=new DataView(buf);
+  let o=80; dv.setUint32(o,tris,true); o+=4;
+  const v=[[0,0,0],[0,0,0],[0,0,0]];
+  for(let t=0;t<tris;t++){
+    for(let k=0;k<3;k++){ const ix=I[t*3+k]*3; v[k][0]=P[ix]; v[k][1]=P[ix+1]; v[k][2]=P[ix+2]; }
+    const ux=v[1][0]-v[0][0],uy=v[1][1]-v[0][1],uz=v[1][2]-v[0][2];
+    const wx=v[2][0]-v[0][0],wy=v[2][1]-v[0][1],wz=v[2][2]-v[0][2];
+    let nx=uy*wz-uz*wy, ny=uz*wx-ux*wz, nz=ux*wy-uy*wx;
+    const len=Math.hypot(nx,ny,nz)||1; nx/=len;ny/=len;nz/=len;
+    dv.setFloat32(o,nx,true);dv.setFloat32(o+4,ny,true);dv.setFloat32(o+8,nz,true);o+=12;
+    for(let k=0;k<3;k++){ dv.setFloat32(o,v[k][0],true);dv.setFloat32(o+4,v[k][1],true);dv.setFloat32(o+8,v[k][2],true);o+=12; }
+    dv.setUint16(o,0,true);o+=2;
+  }
+  download(new Blob([buf],{type:'model/stl'}), safeName(scan.label)+'.stl');
+  toast('STL exported — free, always');
+}
+function exportOBJ(scan){
+  const {positions:P,indices:I}=scan;
+  let s='# Forge Scan export (mm)\no '+safeName(scan.label)+'\n';
+  for(let i=0;i<P.length;i+=3) s+='v '+P[i].toFixed(3)+' '+P[i+1].toFixed(3)+' '+P[i+2].toFixed(3)+'\n';
+  for(let i=0;i<I.length;i+=3) s+='f '+(I[i]+1)+' '+(I[i+1]+1)+' '+(I[i+2]+1)+'\n';
+  download(new Blob([s],{type:'model/obj'}), safeName(scan.label)+'.obj');
+  toast('OBJ exported — free, always');
+}
+
+/* =====================================================================
+   LIBRARY & ACCOUNT
+===================================================================== */
+async function renderLibrary(){
+  const scans=(await idb.all()).sort((a,b)=>b.ts-a.ts);
+  $('libCount').textContent=scans.length+' scan'+(scans.length===1?'':'s');
+  if(!scans.length){
+    $('libList').innerHTML='<div class="empty"><div class="empty-icon">🗂️</div>No scans yet.<br>Run a guided capture and save it here.</div>';
+    return;
+  }
+  $('libList').innerHTML=scans.map(s=>
+    `<div class="scan-item"><div class="scan-emoji">${s.emoji}</div>
+      <div class="scan-info"><div class="scan-name">${s.label}</div>
+      <div class="scan-meta">${fmtDate(s.ts)} · ${s.frames} frames · ${s.dims[0]}×${s.dims[1]}×${s.dims[2]}mm</div></div>
+      <button class="scan-open" data-id="${s.id}">Open</button></div>`).join('');
+  $('libList').querySelectorAll('.scan-open').forEach(b=>b.addEventListener('click',async()=>{
+    const s=(await idb.all()).find(x=>x.id===b.dataset.id);
+    if(!s) return;
+    s.positions=new Float32Array(s.positions); s.indices=new Uint32Array(s.indices); s.saved=true;
+    currentScan=s; openResult(s);
+  }));
+}
+function renderAccount(){
+  const s=getSub(), w=JSON.parse(localStorage.getItem(LS.waiver)||'null');
+  $('accSub').innerHTML = s
+    ? `<b style="color:var(--accent);">${subLabel()}</b><br><span class="muted">${s.trialEnds>Date.now()?'Trial ends '+fmtDate(s.trialEnds):'Renews automatically'} · plan: ${s.plan}</span><br><span class="muted">Manage or cancel via your app store (native builds) — this demo stores state locally.</span>`
+    : 'No active subscription.';
+  $('accWaiver').innerHTML = w ? `Signed by <b>${w.name}</b> on ${fmtDate(w.ts)} (v${w.version}).` : 'Not signed.';
+}
+function initResult(){
+  $('expStl').addEventListener('click',()=>currentScan&&exportSTL(currentScan));
+  $('expObj').addEventListener('click',()=>currentScan&&exportOBJ(currentScan));
+  $('saveScanBtn').addEventListener('click',async()=>{
+    if(!currentScan) return;
+    const rec={...currentScan, positions:Array.from(currentScan.positions), indices:Array.from(currentScan.indices), saved:true};
+    await idb.put(rec); currentScan.saved=true;
+    toast('Saved to library'); $('saveScanBtn').style.display='none'; $('discardBtn').textContent='Delete from library';
+  });
+  $('discardBtn').addEventListener('click',async()=>{
+    if(currentScan&&currentScan.saved){ await idb.del(currentScan.id); toast('Scan deleted'); }
+    currentScan=null; goHome();
+  });
+  $('resultBack').addEventListener('click',()=>{ goHome(); });
+  $('resetBtn').addEventListener('click',async()=>{
+    if(!confirm('Reset the app? This clears the waiver, subscription state, and all saved scans on this device.')) return;
+    localStorage.removeItem(LS.waiver); localStorage.removeItem(LS.sub);
+    const scans=await idb.all(); for(const s of scans) await idb.del(s.id);
+    location.reload();
+  });
+}
+
+/* =====================================================================
+   BOOT
+===================================================================== */
+(async function boot(){
+  await openDB();
+  initWaiver(); initPlans(); initHome(); initCapture(); initResult();
+  if(!waiverOk()){ show('scr-waiver'); }
+  else if(!hasSub()){ show('scr-plans'); }
+  else goHome();
+})();
+</script>
 </body>
 </html>
