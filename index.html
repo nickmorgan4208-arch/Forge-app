@@ -10,10 +10,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <style>
-
-
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--bg:#080810;--s1:#10101c;--s2:#18182a;--s3:#22223a;--border:#2a2a42;--accent:#e8ff47;--blue:#47c8ff;--red:#ff6b47;--green:#47ffaa;--purple:#c847ff;--text:#f0f0ff;--muted:#7070a0;--r:18px;}
+:root{--bg:#080810;--s1:#10101c;--s2:#18182a;--s3:#22223a;--border:#2a2a42;--accent:#e8ff47;--blue:#47c8ff;--red:#ff6b47;--green:#47ffaa;--purple:#c847ff;--orange:#ffaa47;--text:#f0f0ff;--muted:#7070a0;--r:18px;}
 html,body{height:100%;background:#080810 !important;color:var(--text);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased;}body{background:#080810 !important;}
 input,button,textarea{font-family:'DM Sans',sans-serif;}
 button{cursor:pointer;}
@@ -26,6 +24,8 @@ button{cursor:pointer;}
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
 .wordmark{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--accent);letter-spacing:-1px;}
 .avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#080810;}
+.btn-ghost-sm{background:none;border:1px solid var(--border);color:var(--muted);font-size:12px;border-radius:10px;padding:8px 14px;transition:all .2s;}
+.btn-ghost-sm:hover{color:var(--text);border-color:var(--muted);}
 .login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;background:#080810;}
 .login-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:64px;color:var(--accent);letter-spacing:-3px;margin-bottom:6px;}
 .login-tag{font-size:11px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:52px;text-align:center;}
@@ -38,9 +38,17 @@ button{cursor:pointer;}
 .btn-main{width:100%;background:var(--accent);color:#080810;font-family:'Syne',sans-serif;font-weight:700;font-size:17px;letter-spacing:.04em;border:none;border-radius:14px;padding:20px;margin-top:8px;transition:all .2s;text-transform:uppercase;}
 .btn-main:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(232,255,71,.3);}
 .btn-main:disabled{opacity:.5;transform:none;box-shadow:none;}
+.btn-secondary{width:100%;background:none;border:1.5px solid var(--border);color:var(--muted);font-size:15px;border-radius:14px;padding:16px;margin-top:12px;transition:all .2s;}
+.btn-secondary:hover{color:var(--text);border-color:var(--muted);}
 .err{font-size:14px;color:var(--red);margin-top:12px;text-align:center;}
 .parent-link{margin-top:32px;text-align:center;}
 .parent-link button{background:none;border:none;color:var(--muted);font-size:14px;text-decoration:underline;padding:8px;}
+.ob-step{font-size:11px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
+.ob-q{font-family:'Syne',sans-serif;font-weight:700;font-size:26px;line-height:1.25;margin-bottom:8px;}
+.ob-sub{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:26px;}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;}
+.chip{background:var(--s2);border:1.5px solid var(--border);color:var(--text);border-radius:24px;padding:12px 18px;font-size:15px;transition:all .15s;}
+.chip.on{background:rgba(232,255,71,.12);border-color:var(--accent);color:var(--accent);}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
 .stat{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px 12px;text-align:center;position:relative;overflow:hidden;}
 .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--c,var(--accent));}
@@ -51,6 +59,10 @@ button{cursor:pointer;}
 .sdot.done{background:rgba(232,255,71,.15);border-color:var(--accent);}
 .sdot.today{border-color:var(--blue);animation:pulse 2s ease infinite;}
 .sec{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.track-pills{display:flex;gap:8px;margin-bottom:20px;}
+.track-pill{flex:1;background:var(--s1);border:1.5px solid var(--border);border-radius:14px;padding:12px 8px;text-align:center;font-size:12px;color:var(--muted);transition:all .2s;}
+.track-pill.on{border-color:var(--c,var(--accent));color:var(--c,var(--accent));background:rgba(232,255,71,.05);}
+.track-pill .tp-icon{display:block;font-size:22px;margin-bottom:4px;}
 .ccard{background:var(--s1);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:24px;}
 .ccard-head{padding:22px 20px 18px;background:linear-gradient(135deg,rgba(232,255,71,.07),transparent);border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
 .ccard-skill{font-size:11px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
@@ -83,7 +95,7 @@ button{cursor:pointer;}
 .skill-info{flex:1;}
 .skill-name{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:3px;}
 .skill-desc{font-size:13px;color:var(--muted);}
-.skill-badge{font-size:10px;padding:6px 14px;border-radius:20px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0;}
+.skill-badge{font-size:10px;padding:6px 14px;border-radius:20px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0;border:none;}
 .badge-active{background:rgba(232,255,71,.15);color:var(--accent);}
 .badge-done{background:rgba(71,255,170,.15);color:var(--green);}
 .badge-locked{background:var(--s2);color:var(--muted);}
@@ -98,35 +110,32 @@ button{cursor:pointer;}
 .pin-dots{display:flex;gap:16px;margin-bottom:36px;}
 .pin-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);transition:all .2s;}
 .pin-dot.filled{background:var(--blue);border-color:var(--blue);}
-.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;max-width:300px;}
-.pin-key{background:var(--s2);border:1.5px solid var(--border);border-radius:18px;padding:22px;font-family:'Syne',sans-serif;font-weight:700;font-size:24px;text-align:center;border:1.5px solid var(--border);transition:all .15s;}
-.pin-key:active{background:var(--s3);transform:scale(.94);}
-.pin-key.del{font-size:18px;color:var(--muted);}
-.parent-screen{min-height:100vh;background:var(--bg);padding:32px 20px 48px;max-width:540px;margin:0 auto;}
-.parent-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
-.parent-wordmark{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--blue);}
+.pin-pad{display:grid;grid-template-columns:repeat(3,72px);gap:14px;}
+.pin-key{width:72px;height:72px;border-radius:50%;background:var(--s2);border:1.5px solid var(--border);color:var(--text);font-size:26px;font-weight:500;transition:all .15s;}
+.pin-key:active{background:var(--s3);border-color:var(--blue);}
+.pin-key.del{font-size:20px;color:var(--muted);}
+.parent-screen{min-height:100vh;padding:24px 20px 60px;animation:fadeUp .4s ease both;}
+.parent-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.parent-wordmark{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--blue);letter-spacing:-1px;}
 .parent-sub{font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
 .p-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px;}
-.p-card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
-.p-stat-row{display:flex;gap:10px;margin-bottom:14px;}
-.p-stat{flex:1;background:var(--s2);border-radius:12px;padding:14px 10px;text-align:center;}
-.p-stat-val{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--accent);}
-.p-stat-lbl{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+.p-card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:16px;}
+.p-stat-row{display:flex;gap:12px;margin-bottom:14px;}
+.p-stat{flex:1;background:var(--s2);border-radius:12px;padding:14px;text-align:center;}
+.p-stat-val{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--blue);}
+.p-stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
 .p-feed-item{padding:12px 0;border-bottom:1px solid var(--border);}
 .p-feed-item:last-child{border-bottom:none;}
-.p-feed-skill{font-size:10px;color:var(--blue);letter-spacing:.08em;text-transform:uppercase;}
-.p-feed-title{font-weight:500;margin:3px 0;font-size:15px;}
-.p-feed-date{font-size:13px;color:var(--muted);}
-.p-textarea{width:100%;background:var(--s2);border:1.5px solid var(--border);border-radius:12px;padding:16px;color:var(--text);font-size:16px;resize:none;outline:none;transition:border-color .2s;min-height:110px;}
+.p-feed-skill{font-size:10px;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;}
+.p-feed-title{font-size:15px;margin:2px 0;}
+.p-feed-date{font-size:12px;color:var(--muted);}
+.p-textarea{width:100%;background:var(--s2);border:1.5px solid var(--border);border-radius:12px;padding:14px;color:var(--text);font-size:15px;outline:none;min-height:90px;resize:vertical;margin-bottom:12px;}
 .p-textarea:focus{border-color:var(--blue);}
-.btn-parent{background:var(--blue);color:#080810;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;letter-spacing:.04em;text-transform:uppercase;border:none;border-radius:12px;padding:15px 24px;transition:all .2s;margin-top:10px;}
-.btn-parent:hover{box-shadow:0 6px 20px rgba(71,200,255,.3);}
-.btn-parent:disabled{opacity:.5;}
-.btn-ghost-sm{background:none;border:1px solid var(--border);color:var(--muted);font-size:13px;border-radius:8px;padding:8px 16px;transition:all .2s;}
-.btn-ghost-sm:hover{border-color:var(--muted);color:var(--text);}
-.ai-messages{max-height:300px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;padding-right:4px;}
-.ai-msg{padding:14px 16px;border-radius:14px;font-size:14px;line-height:1.65;}
-.ai-msg.user{background:rgba(232,255,71,.1);border:1px solid rgba(232,255,71,.2);align-self:flex-end;max-width:85%;}
+.btn-parent{width:100%;background:var(--blue);color:#080810;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;border:none;border-radius:12px;padding:14px;transition:all .2s;}
+.btn-parent:disabled{opacity:.4;}
+.ai-messages{display:flex;flex-direction:column;gap:10px;max-height:320px;overflow-y:auto;margin-bottom:14px;}
+.ai-msg{padding:12px 16px;border-radius:14px;font-size:15px;line-height:1.6;white-space:pre-wrap;}
+.ai-msg.user{background:rgba(71,200,255,.12);border:1px solid rgba(71,200,255,.25);align-self:flex-end;max-width:85%;}
 .ai-msg.assistant{background:var(--s2);border:1px solid var(--border);align-self:flex-start;max-width:92%;}
 .ai-input-row{display:flex;gap:8px;}
 .ai-input{flex:1;background:var(--s2);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--text);font-size:15px;outline:none;}
@@ -137,11 +146,15 @@ button{cursor:pointer;}
 .unlock-row:last-child{border-bottom:none;}
 .unlock-skill{display:flex;align-items:center;gap:10px;font-size:15px;}
 .unlock-btn{background:rgba(71,255,170,.15);color:var(--green);border:1px solid var(--green);font-size:12px;border-radius:8px;padding:7px 16px;font-weight:600;}
+.mentor-card{background:linear-gradient(135deg,rgba(200,71,255,.1),rgba(71,200,255,.06));border:1px solid rgba(200,71,255,.3);border-radius:20px;padding:20px;margin-bottom:20px;display:flex;gap:14px;align-items:center;}
+.mentor-face{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.mentor-name{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:2px;}
+.mentor-line{font-size:13px;color:var(--muted);line-height:1.5;}
+.offline-note{font-size:12px;color:var(--muted);text-align:center;padding:10px;line-height:1.6;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(71,200,255,.4)}50%{box-shadow:0 0 0 8px rgba(71,200,255,0)}}
-
   </style>
 </head>
 <body>
@@ -150,196 +163,423 @@ button{cursor:pointer;}
 const { useState, useEffect, useRef } = React;
 
 // ── CONFIG ──────────────────────────────────────────────────────────────────
-const SUPABASE_URL = "https://ryhhxdobjjgkbtsrlqxf.supabase.co";
-const SUPABASE_KEY = "sb_publishable_GIWxZYwKBYolS_v90FUJ4g_0IZBOIQj";
-const PARENT_PIN = "1234";
-const LOCAL_STUDENT = { id: "local-1", name: "Carley", password: "forge2024", level: 0, streak: 0, completed: 0 };
+// AI_ENDPOINT: a serverless proxy that forwards {system, messages, max_tokens}
+// to the Anthropic API with YOUR key kept server-side. Leave null and the app
+// runs 100% free/offline from the built-in challenge bank.
+// See docs/FORGE-V2-PLAN.md for the ready-to-paste Vercel function.
+const AI_ENDPOINT = null; // e.g. "/api/mentor"
+const AI_MODEL = "claude-haiku-4-5-20251001"; // cheap + fast; used by the proxy
 
-const SKILL_LADDER = [
-  { id: "ai",     icon: "🧠", name: "What is AI?",     desc: "Understand what AI is and how to talk to it",   color: "#e8ff47" },
-  { id: "prompt", icon: "✍️", name: "Prompting",       desc: "Get AI to do exactly what you want",             color: "#47c8ff" },
-  { id: "scratch",icon: "🎮", name: "Scratch Basics",  desc: "Build your first game — no typing required",     color: "#ff6b47" },
-  { id: "python", icon: "🐍", name: "Python",          desc: "Write real code: variables, loops, logic",       color: "#47ffaa" },
-  { id: "web",    icon: "🌐", name: "Web & HTML",      desc: "Build a page that lives on the internet",        color: "#c847ff" },
-  { id: "build",  icon: "🔨", name: "Build Something", desc: "Make an app, game, or tool from scratch",        color: "#ffaa47" },
+// ── STORAGE (localStorage — free, no backend, survives reload) ─────────────
+const store = {
+  get(key, fallback) { try { const v = localStorage.getItem("forge_" + key); return v ? JSON.parse(v) : fallback; } catch { return fallback; } },
+  set(key, val) { try { localStorage.setItem("forge_" + key, JSON.stringify(val)); } catch {} }
+};
+const todayStr = () => new Date().toISOString().split("T")[0];
+const daysBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
+
+// ── TRACKS & CURRICULUM ─────────────────────────────────────────────────────
+// Each track: 6 levels, each with a built-in challenge bank (app works with
+// zero AI cost). When AI_ENDPOINT is set, fresh personalized challenges are
+// generated instead and the bank becomes the fallback.
+const TRACKS = [
+  {
+    id: "money", icon: "💵", name: "Money & Credit", color: "var(--green)",
+    tagline: "How money actually works — the stuff school never taught",
+    levels: [
+      { id:"basics", icon:"💵", name:"How Money Works", desc:"Earning, trading value, why people get paid", bank:[
+        {title:"Trade Value, Get Paid", explanation:"Nobody hands out money — people trade it for things they want or need. Every dollar someone earns is because they solved a problem or provided something valuable for someone else.", task:"List 3 people you know with jobs. For each one, write down what problem they solve or what value they trade for their paycheck."},
+        {title:"Where Money Goes", explanation:"Money is always flowing: you earn it, spend it, save it, or grow it. People who get ahead aren't always the ones who earn the most — they're the ones who know where their money goes.", task:"Think about the last $20 that got spent on you or by you. Write down exactly where it went and whether it was a need or a want."},
+        {title:"Your Skills = Money", explanation:"Every skill you have is worth something to somebody. Mowing lawns, editing videos, explaining games — someone out there would pay for it.", task:"Write down 3 things you're good at, and next to each one, guess who might pay for it and how much."},
+      ]},
+      { id:"banking", icon:"🏦", name:"Banking Basics", desc:"Accounts, interest, keeping money safe", bank:[
+        {title:"Checking vs Savings", explanation:"A checking account is for spending — money moves in and out. A savings account is for keeping — and the bank pays YOU a little (interest) for parking money there.", task:"Find out (ask or search) the difference between a checking and savings account, and what interest rate a real savings account pays right now."},
+        {title:"The Bank Pays You", explanation:"Interest is money the bank pays you for letting them hold your cash. It seems tiny, but it's the first taste of the most powerful idea in money: your money making money.", task:"Calculate: if you put $100 in a savings account paying 4% per year, how much do you have after 1 year? After 2 (including interest on interest)?"},
+        {title:"Fees Eat Money", explanation:"Banks also charge fees — overdraft fees, ATM fees, monthly fees. A $35 overdraft fee on a $5 purchase means that snack cost $40. Knowing the fees is how you keep your money.", task:"Look up what an overdraft fee is and one way to avoid ever paying one."},
+      ]},
+      { id:"budget", icon:"📊", name:"Budgeting", desc:"Needs vs wants, telling your money where to go", bank:[
+        {title:"Needs vs Wants", explanation:"A budget isn't about not spending — it's about deciding where money goes BEFORE it disappears. The first skill is brutally honest sorting: needs (must have) vs wants (nice to have).", task:"Make two columns: NEEDS and WANTS. Sort 10 things you or your family spent money on this month. Be honest — is Netflix a need?"},
+        {title:"The 50/30/20 Rule", explanation:"A famous simple budget: 50% of money to needs, 30% to wants, 20% to savings. It's not perfect, but it beats having no plan at all.", task:"Imagine you earn $1,000 a month. Write out your 50/30/20 split in real dollars, then list what specifically would go in each bucket."},
+        {title:"Pay Yourself First", explanation:"Most people save whatever's left over — which is usually nothing. Winners flip it: savings comes out FIRST, then you live on the rest.", task:"If you got $50 right now, decide the exact amount you'd save first before spending anything. Write down where you'd keep it so you wouldn't touch it."},
+      ]},
+      { id:"credit", icon:"📈", name:"Credit Score", desc:"The 3-digit number that changes your whole life", bank:[
+        {title:"The Invisible Report Card", explanation:"A credit score is a number (300-850) that tells lenders how reliable you are with borrowed money. It decides if you can get an apartment, a car loan, a house — and how much extra you'll pay. Most people learn this too late.", task:"Look up the 5 things that make up a credit score (hint: payment history is the biggest). Write them down in order of importance."},
+        {title:"Late = Expensive", explanation:"One missed payment can drop your score 100 points and stay on your report for 7 years. A low score can mean paying tens of thousands more for the same car or house as someone with a high score.", task:"Compare: a $20,000 car loan at 6% interest vs 14% interest over 5 years. Search 'auto loan calculator' and write down the total cost difference. That gap is what a bad credit score costs."},
+        {title:"Building From Zero", explanation:"You build credit by borrowing small and paying back on time, every time. A secured credit card or being an authorized user on a trusted adult's card are the standard first moves at 18.", task:"Write a 3-step plan for how you'd build credit starting the day you turn 18, without ever paying a cent of interest (hint: pay the full balance every month)."},
+      ]},
+      { id:"debt", icon:"⚖️", name:"Debt & Borrowing", desc:"Good debt, bad debt, and interest working against you", bank:[
+        {title:"Interest Cuts Both Ways", explanation:"When you save, interest works FOR you. When you borrow, it works AGAINST you. Credit cards charge 20-30% — the most expensive money most people ever touch.", task:"Calculate: you buy $500 of stuff on a credit card at 25% interest and only pay $25/month. Search 'credit card payoff calculator' — how long to pay off, and what's the real total cost?"},
+        {title:"Good Debt vs Bad Debt", explanation:"Debt that buys something that grows in value or earns money (a reasonable home, education that leads to income, business equipment) can be a tool. Debt for stuff that loses value the moment you buy it is a trap.", task:"Sort these into good debt / bad debt / it depends: student loan, credit card balance for clothes, mortgage, payday loan, loan for a work truck. Explain each answer in one sentence."},
+        {title:"The Minimum Payment Trap", explanation:"Minimum payments are designed to keep you in debt as long as legally possible. Paying just the minimum on a big balance can take decades and cost multiples of what you borrowed.", task:"Find a real credit card offer online and read the fine print box (the 'Schumer box'). Write down the interest rate (APR) and the late fee."},
+      ]},
+      { id:"grow", icon:"🌱", name:"Growing Money", desc:"Compound interest — the strongest force in money", bank:[
+        {title:"The Doubling Machine", explanation:"Compound interest means your money earns money, and then THAT money earns money. Started early, small amounts become huge. Einstein supposedly called it the eighth wonder of the world.", task:"Use the 'Rule of 72': divide 72 by an interest rate to see how many years money takes to double. At 8% per year, how many times does $1,000 double between age 15 and 63? What's it worth?"},
+        {title:"Saving vs Investing", explanation:"Savings accounts keep money safe but barely grow it. Investing (like index funds that own a tiny slice of hundreds of companies) is how normal people actually build wealth over decades — accepting ups and downs along the way.", task:"Look up what an 'index fund' is and write a 2-sentence explanation a friend your age would understand."},
+        {title:"Time Beats Timing", explanation:"The biggest advantage you have isn't money — it's time. Someone who invests $100/month starting at 18 usually ends up richer than someone who starts with much more at 35.", task:"Search 'compound interest calculator'. Compare $100/month from age 18 to 65 vs $300/month from 35 to 65, both at 8%. Write down both totals. Who wins?"},
+      ]},
+    ]
+  },
+  {
+    id: "business", icon: "🚀", name: "Business", color: "var(--orange)",
+    tagline: "From spotting problems to making your first real sale",
+    levels: [
+      { id:"problems", icon:"🔍", name:"Spot Problems", desc:"Every business starts with someone's problem", bank:[
+        {title:"Problems Are Money", explanation:"Every successful business exists because it solves a problem someone will pay to make go away. Learning to SEE problems is the first business skill — most people just complain about them.", task:"Carry a note today and write down 5 things that annoyed you or someone around you. Circle the one people would most likely pay to fix."},
+        {title:"Who Has This Problem?", explanation:"A problem only matters as a business if enough people have it and feel it strongly. 'Mildly annoying to everyone' loses to 'painful for a specific group'.", task:"Take your best problem from before (or a new one). Write down exactly WHO has it worst — age, situation, where you'd find them."},
+        {title:"What Do They Do Now?", explanation:"People already cope with their problems somehow — badly, expensively, or slowly. Your opportunity is being better, cheaper, or faster than the current workaround.", task:"For your problem, find out what people currently do about it. Ask one real person if you can. Write down the current 'solution' and its weakness."},
+      ]},
+      { id:"idea", icon:"💡", name:"Your First Idea", desc:"Turn a problem into something you could offer", bank:[
+        {title:"Skills × Problems", explanation:"The best first business sits where something you CAN do meets something people NEED done. You don't need a revolutionary idea — you need a useful one.", task:"Draw two lists: things you can do (or could learn fast) and problems you've spotted. Draw lines between matches. Pick the strongest connection."},
+        {title:"One Sentence Pitch", explanation:"If you can't explain your idea in one sentence, it's not clear enough yet. The formula: 'I help [WHO] do [WHAT] so they get [RESULT].'", task:"Write your idea in that exact formula. Then say it out loud to one person and watch their face. Confused = rewrite it."},
+        {title:"Smallest Version", explanation:"Big ideas die from being too big to start. The winning move is finding the smallest version you could actually deliver this week — no website, no logo, no LLC. Just the core service or product.", task:"Write down the absolute smallest version of your idea you could deliver in 7 days with what you already have."},
+      ]},
+      { id:"validate", icon:"🧪", name:"Test It", desc:"Find out if anyone actually wants it — before building", bank:[
+        {title:"Talk to Real Humans", explanation:"The #1 startup killer is building something nobody wants. Before you build ANYTHING, talk to the people you think would buy. Ask about their problem — not your idea — so they can't just be polite.", task:"Ask 3 people about the problem your idea solves: 'When did this last happen to you? What did you do? What did it cost you?' Write down what they actually said."},
+        {title:"The Pre-Sale Test", explanation:"People lie to be nice. The only true test is asking for real commitment: money, a deposit, a signup, a scheduled time. 'That's cool' means no. Pulling out a wallet means yes.", task:"Design your commitment test: what's the smallest real YES you could ask for? (A $5 deposit? A booked slot?) Write down exactly how you'd ask."},
+        {title:"Kill It or Commit", explanation:"Most ideas should die quickly and cheaply — that's success, not failure, because it frees you for a better one. Set a clear pass/fail line before you test.", task:"Write your pass/fail rule: 'If fewer than __ out of __ people [commit], I move on to the next idea.' Then follow it."},
+      ]},
+      { id:"sale", icon:"🤝", name:"First Sale", desc:"Nothing is real until someone pays you", bank:[
+        {title:"The Ask", explanation:"The difference between a hobby and a business is one uncomfortable moment: asking someone to pay. Everyone feels weird the first time. Do it anyway — the feeling never kills anyone.", task:"Write your exact ask, word for word: what you'll offer, the price, and the question at the end ('Want me to start Saturday?'). Practice saying it out loud 3 times."},
+        {title:"Deliver Like a Pro", explanation:"Your first customer is your most important one ever — they're your proof, your review, and your referral. Overdeliver on purpose: show up early, do extra, follow up after.", task:"List 3 specific ways you could overdeliver on your first job so the customer tells someone else about you."},
+        {title:"Get Paid Properly", explanation:"Agree on price BEFORE the work, get paid promptly after (or half up front for bigger jobs), and keep a record of every dollar in and out — that habit separates real operators from hobbyists.", task:"Set up your money tracking: a simple note or sheet with columns for date, customer, what you did, charged, costs, profit. Add a practice row."},
+      ]},
+      { id:"profit", icon:"🧮", name:"Price & Profit", desc:"Charging right and knowing your real numbers", bank:[
+        {title:"Profit ≠ Revenue", explanation:"Getting paid $100 doesn't mean you MADE $100. Materials, gas, fees, your time — real businesses know their costs. Profit is what's left, and it's the only number that matters.", task:"Take one thing you could sell (product or service). List every cost involved, then calculate actual profit at your planned price. Surprised?"},
+        {title:"Stop Undercharging", explanation:"Beginners always price too low — it feels safer but attracts the worst customers and burns you out. Price on the VALUE to the customer, not just your time.", task:"Find 3 real prices for what others charge for something like your offer. Set your price in the middle or higher, and write one sentence justifying it with value."},
+        {title:"The Math of Your Goal", explanation:"Work backwards from a money goal and business gets concrete fast: want $500/month? At $50 profit per job that's 10 jobs — about 2-3 a week. Suddenly it's not a dream, it's a schedule.", task:"Pick a monthly income goal. Work backwards: how many sales at your price and profit? How many asks does that take if 1 in 3 says yes? Write the weekly numbers."},
+      ]},
+      { id:"growth", icon:"📣", name:"Grow It", desc:"Repeat customers, referrals, and simple marketing", bank:[
+        {title:"Repeat > New", explanation:"Getting a new customer is 5x harder than keeping one. The fastest growth move is turning one-time buyers into regulars: follow up, remind them, make rebooking effortless.", task:"Write the follow-up message you'd send a customer 2 weeks after a job. Make it helpful, not desperate — offer something, don't beg."},
+        {title:"The Referral Engine", explanation:"Happy customers will recommend you — but usually only if you ASK. A simple 'know anyone else who needs this?' at the moment they're happiest doubles many small businesses.", task:"Script your referral ask, and decide what you'd give as a thank-you (discount? freebie?). When exactly would you say it?"},
+        {title:"Show Your Work", explanation:"Posting what you do — before/after photos, results, happy customers — is free marketing that compounds. You don't need to go viral; you need the RIGHT 50 local people to know you exist.", task:"Draft one post showing off a (real or practice) job: photo idea, 2-3 sentences, where you'd post it so your actual customers see it."},
+      ]},
+    ]
+  },
+  {
+    id: "ai", icon: "🧠", name: "AI Skills", color: "var(--blue)",
+    tagline: "From first prompt to shipping real things with AI",
+    levels: [
+      { id:"what", icon:"🧠", name:"What is AI?", desc:"What it is, what it's good and bad at", bank:[
+        {title:"What Even Is AI?", explanation:"AI is a computer program that learned patterns from enormous amounts of examples — kind of like how you learned to recognize dogs by seeing lots of them. It predicts, it doesn't 'know'.", task:"Write down 3 things you think AI is great at and 3 things it's bad at. Keep the list — you'll check it against reality as you level up."},
+        {title:"Catch It Being Wrong", explanation:"AI sounds confident even when it's wrong ('hallucinating'). The most important AI skill is healthy suspicion: trust, but verify anything that matters.", task:"Ask any AI chatbot a question about something you know really well (your town, your hobby). Find at least one thing it gets wrong or oversimplifies."},
+        {title:"AI All Around You", explanation:"You already use AI dozens of times a day without noticing: your feed, autocorrect, music recommendations, photo search, navigation. Knowing where it hides makes you sharper about what it's doing with your attention.", task:"Spot 5 places AI touched your day today. For each, write what it was trying to predict or decide for you."},
+      ]},
+      { id:"prompt", icon:"✍️", name:"Prompting", desc:"Get AI to do exactly what you want", bank:[
+        {title:"Garbage In, Garbage Out", explanation:"Vague prompts get vague answers. The formula for a strong prompt: give it a ROLE, a TASK, CONTEXT, and the FORMAT you want back. Specific beats clever every time.", task:"Take a lazy prompt like 'help me with my room' and rewrite it with role + task + context + format. Run both in a free AI chat and compare the results."},
+        {title:"Iterate Like a Pro", explanation:"Pros never accept the first answer. They push: 'make it shorter', 'more casual', 'give me 3 options', 'you missed X'. The conversation is the tool.", task:"Ask an AI to write something (a text, a plan, a story). Then improve it with at least 4 follow-up instructions. Save the before and after."},
+        {title:"Make It Think Step by Step", explanation:"For hard problems, telling AI to 'think step by step' or 'ask me questions first' dramatically improves answers. You're not just asking — you're directing how it works.", task:"Give an AI a genuinely hard question for your life (schedule, decision, plan). First normally, then again with 'ask me 3 clarifying questions before answering'. Compare."},
+      ]},
+      { id:"image", icon:"🎨", name:"AI Images & Media", desc:"Create images, and spot fakes", bank:[
+        {title:"Paint With Words", explanation:"Image AI turns descriptions into pictures. The skill is the same as prompting: subject + style + mood + details. 'A dog' is boring; 'a golden retriever astronaut, oil painting, dramatic lighting' is art direction.", task:"Use any free AI image tool and generate the same subject in 3 completely different styles. Save your favorite and the prompt that made it."},
+        {title:"Spot the Fake", explanation:"If you can make AI images, so can scammers and liars. Classic tells: weird hands, melted text, impossible reflections, too-perfect skin. This skill protects you and people you love.", task:"Search 'AI image vs real quiz' and take one. Write down your score and the 3 tells that helped you most."},
+        {title:"Design Something Real", explanation:"AI media isn't just for fun — it's logos, flyers, thumbnails, product mockups. Real business value from a text box.", task:"Design something useful with AI: a logo for your business idea, a flyer, a banner. Generate at least 3 versions and pick the winner."},
+      ]},
+      { id:"code", icon:"💻", name:"Code with AI", desc:"Your first real code, with AI as tutor", bank:[
+        {title:"AI Is Your Tutor", explanation:"You don't need to memorize code anymore — you need to understand it. AI can write code AND explain every line like a patient teacher who never judges.", task:"Ask an AI: 'Write a simple Python program that asks my name and age, then tells me what year I turn 100. Explain every line like I'm brand new.' Read the whole explanation."},
+        {title:"Run Real Code", explanation:"Reading code isn't coding — running it is. Free browser tools (like replit.com or an online Python runner) let you run real code with zero setup.", task:"Take the program from before, run it in a free online Python runner, then change TWO things about it (the message, the math) and run again."},
+        {title:"Debug Like a Detective", explanation:"All code breaks. The pro move: paste the error message into AI and ask 'what does this mean and how do I fix it?' Errors go from scary to just... information.", task:"Break your program on purpose (delete a quote, misspell a command). Read the error, then use AI to understand and fix it."},
+      ]},
+      { id:"web", icon:"🌐", name:"Build a Website", desc:"Put a real page on the actual internet", bank:[
+        {title:"Your First Page", explanation:"Websites are just files a browser reads. With AI writing the HTML and you directing it, you can have a real page in minutes — about you, your business, your team, anything.", task:"Ask AI to 'create a single-file HTML page about [your topic] with a dark theme'. Save it as page.html and open it in your browser. That's YOUR website."},
+        {title:"Make It Yours", explanation:"Copy-paste isn't building — changing things is. Colors, layout, sections, images: every edit teaches you how the web actually works.", task:"Take your page and make 5 specific changes via AI ('make the header bigger', 'add a photo section', 'change to blue theme'). Reload after each one."},
+        {title:"Put It Online — Free", explanation:"Free services (GitHub Pages, Netlify Drop, Vercel) will host your page on the real internet at a real URL. Sharing that link the first time feels like magic because it is.", task:"Search 'Netlify Drop', drag your HTML file in, and get your live URL. Send it to one person you like."},
+      ]},
+      { id:"ship", icon:"🔨", name:"Ship Something Real", desc:"Combine everything into a real project", bank:[
+        {title:"Pick Your Build", explanation:"Time to combine it all: a real project for a real purpose. A site for your business idea, a tool that solves one of the problems you spotted, a game — something that didn't exist before you.", task:"Write a one-page plan: what you're building, who it's for, the 3 features version 1 needs (and nothing more)."},
+        {title:"Build in Passes", explanation:"Real builders don't build everything at once — they get an ugly version working, then improve in passes. Working-but-ugly always beats perfect-but-imaginary.", task:"Build pass 1 with AI's help: the smallest working version of your project. It should DO the main thing, even if it's ugly."},
+        {title:"Ship It & Show It", explanation:"Done means someone else can use it. Ship your project, show 3 people, and watch what they do — their confusion is your next to-do list. Congratulations: you're officially a builder.", task:"Put your project online, show it to 3 people, and write down: what confused them, what they liked, and the 1 thing you'd improve next."},
+      ]},
+    ]
+  },
 ];
 
-const db = {
-  h: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
-  async getUser(name, password) {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/users?name=eq.${encodeURIComponent(name)}&password=eq.${encodeURIComponent(password)}&select=*`, { headers: this.h });
-    const d = await r.json(); return d[0] || null;
-  },
-  async updateUser(id, fields) {
-    await fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${id}`, { method: "PATCH", headers: this.h, body: JSON.stringify(fields) });
-  },
-  async logCompletion(userId, skillId, title) {
-    await fetch(`${SUPABASE_URL}/rest/v1/completions`, { method: "POST", headers: this.h, body: JSON.stringify({ user_id: userId, skill_id: skillId, challenge_title: title }) });
-  }
-};
+// ── MENTOR ──────────────────────────────────────────────────────────────────
+const AGE_BANDS = ["8-11","12-15","16-18","Adult"];
+const GOALS = [
+  {id:"money", label:"💵 Understand money"},{id:"credit", label:"📈 Credit & adulting"},
+  {id:"business", label:"🚀 Start a business"},{id:"ai", label:"🧠 Learn AI"},
+  {id:"code", label:"💻 Learn to code"},{id:"build", label:"🌐 Build websites"},
+];
+const STYLES = [
+  {id:"hype", label:"🔥 Hype me up"},{id:"chill", label:"😌 Calm & patient"},
+  {id:"straight", label:"🎯 Straight to the point"},{id:"fun", label:"🎮 Make it fun"},
+];
 
+function mentorSystemPrompt(profile) {
+  const p = profile || {};
+  return `You are ${p.mentorName || "Forge"}, a personal mentor inside the Forge app, teaching real-life skills: money, credit, business, and AI/coding.
+Student: ${p.name || "a student"}, age band ${p.ageBand || "unknown"}.
+Their goals: ${(p.goals || []).join(", ") || "general life skills"}. Interests: ${p.interests || "unknown"}.
+Coaching style they chose: ${p.style || "encouraging"}.
+Rules: Adapt every explanation to their age band. Use their interests for examples. Be warm and real, never babyish or condescending. Short paragraphs. Concrete examples over theory. If they're stuck, break it smaller. Celebrate real effort. Never make up facts; if unsure, say so. For money topics, teach the lesson their school skipped: credit scores, interest, budgeting are life-changing knowledge.`;
+}
 
+// AI call goes through YOUR serverless proxy (never expose an API key in the
+// browser). Returns null on any failure so callers can use built-in content.
+async function callAI(system, messages, maxTokens = 600) {
+  if (!AI_ENDPOINT) return null;
+  try {
+    const r = await fetch(AI_ENDPOINT, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: AI_MODEL, system, messages, max_tokens: maxTokens })
+    });
+    if (!r.ok) return null;
+    const d = await r.json();
+    return d.content?.find(b => b.type === "text")?.text || null;
+  } catch { return null; }
+}
 
+// Deterministic daily pick from the bank so "today's challenge" is stable all
+// day but rotates tomorrow.
+function bankChallenge(track, levelIdx) {
+  const lvl = track.levels[levelIdx];
+  const seed = Math.floor(Date.now() / 86400000) + levelIdx + track.id.length;
+  return lvl.bank[seed % lvl.bank.length];
+}
+
+async function getChallenge(profile, track, levelIdx) {
+  const lvl = track.levels[levelIdx];
+  const sys = mentorSystemPrompt(profile);
+  const text = await callAI(sys, [{ role: "user", content:
+    `Generate a fresh daily challenge for the skill "${lvl.name}" (${lvl.desc}) in the "${track.name}" track. It must be achievable in 10-20 minutes with no money spent. Respond ONLY with JSON, no markdown: {"title":"max 6 words","explanation":"2-3 sentences, warm, specific to their age and interests","task":"one specific concrete task"}` }]);
+  if (text) { try { return JSON.parse(text.replace(/```json|```/g, "").trim()); } catch {} }
+  return bankChallenge(track, levelIdx);
+}
+
+// ── APP ─────────────────────────────────────────────────────────────────────
 function ForgeApp() {
-  const [mode, setMode] = useState("login");
+  const [profile, setProfile] = useState(() => store.get("profile", null));
+  const [mode, setMode] = useState(profile ? "student" : "welcome");
+
+  const saveProfile = (p) => { store.set("profile", p); setProfile(p); };
+
   return (
-    <>
-      
-      <div className="root">
-        {mode === "login"   && <LoginScreen onStudent={()=>setMode("student")} onParent={()=>setMode("pin")} />}
-        {mode === "student" && <StudentApp onExit={()=>setMode("login")} />}
-        {mode === "pin"     && <PinScreen onSuccess={()=>setMode("parent")} onBack={()=>setMode("login")} />}
-        {mode === "parent"  && <ParentPortal onExit={()=>setMode("login")} />}
-      </div>
-    </>
+    <div className="root">
+      {mode === "welcome"  && <Welcome onStart={() => setMode("onboarding")} />}
+      {mode === "onboarding" && <Onboarding onDone={(p) => { saveProfile(p); setMode("student"); }} />}
+      {mode === "student"  && <StudentApp profile={profile} onProfile={saveProfile} onExit={() => setMode("welcome")} onParent={() => setMode("pin")} />}
+      {mode === "pin"      && <PinScreen pin={(profile && profile.parentPin) || "1234"} onSuccess={() => setMode("parent")} onBack={() => setMode("student")} />}
+      {mode === "parent"   && <ParentPortal profile={profile} onProfile={saveProfile} onExit={() => setMode("student")} />}
+    </div>
   );
 }
 
-function LoginScreen({ onStudent, onParent }) {
-  const [name, setName]         = useState("");
-  const [pass, setPass]         = useState("");
-  const [showPass, setShowPass] = useState(false);
-  const [err, setErr]           = useState("");
-  const [loading, setLoading]   = useState(false);
-
-  const handleLogin = async () => {
-    if (!name.trim()) { setErr("Enter your name."); return; }
-    if (!pass.trim()) { setErr("Enter your password."); return; }
-    setLoading(true); setErr("");
-    try {
-      const u = await db.getUser(name.trim(), pass);
-      if (u) { onStudent(); setLoading(false); return; }
-    } catch {}
-    if (name.trim().toLowerCase() === LOCAL_STUDENT.name.toLowerCase() && pass === LOCAL_STUDENT.password) {
-      onStudent(); setLoading(false); return;
-    }
-    setErr("Wrong name or password."); setLoading(false);
-  };
-
+function Welcome({ onStart }) {
+  const hasProfile = !!store.get("profile", null);
   return (
     <div className="login-screen">
       <div className="login-logo">FORGE</div>
-      <div className="login-tag">Build things that didn't exist yesterday</div>
+      <div className="login-tag">Real skills for real life — money, business, AI</div>
       <div className="login-box">
-        <div className="field">
-          <label className="field-label">Your name</label>
-          <input className="field-input" placeholder="Type your name..." value={name}
-            autoComplete="off" autoCorrect="off" autoCapitalize="words" spellCheck="false"
-            onChange={e=>{ setName(e.target.value); setErr(""); if(e.target.value.trim()) setShowPass(true); else setShowPass(false); }} />
-        </div>
-        {showPass && (
-          <div className="field" style={{animation:"fadeUp .3s ease both"}}>
-            <label className="field-label">Password</label>
-            <input className="field-input" type="password" placeholder="Enter password" value={pass}
-              autoComplete="new-password"
-              onChange={e=>{ setPass(e.target.value); setErr(""); }}
-              onKeyDown={e=>e.key==="Enter"&&handleLogin()} />
-          </div>
-        )}
-        {err && <div className="err">{err}</div>}
-        {showPass && (
-          <button className="btn-main" onClick={handleLogin} disabled={loading}>
-            {loading ? "Checking..." : "Enter Forge →"}
-          </button>
-        )}
-        <div className="parent-link">
-          <button onClick={onParent}>Parent access</button>
-        </div>
+        <button className="btn-main" onClick={onStart}>{hasProfile ? "Continue →" : "Get Started →"}</button>
       </div>
     </div>
   );
 }
 
-function StudentApp({ onExit }) {
-  const [tab, setTab]             = useState("home");
-  const [streak, setStreak]       = useState(0);
-  const [completed, setCompleted] = useState(0);
-  const [level, setLevel]         = useState(0);
+// Optional-but-easy mentor setup: 4 taps and a name. Skippable at every step;
+// skipping still produces a usable default profile.
+function Onboarding({ onDone }) {
+  const existing = store.get("profile", null);
+  const [step, setStep] = useState(existing ? 99 : 0);
+  const [name, setName] = useState(existing?.name || "");
+  const [ageBand, setAgeBand] = useState(existing?.ageBand || null);
+  const [goals, setGoals] = useState(existing?.goals || []);
+  const [interests, setInterests] = useState(existing?.interests || "");
+  const [style, setStyle] = useState(existing?.style || null);
+
+  useEffect(() => { if (step === 99 && existing) onDone(existing); }, []);
+
+  const finish = (skip) => {
+    const p = {
+      name: name.trim() || "Builder",
+      ageBand: ageBand || "12-15",
+      goals: goals.length ? goals : ["money", "ai"],
+      interests: interests.trim(),
+      style: style || "hype",
+      mentorName: "Forge",
+      parentPin: existing?.parentPin || "1234",
+      created: todayStr(),
+    };
+    onDone(p);
+  };
+  const toggleGoal = (id) => setGoals(g => g.includes(id) ? g.filter(x => x !== id) : [...g, id]);
+
+  return (
+    <div className="screen" style={{paddingTop: 48}}>
+      <div className="wordmark" style={{marginBottom: 32}}>FORGE</div>
+
+      {step === 0 && (<>
+        <div className="ob-step">Step 1 of 5 · Meet your mentor</div>
+        <div className="ob-q">What should your mentor call you?</div>
+        <div className="ob-sub">Forge builds a mentor around you — how you learn, what you're into, what you want. Takes 30 seconds. You can skip any step.</div>
+        <div className="field"><input className="field-input" placeholder="Your first name..." value={name} autoComplete="off" onChange={e => setName(e.target.value)} onKeyDown={e => e.key === "Enter" && setStep(1)} /></div>
+        <button className="btn-main" onClick={() => setStep(1)}>Next →</button>
+        <button className="btn-secondary" onClick={() => finish(true)}>Skip setup — use defaults</button>
+      </>)}
+
+      {step === 1 && (<>
+        <div className="ob-step">Step 2 of 5 · Age</div>
+        <div className="ob-q">How old are you?</div>
+        <div className="ob-sub">Your mentor adjusts every explanation to fit — never babyish, never over your head.</div>
+        <div className="chips">{AGE_BANDS.map(a => <button key={a} className={`chip ${ageBand === a ? "on" : ""}`} onClick={() => setAgeBand(a)}>{a}</button>)}</div>
+        <button className="btn-main" onClick={() => setStep(2)} disabled={!ageBand}>Next →</button>
+        <button className="btn-secondary" onClick={() => setStep(2)}>Skip</button>
+      </>)}
+
+      {step === 2 && (<>
+        <div className="ob-step">Step 3 of 5 · Goals</div>
+        <div className="ob-q">What do you want to get good at?</div>
+        <div className="ob-sub">Pick as many as you want — this decides which tracks your mentor pushes first.</div>
+        <div className="chips">{GOALS.map(g => <button key={g.id} className={`chip ${goals.includes(g.id) ? "on" : ""}`} onClick={() => toggleGoal(g.id)}>{g.label}</button>)}</div>
+        <button className="btn-main" onClick={() => setStep(3)} disabled={goals.length === 0}>Next →</button>
+        <button className="btn-secondary" onClick={() => setStep(3)}>Skip</button>
+      </>)}
+
+      {step === 3 && (<>
+        <div className="ob-step">Step 4 of 5 · Interests</div>
+        <div className="ob-q">What are you into?</div>
+        <div className="ob-sub">Games, sports, music, animals, cars — your mentor uses YOUR world for examples. Money lessons hit different when they're about sneakers you actually want.</div>
+        <div className="field"><input className="field-input" placeholder="e.g. Minecraft, soccer, drawing..." value={interests} autoComplete="off" onChange={e => setInterests(e.target.value)} onKeyDown={e => e.key === "Enter" && setStep(4)} /></div>
+        <button className="btn-main" onClick={() => setStep(4)}>Next →</button>
+        <button className="btn-secondary" onClick={() => setStep(4)}>Skip</button>
+      </>)}
+
+      {step === 4 && (<>
+        <div className="ob-step">Step 5 of 5 · Style</div>
+        <div className="ob-q">How should your mentor coach you?</div>
+        <div className="chips">{STYLES.map(s => <button key={s.id} className={`chip ${style === s.id ? "on" : ""}`} onClick={() => setStyle(s.id)}>{s.label}</button>)}</div>
+        <button className="btn-main" onClick={() => finish(false)}>Build my mentor ⚡</button>
+      </>)}
+    </div>
+  );
+}
+
+function StudentApp({ profile, onProfile, onExit, onParent }) {
+  const [tab, setTab] = useState("home");
+  const [progress, setProgress] = useState(() => store.get("progress", { levels: {}, streak: 0, lastDay: null, history: [] }));
+  const [trackId, setTrackId] = useState(() => store.get("track", (profile?.goals?.includes("business") ? "business" : profile?.goals?.some(g => ["ai","code","build"].includes(g)) ? "ai" : "money")));
   const [challenge, setChallenge] = useState(null);
-  const [loading, setLoading]     = useState(false);
-  const [done, setDone]           = useState(false);
-  const [history, setHistory]     = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
 
-  useEffect(()=>{ loadChallenge(0); },[]);
+  const track = TRACKS.find(t => t.id === trackId) || TRACKS[0];
+  const level = progress.levels[trackId] || 0;
 
-  const loadChallenge = async (lvl) => {
-    setLoading(true); setChallenge(null); setDone(false);
-    const skill = SKILL_LADDER[lvl];
-    const prompt = `You are a coding teacher for a 10-year-old girl named Carley who is a complete beginner. Generate a fresh daily challenge for: "${skill.name}". Respond ONLY with JSON no markdown: {"title":"max 5 words","explanation":"2-3 sentences simple warm not babyish","task":"specific task achievable in 10-15 minutes"}`;
-    try {
-      const r = await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:600,messages:[{role:"user",content:prompt}]})});
-      const d = await r.json();
-      const t = d.content?.find(b=>b.type==="text")?.text||"";
-      setChallenge(JSON.parse(t.replace(/```json|```/g,"").trim()));
-    } catch {
-      setChallenge({title:"What Even Is AI?",explanation:"AI stands for Artificial Intelligence — a computer program that learns from examples, kind of like how you learned to recognize dogs by seeing lots of them.",task:"Grab a piece of paper and list 3 things you think AI can do well and 3 things you think it can't. Keep it — you'll look back at this list later."});
+  const saveProgress = (p) => { store.set("progress", p); setProgress(p); };
+  const switchTrack = (id) => { store.set("track", id); setTrackId(id); setChallenge(null); setDone(false); };
+
+  useEffect(() => { loadChallenge(); }, [trackId]);
+
+  const loadChallenge = async () => {
+    setLoading(true); setDone(false);
+    const t = TRACKS.find(x => x.id === trackId) || TRACKS[0];
+    const c = await getChallenge(profile, t, (store.get("progress", progress).levels[trackId] || 0));
+    setChallenge(c); setLoading(false);
+  };
+
+  const handleComplete = () => {
+    const today = todayStr();
+    const alreadyToday = progress.lastDay === today;
+    // Streak: +1 if yesterday was last completion, reset to 1 if gap, unchanged if already done today
+    let streak = progress.streak;
+    if (!alreadyToday) {
+      streak = progress.lastDay && daysBetween(progress.lastDay, today) === 1 ? streak + 1 : 1;
     }
-    setLoading(false);
-  };
-
-  const handleComplete = async () => {
+    const history = [{ track: track.name, skill: track.levels[level].name, title: challenge?.title || "", date: today }, ...progress.history].slice(0, 200);
+    saveProgress({ ...progress, streak, lastDay: today, history });
     setDone(true);
-    const ns=streak+1; const nc=completed+1;
-    setStreak(ns); setCompleted(nc);
-    setHistory(h=>[{skill:SKILL_LADDER[level].name,title:challenge?.title||"",date:new Date().toLocaleDateString()},...h]);
-    try { await db.updateUser(LOCAL_STUDENT.id,{streak:ns,completed:nc,level,last_active:new Date().toISOString().split("T")[0]}); } catch{}
   };
 
-  const streakDots = Array.from({length:7},(_,i)=>i<(streak%7)?"done":i===(streak%7)?"today":"empty");
-  const tabs = [{id:"home",icon:"🏠",label:"Home"},{id:"challenge",icon:"⚡",label:"Challenge"},{id:"progress",icon:"📈",label:"Progress"},{id:"skills",icon:"🎯",label:"Skills"}];
+  const advanceLevel = () => {
+    const nl = Math.min(level + 1, track.levels.length - 1);
+    saveProgress({ ...progress, levels: { ...progress.levels, [trackId]: nl } });
+    setDone(false); setChallenge(null);
+    setTimeout(loadChallenge, 50);
+  };
+
+  const completedCount = progress.history.length;
+  const doneToday = progress.lastDay === todayStr();
+  const streakDots = Array.from({ length: 7 }, (_, i) => {
+    const shown = progress.streak % 7 || (progress.streak > 0 && doneToday ? 7 : 0);
+    return i < shown ? "done" : i === shown ? "today" : "empty";
+  });
+  const tabs = [{id:"home",icon:"🏠",label:"Home"},{id:"challenge",icon:"⚡",label:"Today"},{id:"mentor",icon:"🧭",label:"Mentor"},{id:"skills",icon:"🎯",label:"Tracks"},{id:"progress",icon:"📈",label:"Progress"}];
+  const initial = (profile?.name || "F")[0].toUpperCase();
 
   return (
     <>
-      {tab==="home" && (
+      {tab === "home" && (
         <div className="screen">
           <div className="topbar">
             <div className="wordmark">FORGE</div>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <div className="avatar">C</div>
-              <button className="btn-ghost-sm" onClick={onExit}>exit</button>
+              <div className="avatar">{initial}</div>
+              <button className="btn-ghost-sm" onClick={onParent}>parent</button>
             </div>
           </div>
-          <div className="stats">
-            <div className="stat" style={{"--c":"var(--accent)"}}><div className="stat-val">{streak}</div><div className="stat-lbl">Streak 🔥</div></div>
-            <div className="stat" style={{"--c":"var(--blue)"}}><div className="stat-val">{completed}</div><div className="stat-lbl">Done</div></div>
-            <div className="stat" style={{"--c":"var(--red)"}}><div className="stat-val">{level+1}/6</div><div className="stat-lbl">Level</div></div>
+
+          <div className="mentor-card" onClick={() => setTab("mentor")}>
+            <div className="mentor-face">🧭</div>
+            <div>
+              <div className="mentor-name">Your mentor</div>
+              <div className="mentor-line">{doneToday ? `Streak safe, ${profile?.name}. Come back tomorrow — or get ahead on another track.` : `Ready when you are, ${profile?.name}. Today's ${track.name} challenge is waiting.`}</div>
+            </div>
           </div>
+
+          <div className="stats">
+            <div className="stat" style={{"--c":"var(--accent)"}}><div className="stat-val">{progress.streak}</div><div className="stat-lbl">Streak 🔥</div></div>
+            <div className="stat" style={{"--c":"var(--blue)"}}><div className="stat-val">{completedCount}</div><div className="stat-lbl">Done</div></div>
+            <div className="stat" style={{"--c":"var(--red)"}}><div className="stat-val">{level + 1}/{track.levels.length}</div><div className="stat-lbl">Level</div></div>
+          </div>
+
           <div className="sec">This week</div>
-          <div className="streak-row">{streakDots.map((t,i)=><div key={i} className={`sdot ${t}`}>{t==="done"?"✓":t==="today"?"→":""}</div>)}</div>
-          <div className="sec">Current skill</div>
+          <div className="streak-row">{streakDots.map((t, i) => <div key={i} className={`sdot ${t}`}>{t === "done" ? "✓" : t === "today" ? "→" : ""}</div>)}</div>
+
+          <div className="sec">Your tracks</div>
+          <div className="track-pills">
+            {TRACKS.map(t => (
+              <button key={t.id} className={`track-pill ${t.id === trackId ? "on" : ""}`} style={{"--c": t.color}} onClick={() => switchTrack(t.id)}>
+                <span className="tp-icon">{t.icon}</span>{t.name}
+              </button>
+            ))}
+          </div>
+
           <div className="skill-item active" style={{marginBottom:0}}>
-            <div className="skill-emoji">{SKILL_LADDER[level].icon}</div>
-            <div className="skill-info"><div className="skill-name">{SKILL_LADDER[level].name}</div><div className="skill-desc">{SKILL_LADDER[level].desc}</div></div>
-            <button className="skill-badge badge-active" onClick={()=>setTab("challenge")}>Go →</button>
+            <div className="skill-emoji">{track.levels[level].icon}</div>
+            <div className="skill-info"><div className="skill-name">{track.levels[level].name}</div><div className="skill-desc">{track.levels[level].desc}</div></div>
+            <button className="skill-badge badge-active" onClick={() => setTab("challenge")}>Go →</button>
           </div>
         </div>
       )}
 
-      {tab==="challenge" && (
+      {tab === "challenge" && (
         <div className="screen">
-          <div className="topbar"><div className="wordmark">FORGE</div><div className="avatar">C</div></div>
+          <div className="topbar"><div className="wordmark">FORGE</div><div className="avatar">{initial}</div></div>
           <div className="ccard">
-            {loading && <div className="loading"><div className="spinner"/>generating your challenge...</div>}
-            {!loading&&done && (
+            {loading && <div className="loading"><div className="spinner"/>building your challenge...</div>}
+            {!loading && done && (
               <div className="done-state">
                 <div className="done-icon">⚡</div>
                 <div className="done-title">Challenge Complete!</div>
-                <div className="done-sub">Day streak: {streak} 🔥</div>
-                <button className="btn-next" onClick={()=>{const n=Math.min(level+1,5);setLevel(n);loadChallenge(n);}}>Next Challenge →</button>
+                <div className="done-sub">Day streak: {progress.streak} 🔥</div>
+                {level < track.levels.length - 1
+                  ? <button className="btn-next" onClick={advanceLevel}>Next Level: {track.levels[level+1].name} →</button>
+                  : <div className="done-sub" style={{color:"var(--green)"}}>Track mastered — pick another track and keep building 🏆</div>}
               </div>
             )}
-            {!loading&&!done&&challenge && (
+            {!loading && !done && challenge && (
               <>
                 <div className="ccard-head">
-                  <div><div className="ccard-skill">{SKILL_LADDER[level].name} · Day {completed+1}</div><div className="ccard-title">{challenge.title}</div></div>
-                  <div className="ccard-icon">{SKILL_LADDER[level].icon}</div>
+                  <div><div className="ccard-skill">{track.name} · {track.levels[level].name}</div><div className="ccard-title">{challenge.title}</div></div>
+                  <div className="ccard-icon">{track.levels[level].icon}</div>
                 </div>
                 <div className="ccard-body">
                   <div className="ccard-text">{challenge.explanation}</div>
                   <div className="task-box"><div className="task-lbl">Your task today</div><div className="task-text">{challenge.task}</div></div>
                   <div className="ccard-actions">
                     <button className="btn-complete" onClick={handleComplete}>Mark Complete ✓</button>
-                    <button className="btn-skip" onClick={()=>loadChallenge(level)} disabled={loading}>↺</button>
+                    <button className="btn-skip" onClick={loadChallenge} disabled={loading} title="Different challenge">↺</button>
                   </div>
                 </div>
               </>
@@ -348,39 +588,49 @@ function StudentApp({ onExit }) {
         </div>
       )}
 
-      {tab==="progress" && (
+      {tab === "mentor" && <MentorChat profile={profile} track={track} level={level} initial={initial} />}
+
+      {tab === "skills" && (
         <div className="screen">
-          <div className="topbar"><div className="wordmark">FORGE</div><div className="avatar">C</div></div>
+          <div className="topbar"><div className="wordmark">FORGE</div><div className="avatar">{initial}</div></div>
+          {TRACKS.map(t => {
+            const tl = progress.levels[t.id] || 0;
+            return (
+              <div key={t.id} style={{marginBottom: 26}}>
+                <div className="sec" style={{color: t.id === trackId ? "var(--accent)" : undefined}}>{t.icon} {t.name} — {t.tagline}</div>
+                <div className="skill-list">
+                  {t.levels.map((sk, i) => {
+                    const isDone = i < tl; const isActive = i === tl; const isLocked = i > tl;
+                    return (
+                      <div key={sk.id} className={`skill-item ${isActive ? "active" : ""} ${isLocked ? "locked" : ""}`}
+                        onClick={() => { if (!isLocked) { switchTrack(t.id); setTab("challenge"); } }}>
+                        <div className="skill-emoji">{sk.icon}</div>
+                        <div className="skill-info"><div className="skill-name">{sk.name}</div><div className="skill-desc">{sk.desc}</div></div>
+                        <span className={`skill-badge ${isDone ? "badge-done" : isActive ? "badge-active" : "badge-locked"}`}>{isDone ? "done" : isActive ? "active" : "locked"}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {tab === "progress" && (
+        <div className="screen">
+          <div className="topbar"><div className="wordmark">FORGE</div><div className="avatar">{initial}</div></div>
           <div className="sec">Completed challenges</div>
-          {history.length===0
+          {progress.history.length === 0
             ? <div className="prog-empty">No challenges completed yet.<br/>Start with today's challenge! ⚡</div>
-            : history.map((h,i)=><div key={i} className="prog-item"><div className="prog-skill">{h.skill}</div><div className="prog-title">{h.title}</div><div className="prog-date">{h.date}</div></div>)
+            : progress.history.map((h, i) => <div key={i} className="prog-item"><div className="prog-skill">{h.track} · {h.skill}</div><div className="prog-title">{h.title}</div><div className="prog-date">{h.date}</div></div>)
           }
         </div>
       )}
 
-      {tab==="skills" && (
-        <div className="screen">
-          <div className="topbar"><div className="wordmark">FORGE</div><div className="avatar">C</div></div>
-          <div className="sec">Skill ladder</div>
-          <div className="skill-list">
-            {SKILL_LADDER.map((sk,i)=>{
-              const isDone=i<level;const isActive=i===level;const isLocked=i>level;
-              return (
-                <div key={sk.id} className={`skill-item ${isActive?"active":""} ${isLocked?"locked":""}`} onClick={()=>!isLocked&&(setLevel(i),loadChallenge(i),setTab("challenge"))}>
-                  <div className="skill-emoji">{sk.icon}</div>
-                  <div className="skill-info"><div className="skill-name">{sk.name}</div><div className="skill-desc">{sk.desc}</div></div>
-                  <span className={`skill-badge ${isDone?"badge-done":isActive?"badge-active":"badge-locked"}`}>{isDone?"done":isActive?"active":"locked"}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
       <nav className="bnav">
-        {tabs.map(t=>(
-          <button key={t.id} className={`bnav-btn ${tab===t.id?"active":""}`} onClick={()=>setTab(t.id)}>
+        {tabs.map(t => (
+          <button key={t.id} className={`bnav-btn ${tab === t.id ? "active" : ""}`} onClick={() => setTab(t.id)}>
             <span className="bnav-icon">{t.icon}</span>{t.label}
           </button>
         ))}
@@ -389,70 +639,101 @@ function StudentApp({ onExit }) {
   );
 }
 
-function PinScreen({ onSuccess, onBack }) {
-  const [pin, setPin] = useState("");
-  const [err, setErr] = useState(false);
+function MentorChat({ profile, track, level, initial }) {
+  const greeting = AI_ENDPOINT
+    ? `Hey ${profile?.name}! I'm your mentor. Ask me anything — today's challenge, money stuff, business ideas, AI, whatever you're stuck on or curious about.`
+    : `Hey ${profile?.name}! I'm your mentor. Live chat needs the AI connection set up (a grown-up can do it in 5 minutes — see the setup guide). Until then, your daily challenges below still work 100%.`;
+  const [messages, setMessages] = useState([{ role: "assistant", content: greeting }]);
+  const [input, setInput] = useState("");
+  const [busy, setBusy] = useState(false);
+  const endRef = useRef(null);
+  useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
-  const press = (k) => {
-    if(k==="del"){setPin(p=>p.slice(0,-1));setErr(false);return;}
-    if(pin.length>=4)return;
-    const np=pin+k; setPin(np);
-    if(np.length===4){
-      if(np===PARENT_PIN){setTimeout(onSuccess,200);}
-      else{setTimeout(()=>{setPin("");setErr(true);},300);}
-    }
+  const send = async () => {
+    if (!input.trim() || busy) return;
+    const msg = input.trim(); setInput("");
+    const next = [...messages, { role: "user", content: msg }];
+    setMessages(next); setBusy(true);
+    const sys = mentorSystemPrompt(profile) + `\nThey are currently on the "${track.name}" track, level "${track.levels[level].name}".`;
+    const text = await callAI(sys, next.filter((m, i) => i > 0).map(m => ({ role: m.role, content: m.content })), 500);
+    setMessages(m => [...m, { role: "assistant", content: text || "I can't connect right now — but your challenges still work! Ask a parent to check the AI setup when they get a chance." }]);
+    setBusy(false);
   };
 
   return (
-    <div className="pin-screen">
-      <div className="pin-title">Parent Access</div>
-      <div className="pin-sub" style={{color:err?"var(--red)":"var(--muted)"}}>{err?"Incorrect PIN. Try again.":"Enter your PIN"}</div>
-      <div className="pin-dots">{[0,1,2,3].map(i=><div key={i} className={`pin-dot ${i<pin.length?"filled":""}`}/>)}</div>
-      <div className="pin-pad">
-        {["1","2","3","4","5","6","7","8","9","","0","del"].map((k,i)=>(
-          k===""?<div key={i}/>:<button key={i} className={`pin-key ${k==="del"?"del":""}`} onClick={()=>press(k)}>{k==="del"?"⌫":k}</button>
-        ))}
+    <div className="screen">
+      <div className="topbar"><div className="wordmark">FORGE</div><div className="avatar">{initial}</div></div>
+      <div className="mentor-card"><div className="mentor-face">🧭</div><div>
+        <div className="mentor-name">Your Mentor</div>
+        <div className="mentor-line">Tuned to you: {profile?.ageBand} · {(profile?.goals || []).join(", ")}{profile?.interests ? ` · loves ${profile.interests}` : ""}</div>
+      </div></div>
+      <div className="ai-messages" style={{maxHeight: "none", flex: 1}}>
+        {messages.map((m, i) => <div key={i} className={`ai-msg ${m.role}`}>{m.content}</div>)}
+        {busy && <div className="ai-msg assistant" style={{color:"var(--muted)"}}>thinking...</div>}
+        <div ref={endRef}/>
       </div>
-      <button className="btn-ghost-sm" style={{marginTop:28}} onClick={onBack}>← Back</button>
+      <div className="ai-input-row">
+        <input className="ai-input" placeholder="Ask your mentor anything..." value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === "Enter" && send()} />
+        <button className="btn-send" onClick={send} disabled={!input.trim() || busy}>→</button>
+      </div>
     </div>
   );
 }
 
-function ParentPortal({ onExit }) {
-  const [customChallenge, setCustomChallenge] = useState("");
-  const [saved, setSaved]                     = useState(false);
-  const [unlockedLevel, setUnlockedLevel]     = useState(0);
-  const [aiMessages, setAiMessages]           = useState([
-    {role:"assistant",content:"Hi! I'm here to help you support Carley's learning. Ask me what she should work on next, how to explain a concept, or ideas for custom challenges based on her current level."}
-  ]);
-  const [aiInput, setAiInput]   = useState("");
-  const [aiLoading, setAiLoading] = useState(false);
-  const messagesEndRef = useRef(null);
-
-  const activity = [{skill:"What is AI?",title:"What Even Is AI?",date:"Today"}];
-
-  useEffect(()=>{ messagesEndRef.current?.scrollIntoView({behavior:"smooth"}); },[aiMessages]);
-
-  const sendAi = async () => {
-    if(!aiInput.trim()||aiLoading)return;
-    const msg = aiInput.trim(); setAiInput("");
-    setAiMessages(m=>[...m,{role:"user",content:msg}]);
-    setAiLoading(true);
-    const sys = `You are a helpful assistant for parents (Nick and Jess) supporting their 10-year-old daughter Carley learning to code and understand AI. She is a complete beginner currently on level ${unlockedLevel+1}/6: "${SKILL_LADDER[unlockedLevel].name}". She has completed ${activity.length} challenge(s). Give practical specific advice. Keep responses concise and parent-friendly.`;
-    try {
-      const r = await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:500,system:sys,messages:aiMessages.concat({role:"user",content:msg})})});
-      const d = await r.json();
-      const t = d.content?.find(b=>b.type==="text")?.text||"Couldn't connect right now.";
-      setAiMessages(m=>[...m,{role:"assistant",content:t}]);
-    } catch {
-      setAiMessages(m=>[...m,{role:"assistant",content:"Couldn't connect right now. Try again."}]);
+function PinScreen({ pin, onSuccess, onBack }) {
+  const [entered, setEntered] = useState("");
+  const [err, setErr] = useState(false);
+  const press = (k) => {
+    if (k === "del") { setEntered(p => p.slice(0, -1)); setErr(false); return; }
+    if (entered.length >= 4) return;
+    const np = entered + k; setEntered(np);
+    if (np.length === 4) {
+      if (np === pin) setTimeout(onSuccess, 200);
+      else setTimeout(() => { setEntered(""); setErr(true); }, 300);
     }
-    setAiLoading(false);
+  };
+  return (
+    <div className="pin-screen">
+      <div className="pin-title">Parent Access</div>
+      <div className="pin-sub" style={{color: err ? "var(--red)" : "var(--muted)"}}>{err ? "Incorrect PIN. Try again." : "Enter your PIN"}</div>
+      <div className="pin-dots">{[0,1,2,3].map(i => <div key={i} className={`pin-dot ${i < entered.length ? "filled" : ""}`}/>)}</div>
+      <div className="pin-pad">
+        {["1","2","3","4","5","6","7","8","9","","0","del"].map((k, i) => (
+          k === "" ? <div key={i}/> : <button key={i} className={`pin-key ${k === "del" ? "del" : ""}`} onClick={() => press(k)}>{k === "del" ? "⌫" : k}</button>
+        ))}
+      </div>
+      <button className="btn-ghost-sm" style={{marginTop: 28}} onClick={onBack}>← Back</button>
+    </div>
+  );
+}
+
+function ParentPortal({ profile, onProfile, onExit }) {
+  const progress = store.get("progress", { levels: {}, streak: 0, history: [] });
+  const [newPin, setNewPin] = useState("");
+  const [pinSaved, setPinSaved] = useState(false);
+  const [aiMessages, setAiMessages] = useState([
+    { role: "assistant", content: `Hi! I'm here to help you support ${profile?.name || "your learner"}. Ask what they should work on next, how to explain something (credit scores, budgeting, AI), or for custom challenge ideas.${AI_ENDPOINT ? "" : "\n\n(Live AI chat is off — set AI_ENDPOINT in the app config to enable it. The rest of the portal works.)"}` }
+  ]);
+  const [aiInput, setAiInput] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const endRef = useRef(null);
+  useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [aiMessages]);
+
+  const savePin = () => {
+    if (!/^\d{4}$/.test(newPin)) return;
+    onProfile({ ...profile, parentPin: newPin });
+    setNewPin(""); setPinSaved(true); setTimeout(() => setPinSaved(false), 2000);
   };
 
-  const saveCustom = () => {
-    if(!customChallenge.trim())return;
-    setSaved(true); setTimeout(()=>setSaved(false),2000); setCustomChallenge("");
+  const sendAi = async () => {
+    if (!aiInput.trim() || aiLoading) return;
+    const msg = aiInput.trim(); setAiInput("");
+    const next = [...aiMessages, { role: "user", content: msg }];
+    setAiMessages(next); setAiLoading(true);
+    const sys = `You are an assistant for a parent supporting ${profile?.name || "their child"} (age band ${profile?.ageBand}) learning life skills in the Forge app (tracks: Money & Credit, Business, AI Skills). They have completed ${progress.history.length} challenges, current streak ${progress.streak}. Goals: ${(profile?.goals || []).join(", ")}. Give practical, specific, concise parent-friendly advice.`;
+    const text = await callAI(sys, next.filter((m, i) => i > 0).map(m => ({ role: m.role, content: m.content })), 500);
+    setAiMessages(m => [...m, { role: "assistant", content: text || "AI isn't connected yet. Set AI_ENDPOINT in the app (see docs/FORGE-V2-PLAN.md) to enable live help." }]);
+    setAiLoading(false);
   };
 
   return (
@@ -463,57 +744,46 @@ function ParentPortal({ onExit }) {
       </div>
 
       <div className="p-card">
-        <div className="p-card-title">📊 Carley's Progress</div>
+        <div className="p-card-title">📊 {profile?.name}'s Progress</div>
         <div className="p-stat-row">
-          <div className="p-stat"><div className="p-stat-val">0</div><div className="p-stat-lbl">Streak</div></div>
-          <div className="p-stat"><div className="p-stat-val">{activity.length}</div><div className="p-stat-lbl">Done</div></div>
-          <div className="p-stat"><div className="p-stat-val">{unlockedLevel+1}/6</div><div className="p-stat-lbl">Level</div></div>
+          <div className="p-stat"><div className="p-stat-val">{progress.streak}</div><div className="p-stat-lbl">Streak</div></div>
+          <div className="p-stat"><div className="p-stat-val">{progress.history.length}</div><div className="p-stat-lbl">Done</div></div>
+          <div className="p-stat"><div className="p-stat-val">{Object.keys(progress.levels).length || 1}</div><div className="p-stat-lbl">Tracks</div></div>
         </div>
-        <div style={{fontSize:14,color:"var(--muted)"}}>Current skill: <span style={{color:"var(--accent)"}}>{SKILL_LADDER[unlockedLevel].name}</span></div>
+        <div style={{fontSize:14,color:"var(--muted)"}}>Mentor profile: {profile?.ageBand} · {(profile?.goals || []).join(", ")}{profile?.interests ? ` · ${profile.interests}` : ""}</div>
       </div>
 
       <div className="p-card">
         <div className="p-card-title">🕐 Recent Activity</div>
-        {activity.map((a,i)=>(
-          <div key={i} className="p-feed-item">
-            <div className="p-feed-skill">{a.skill}</div>
-            <div className="p-feed-title">{a.title}</div>
-            <div className="p-feed-date">{a.date}</div>
-          </div>
-        ))}
+        {progress.history.length === 0
+          ? <div style={{fontSize:14,color:"var(--muted)"}}>Nothing completed yet.</div>
+          : progress.history.slice(0, 8).map((a, i) => (
+            <div key={i} className="p-feed-item">
+              <div className="p-feed-skill">{a.track} · {a.skill}</div>
+              <div className="p-feed-title">{a.title}</div>
+              <div className="p-feed-date">{a.date}</div>
+            </div>
+          ))}
       </div>
 
       <div className="p-card">
-        <div className="p-card-title">🔓 Unlock Levels</div>
-        {SKILL_LADDER.map((sk,i)=>(
-          <div key={sk.id} className="unlock-row">
-            <div className="unlock-skill"><span>{sk.icon}</span><span>{sk.name}</span></div>
-            {i<=unlockedLevel
-              ? <span style={{fontSize:13,color:"var(--green)"}}>✓ Unlocked</span>
-              : i===unlockedLevel+1
-                ? <button className="unlock-btn" onClick={()=>setUnlockedLevel(i)}>Unlock</button>
-                : <span style={{fontSize:13,color:"var(--muted)"}}>Locked</span>
-            }
-          </div>
-        ))}
-      </div>
-
-      <div className="p-card">
-        <div className="p-card-title">✏️ Add Custom Challenge</div>
-        <textarea className="p-textarea" placeholder="Write a custom challenge for Carley to see next time she logs in..." value={customChallenge} onChange={e=>setCustomChallenge(e.target.value)}/>
-        <button className="btn-parent" onClick={saveCustom} disabled={!customChallenge.trim()}>{saved?"Saved ✓":"Save Challenge"}</button>
+        <div className="p-card-title">🔐 Change Parent PIN</div>
+        <div style={{display:"flex",gap:10}}>
+          <input className="ai-input" placeholder="New 4-digit PIN" inputMode="numeric" maxLength={4} value={newPin} onChange={e => setNewPin(e.target.value.replace(/\D/g, ""))}/>
+          <button className="btn-send" style={{fontSize:14,fontWeight:600}} onClick={savePin} disabled={!/^\d{4}$/.test(newPin)}>{pinSaved ? "✓" : "Save"}</button>
+        </div>
       </div>
 
       <div className="p-card">
         <div className="p-card-title">🤖 AI Assistant</div>
         <div className="ai-messages">
-          {aiMessages.map((m,i)=><div key={i} className={`ai-msg ${m.role}`}>{m.content}</div>)}
-          {aiLoading&&<div className="ai-msg assistant" style={{color:"var(--muted)"}}>thinking...</div>}
-          <div ref={messagesEndRef}/>
+          {aiMessages.map((m, i) => <div key={i} className={`ai-msg ${m.role}`}>{m.content}</div>)}
+          {aiLoading && <div className="ai-msg assistant" style={{color:"var(--muted)"}}>thinking...</div>}
+          <div ref={endRef}/>
         </div>
         <div className="ai-input-row">
-          <input className="ai-input" placeholder="Ask about Carley's learning..." value={aiInput} onChange={e=>setAiInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&sendAi()}/>
-          <button className="btn-send" onClick={sendAi} disabled={!aiInput.trim()||aiLoading}>→</button>
+          <input className="ai-input" placeholder={`Ask about ${profile?.name}'s learning...`} value={aiInput} onChange={e => setAiInput(e.target.value)} onKeyDown={e => e.key === "Enter" && sendAi()}/>
+          <button className="btn-send" onClick={sendAi} disabled={!aiInput.trim() || aiLoading}>→</button>
         </div>
       </div>
     </div>
