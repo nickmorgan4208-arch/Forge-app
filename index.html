@@ -27,12 +27,12 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus
 .bnav-btn.active{color:var(--accent);}
 .bnav-icon{font-size:24px;line-height:1;}
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
-.wordmark{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--accent);letter-spacing:-1px;}
+.wordmark{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--accent);letter-spacing:-1px;text-shadow:0 0 24px rgba(232,255,71,.3);}
 .avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#080810;}
 .btn-ghost-sm{background:none;border:1px solid var(--border);color:var(--muted);font-size:12px;border-radius:10px;padding:8px 14px;transition:all .2s;}
 .btn-ghost-sm:hover{color:var(--text);border-color:var(--muted);}
 .login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;}
-.login-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:64px;color:var(--accent);letter-spacing:-3px;margin-bottom:6px;}
+.login-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:64px;color:var(--accent);letter-spacing:-3px;margin-bottom:6px;text-shadow:0 0 60px rgba(232,255,71,.4);}
 .login-tag{font-size:11px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:52px;text-align:center;}
 .login-box{width:100%;max-width:380px;}
 .field{margin-bottom:16px;}
@@ -40,22 +40,24 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus
 .field-input{width:100%;background:var(--s2);border:1.5px solid var(--border);border-radius:14px;padding:18px 18px;color:var(--text);font-size:18px;outline:none;transition:border-color .2s;-webkit-appearance:none;}
 .field-input:focus{border-color:var(--accent);}
 .field-input::placeholder{color:var(--muted);}
-.btn-main{width:100%;background:var(--accent);color:#080810;font-family:'Syne',sans-serif;font-weight:700;font-size:17px;letter-spacing:.04em;border:none;border-radius:14px;padding:20px;margin-top:8px;transition:all .2s;text-transform:uppercase;}
+.btn-main{width:100%;background:var(--accent);color:#080810;font-family:'Syne',sans-serif;font-weight:700;font-size:17px;letter-spacing:.04em;border:none;border-radius:14px;padding:20px;margin-top:8px;transition:all .2s;text-transform:uppercase;box-shadow:0 10px 26px rgba(232,255,71,.16);}
 .btn-main:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(232,255,71,.3);}
+.btn-main:active{transform:scale(.97);}
 .btn-main:disabled{opacity:.5;transform:none;box-shadow:none;}
 .btn-secondary{width:100%;background:none;border:1.5px solid var(--border);color:var(--muted);font-size:15px;border-radius:14px;padding:16px;margin-top:12px;transition:all .2s;}
 .btn-secondary:hover{color:var(--text);border-color:var(--muted);}
 .err{font-size:14px;color:var(--red);margin-top:12px;text-align:center;}
-.parent-link{margin-top:32px;text-align:center;}
-.parent-link button{background:none;border:none;color:var(--muted);font-size:14px;text-decoration:underline;padding:8px;}
 .ob-step{font-size:11px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
 .ob-q{font-family:'Syne',sans-serif;font-weight:700;font-size:26px;line-height:1.25;margin-bottom:8px;}
 .ob-sub{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:26px;}
 .chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;}
-.chip{background:var(--s2);border:1.5px solid var(--border);color:var(--text);border-radius:24px;padding:12px 18px;font-size:15px;transition:all .15s;}
+.chip{background:var(--s2);border:1.5px solid var(--border);color:var(--text);border-radius:24px;padding:12px 18px;font-size:15px;transition:all .15s;text-align:left;}
 .chip.on{background:rgba(232,255,71,.12);border-color:var(--accent);color:var(--accent);}
+.chip:active{transform:scale(.97);}
+.chips.stack{flex-direction:column;}
+.chips.stack .chip{width:100%;padding:15px 18px;line-height:1.45;}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
-.stat{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px 12px;text-align:center;position:relative;overflow:hidden;}
+.stat{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px 12px;text-align:center;position:relative;overflow:hidden;box-shadow:0 12px 32px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.04);}
 .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--c,var(--accent));}
 .stat-val{font-family:'Syne',sans-serif;font-weight:800;font-size:32px;color:var(--c,var(--accent));line-height:1;margin-bottom:4px;}
 .stat-lbl{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
@@ -67,35 +69,47 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus
 .track-pills{display:flex;gap:8px;margin-bottom:20px;}
 .track-pill{flex:1;background:var(--s1);border:1.5px solid var(--border);border-radius:14px;padding:12px 8px;text-align:center;font-size:12px;color:var(--muted);transition:all .2s;}
 .track-pill.on{border-color:var(--c,var(--accent));color:var(--c,var(--accent));background:rgba(232,255,71,.05);}
+.track-pill:active{transform:scale(.97);}
 .track-pill .tp-icon{display:block;font-size:22px;margin-bottom:4px;}
-.ccard{background:var(--s1);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:24px;}
+.ccard{background:var(--s1);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:24px;box-shadow:0 12px 32px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.04);}
 .ccard-head{padding:22px 20px 18px;background:linear-gradient(135deg,rgba(232,255,71,.07),transparent);border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
 .ccard-skill{font-size:11px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
 .ccard-title{font-family:'Syne',sans-serif;font-weight:700;font-size:24px;line-height:1.2;}
-.ccard-icon{font-size:36px;flex-shrink:0;margin-top:4px;}
+.ccard-icon{font-size:36px;flex-shrink:0;margin-top:4px;filter:drop-shadow(0 6px 16px rgba(232,255,71,.3));}
 .ccard-body{padding:22px;}
 .ccard-text{font-size:16px;line-height:1.75;color:#c0c0d8;margin-bottom:22px;}
 .task-box{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:22px;}
 .task-lbl{font-size:10px;color:var(--blue);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
 .task-text{font-size:16px;line-height:1.75;}
 .ccard-actions{display:flex;gap:10px;}
-.btn-complete{flex:1;background:var(--accent);color:#080810;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;letter-spacing:.04em;text-transform:uppercase;border:none;border-radius:14px;padding:18px;transition:all .2s;}
+.btn-complete{flex:1;background:var(--accent);color:#080810;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;letter-spacing:.04em;text-transform:uppercase;border:none;border-radius:14px;padding:18px;transition:all .2s;box-shadow:0 10px 26px rgba(232,255,71,.16);}
 .btn-complete:hover{box-shadow:0 6px 20px rgba(232,255,71,.3);transform:translateY(-1px);}
+.btn-complete:active{transform:scale(.97);}
 .btn-complete:disabled{opacity:.5;transform:none;box-shadow:none;}
 .btn-skip{background:var(--s2);border:1.5px solid var(--border);color:var(--muted);font-size:22px;border-radius:14px;padding:18px 22px;transition:all .2s;}
 .btn-skip:hover{border-color:var(--blue);color:var(--blue);}
+.heat-chip{display:inline-flex;align-items:center;gap:4px;background:rgba(255,107,71,.12);border:1px solid rgba(255,107,71,.35);color:var(--red);font-size:11px;font-weight:600;letter-spacing:.06em;border-radius:20px;padding:4px 10px;margin-top:8px;}
+.quiz-q{font-family:'Syne',sans-serif;font-weight:700;font-size:20px;line-height:1.35;margin-bottom:18px;text-wrap:balance;}
+.quiz-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:8px;}
+.quiz-opt{background:var(--s2);border:1.5px solid var(--border);color:var(--text);border-radius:14px;padding:16px 18px;font-size:15px;line-height:1.45;text-align:left;transition:all .15s;}
+.quiz-opt:active{transform:scale(.985);}
+.quiz-opt.correct{border-color:var(--green);background:rgba(71,255,170,.12);color:var(--green);}
+.quiz-opt.wrong{border-color:var(--red);background:rgba(255,107,71,.1);color:var(--red);}
+.quiz-meta{font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;}
 .loading{text-align:center;padding:52px 24px;color:var(--muted);font-size:13px;letter-spacing:.08em;}
 .spinner{width:30px;height:30px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;margin:0 auto 18px;animation:spin .8s linear infinite;}
 .done-state{text-align:center;padding:52px 24px;}
-.done-icon{font-size:64px;margin-bottom:18px;animation:pop .4s cubic-bezier(.34,1.56,.64,1) both;}
+.done-icon{font-size:64px;margin-bottom:18px;animation:pop .4s cubic-bezier(.34,1.56,.64,1) both;filter:drop-shadow(0 0 26px rgba(232,255,71,.5));}
 .done-title{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--accent);margin-bottom:8px;}
-.done-sub{font-size:15px;color:var(--muted);margin-bottom:32px;}
+.done-sub{font-size:15px;color:var(--muted);margin-bottom:32px;line-height:1.6;}
 .btn-next{background:var(--s2);border:1.5px solid var(--accent);color:var(--accent);font-family:'Syne',sans-serif;font-weight:600;font-size:15px;letter-spacing:.06em;text-transform:uppercase;border-radius:14px;padding:16px 36px;transition:all .2s;}
 .btn-next:hover{background:rgba(232,255,71,.1);}
+.btn-next:active{transform:scale(.97);}
 .skill-list{display:flex;flex-direction:column;gap:12px;}
-.skill-item{background:var(--s1);border:1.5px solid var(--border);border-radius:var(--r);padding:20px 16px;display:flex;align-items:center;gap:14px;transition:all .2s;}
+.skill-item{background:var(--s1);border:1.5px solid var(--border);border-radius:var(--r);padding:20px 16px;display:flex;align-items:center;gap:14px;transition:all .2s;box-shadow:0 12px 32px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.04);}
 .skill-item.active{border-color:var(--accent);background:rgba(232,255,71,.04);}
 .skill-item.locked{opacity:.4;}
+.skill-item:active{transform:scale(.985);}
 .skill-emoji{font-size:30px;flex-shrink:0;}
 .skill-info{flex:1;}
 .skill-name{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:3px;}
@@ -105,11 +119,11 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus
 .badge-done{background:rgba(71,255,170,.15);color:var(--green);}
 .badge-locked{background:var(--s2);color:var(--muted);}
 .prog-empty{text-align:center;padding:52px 24px;color:var(--muted);font-size:15px;line-height:1.7;}
-.prog-item{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:10px;}
+.prog-item{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:10px;box-shadow:0 12px 32px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.04);}
 .prog-skill{font-size:10px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
 .prog-title{font-size:16px;font-weight:500;margin-bottom:4px;}
 .prog-date{font-size:13px;color:var(--muted);}
-.pin-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;background:var(--bg);}
+.pin-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;}
 .pin-title{font-family:'Syne',sans-serif;font-weight:800;font-size:32px;margin-bottom:8px;}
 .pin-sub{font-size:15px;color:var(--muted);margin-bottom:36px;}
 .pin-dots{display:flex;gap:16px;margin-bottom:36px;}
@@ -119,11 +133,13 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus
 .pin-key{width:72px;height:72px;border-radius:50%;background:var(--s2);border:1.5px solid var(--border);color:var(--text);font-size:26px;font-weight:500;transition:all .15s;}
 .pin-key:active{background:var(--s3);border-color:var(--blue);}
 .pin-key.del{font-size:20px;color:var(--muted);}
+.forgot-box{margin-top:26px;width:100%;max-width:340px;text-align:center;}
+.forgot-box .row{display:flex;gap:8px;margin-top:12px;}
 .parent-screen{min-height:100vh;padding:24px 20px 60px;animation:fadeUp .4s ease both;}
 .parent-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
 .parent-wordmark{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--blue);letter-spacing:-1px;}
 .parent-sub{font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
-.p-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px;}
+.p-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px;box-shadow:0 12px 32px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.04);}
 .p-card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:16px;}
 .p-stat-row{display:flex;gap:12px;margin-bottom:14px;}
 .p-stat{flex:1;background:var(--s2);border-radius:12px;padding:14px;text-align:center;}
@@ -138,6 +154,13 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus
 .p-textarea:focus{border-color:var(--blue);}
 .btn-parent{width:100%;background:var(--blue);color:#080810;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;border:none;border-radius:12px;padding:14px;transition:all .2s;}
 .btn-parent:disabled{opacity:.4;}
+.btn-danger{width:100%;background:none;border:1.5px solid var(--red);color:var(--red);font-size:14px;font-weight:600;border-radius:12px;padding:12px;transition:all .2s;}
+.admin-note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:10px;}
+.mini-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.mini-chip{background:var(--s2);border:1.5px solid var(--border);color:var(--muted);border-radius:10px;padding:8px 12px;font-size:13px;transition:all .15s;}
+.mini-chip.on{border-color:var(--blue);color:var(--blue);background:rgba(71,200,255,.08);}
+.preview-box{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:14px;line-height:1.6;margin-top:4px;}
+.preview-box .pv-lbl{font-size:10px;color:var(--blue);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
 .ai-messages{display:flex;flex-direction:column;gap:10px;max-height:320px;overflow-y:auto;margin-bottom:14px;}
 .ai-msg{padding:12px 16px;border-radius:14px;font-size:15px;line-height:1.6;white-space:pre-wrap;}
 .ai-msg.user{background:rgba(71,200,255,.12);border:1px solid rgba(71,200,255,.25);align-self:flex-end;max-width:85%;}
@@ -147,25 +170,10 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus
 .ai-input:focus{border-color:var(--blue);}
 .btn-send{background:var(--blue);color:#080810;border:none;border-radius:12px;padding:14px 18px;font-size:20px;transition:all .2s;}
 .btn-send:disabled{opacity:.4;}
-.unlock-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);}
-.unlock-row:last-child{border-bottom:none;}
-.unlock-skill{display:flex;align-items:center;gap:10px;font-size:15px;}
-.unlock-btn{background:rgba(71,255,170,.15);color:var(--green);border:1px solid var(--green);font-size:12px;border-radius:8px;padding:7px 16px;font-weight:600;}
-.mentor-card{background:linear-gradient(135deg,rgba(200,71,255,.1),rgba(71,200,255,.06));border:1px solid rgba(200,71,255,.3);border-radius:20px;padding:20px;margin-bottom:20px;display:flex;gap:14px;align-items:center;}
-.mentor-face{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.mentor-card{background:linear-gradient(135deg,rgba(200,71,255,.1),rgba(71,200,255,.06));border:1px solid rgba(200,71,255,.3);border-radius:20px;padding:20px;margin-bottom:20px;display:flex;gap:14px;align-items:center;box-shadow:0 12px 32px rgba(0,0,0,.38);}
+.mentor-face{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;box-shadow:0 0 24px rgba(200,71,255,.35);}
 .mentor-name{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:2px;}
 .mentor-line{font-size:13px;color:var(--muted);line-height:1.5;}
-.offline-note{font-size:12px;color:var(--muted);text-align:center;padding:10px;line-height:1.6;}
-/* Depth & life: soft shadows, glows, tactile press states */
-.stat,.ccard,.skill-item,.mentor-card,.p-card,.prog-item{box-shadow:0 12px 32px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.04);}
-.btn-main,.btn-complete{box-shadow:0 10px 26px rgba(232,255,71,.16);}
-.btn-main:active,.btn-complete:active,.btn-next:active,.chip:active,.track-pill:active{transform:scale(.97);}
-.skill-item:active{transform:scale(.985);}
-.ccard-icon{filter:drop-shadow(0 6px 16px rgba(232,255,71,.3));}
-.wordmark{text-shadow:0 0 24px rgba(232,255,71,.3);}
-.login-logo{text-shadow:0 0 60px rgba(232,255,71,.4);}
-.mentor-face{box-shadow:0 0 24px rgba(200,71,255,.35);}
-.done-icon{filter:drop-shadow(0 0 26px rgba(232,255,71,.5));}
 .legal{font-size:11px;color:var(--muted);text-align:center;line-height:1.7;margin-top:18px;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -193,11 +201,13 @@ const store = {
 };
 const todayStr = () => new Date().toISOString().split("T")[0];
 const daysBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
+const defaultProgress = () => ({ levels: {}, heat: {}, streak: 0, lastDay: null, history: [] });
+const loadProgress = () => ({ ...defaultProgress(), ...store.get("progress", {}) });
 
 // ── TRACKS & CURRICULUM ─────────────────────────────────────────────────────
-// Each track: 6 levels, each with a built-in challenge bank (app works with
-// zero AI cost). When AI_ENDPOINT is set, fresh personalized challenges are
-// generated instead and the bank becomes the fallback.
+// Each level ships a challenge bank (zero AI cost) AND a 3-question mentor
+// check-in quiz. Quiz results drive the adaptive engine: 3/3 turns the heat
+// up, 0-1/3 turns it down and holds the level. quiz item: {q, a:[3], c:idx}.
 const TRACKS = [
   {
     id: "money", icon: "💵", name: "Money & Credit", color: "var(--green)",
@@ -207,31 +217,55 @@ const TRACKS = [
         {title:"Trade Value, Get Paid", explanation:"Nobody hands out money — people trade it for things they want or need. Every dollar someone earns is because they solved a problem or provided something valuable for someone else.", task:"List 3 people you know with jobs. For each one, write down what problem they solve or what value they trade for their paycheck."},
         {title:"Where Money Goes", explanation:"Money is always flowing: you earn it, spend it, save it, or grow it. People who get ahead aren't always the ones who earn the most — they're the ones who know where their money goes.", task:"Think about the last $20 that got spent on you or by you. Write down exactly where it went and whether it was a need or a want."},
         {title:"Your Skills = Money", explanation:"Every skill you have is worth something to somebody. Mowing lawns, editing videos, explaining games — someone out there would pay for it.", task:"Write down 3 things you're good at, and next to each one, guess who might pay for it and how much."},
+      ], quiz:[
+        {q:"Why does a plumber get paid?", a:["They fix problems people can't or won't fix themselves","Because they own a van","The government pays all plumbers"], c:0},
+        {q:"Money is basically…", a:["Points you win for being lucky","A tool for trading value between people","Something only banks create for themselves"], c:1},
+        {q:"Who usually earns more over time?", a:["Whoever works the most total hours, always","The person who asks for money most often","The person who solves bigger or rarer problems"], c:2},
       ]},
       { id:"banking", icon:"🏦", name:"Banking Basics", desc:"Accounts, interest, keeping money safe", bank:[
         {title:"Checking vs Savings", explanation:"A checking account is for spending — money moves in and out. A savings account is for keeping — and the bank pays YOU a little (interest) for parking money there.", task:"Find out (ask or search) the difference between a checking and savings account, and what interest rate a real savings account pays right now."},
         {title:"The Bank Pays You", explanation:"Interest is money the bank pays you for letting them hold your cash. It seems tiny, but it's the first taste of the most powerful idea in money: your money making money.", task:"Calculate: if you put $100 in a savings account paying 4% per year, how much do you have after 1 year? After 2 (including interest on interest)?"},
         {title:"Fees Eat Money", explanation:"Banks also charge fees — overdraft fees, ATM fees, monthly fees. A $35 overdraft fee on a $5 purchase means that snack cost $40. Knowing the fees is how you keep your money.", task:"Look up what an overdraft fee is and one way to avoid ever paying one."},
+      ], quiz:[
+        {q:"Interest on a savings account is…", a:["Money the bank pays YOU","A fee you pay the bank","A kind of tax"], c:0},
+        {q:"An overdraft fee happens when…", a:["You save too much money","You spend more than your account has","You visit the bank too often"], c:1},
+        {q:"Which account is built for everyday spending?", a:["Savings","Retirement","Checking"], c:2},
       ]},
       { id:"budget", icon:"📊", name:"Budgeting", desc:"Needs vs wants, telling your money where to go", bank:[
         {title:"Needs vs Wants", explanation:"A budget isn't about not spending — it's about deciding where money goes BEFORE it disappears. The first skill is brutally honest sorting: needs (must have) vs wants (nice to have).", task:"Make two columns: NEEDS and WANTS. Sort 10 things you or your family spent money on this month. Be honest — is Netflix a need?"},
         {title:"The 50/30/20 Rule", explanation:"A famous simple budget: 50% of money to needs, 30% to wants, 20% to savings. It's not perfect, but it beats having no plan at all.", task:"Imagine you earn $1,000 a month. Write out your 50/30/20 split in real dollars, then list what specifically would go in each bucket."},
         {title:"Pay Yourself First", explanation:"Most people save whatever's left over — which is usually nothing. Winners flip it: savings comes out FIRST, then you live on the rest.", task:"If you got $50 right now, decide the exact amount you'd save first before spending anything. Write down where you'd keep it so you wouldn't touch it."},
+      ], quiz:[
+        {q:"In the 50/30/20 rule, the 20% goes to…", a:["Savings","Wants","Snacks"], c:0},
+        {q:"Which one is a NEED?", a:["A new game skin","Concert tickets","The electricity bill"], c:2},
+        {q:"'Pay yourself first' means…", a:["Buy yourself a treat before anything else","Move money to savings before you spend on anything","Pay your bills last"], c:1},
       ]},
       { id:"credit", icon:"📈", name:"Credit Score", desc:"The 3-digit number that changes your whole life", bank:[
         {title:"The Invisible Report Card", explanation:"A credit score is a number (300-850) that tells lenders how reliable you are with borrowed money. It decides if you can get an apartment, a car loan, a house — and how much extra you'll pay. Most people learn this too late.", task:"Look up the 5 things that make up a credit score (hint: payment history is the biggest). Write them down in order of importance."},
         {title:"Late = Expensive", explanation:"One missed payment can drop your score 100 points and stay on your report for 7 years. A low score can mean paying tens of thousands more for the same car or house as someone with a high score.", task:"Compare: a $20,000 car loan at 6% interest vs 14% interest over 5 years. Search 'auto loan calculator' and write down the total cost difference. That gap is what a bad credit score costs."},
         {title:"Building From Zero", explanation:"You build credit by borrowing small and paying back on time, every time. A secured credit card or being an authorized user on a trusted adult's card are the standard first moves at 18.", task:"Write a 3-step plan for how you'd build credit starting the day you turn 18, without ever paying a cent of interest (hint: pay the full balance every month)."},
+      ], quiz:[
+        {q:"The single biggest factor in a credit score is…", a:["Paying on time, every time","How much money you make","How old you are"], c:0},
+        {q:"A credit score mainly tells lenders…", a:["How smart you are","How reliably you repay what you borrow","How much is in your bank account"], c:1},
+        {q:"How do you use a credit card and never pay interest?", a:["Only use it on weekends","Pay the minimum every month","Pay the full balance every month"], c:2},
       ]},
       { id:"debt", icon:"⚖️", name:"Debt & Borrowing", desc:"Good debt, bad debt, and interest working against you", bank:[
         {title:"Interest Cuts Both Ways", explanation:"When you save, interest works FOR you. When you borrow, it works AGAINST you. Credit cards charge 20-30% — the most expensive money most people ever touch.", task:"Calculate: you buy $500 of stuff on a credit card at 25% interest and only pay $25/month. Search 'credit card payoff calculator' — how long to pay off, and what's the real total cost?"},
         {title:"Good Debt vs Bad Debt", explanation:"Debt that buys something that grows in value or earns money (a reasonable home, education that leads to income, business equipment) can be a tool. Debt for stuff that loses value the moment you buy it is a trap.", task:"Sort these into good debt / bad debt / it depends: student loan, credit card balance for clothes, mortgage, payday loan, loan for a work truck. Explain each answer in one sentence."},
         {title:"The Minimum Payment Trap", explanation:"Minimum payments are designed to keep you in debt as long as legally possible. Paying just the minimum on a big balance can take decades and cost multiples of what you borrowed.", task:"Find a real credit card offer online and read the fine print box (the 'Schumer box'). Write down the interest rate (APR) and the late fee."},
+      ], quiz:[
+        {q:"Usually the most expensive way to borrow is…", a:["A payday loan","A mortgage","A student loan"], c:0},
+        {q:"Minimum payments are designed to…", a:["Help you pay debt off fast","Keep you in debt as long as possible","Lower your interest rate"], c:1},
+        {q:"'Good debt' usually buys something that…", a:["Is on sale","Feels good right now","Grows in value or helps you earn"], c:2},
       ]},
       { id:"grow", icon:"🌱", name:"Growing Money", desc:"Compound interest — the strongest force in money", bank:[
         {title:"The Doubling Machine", explanation:"Compound interest means your money earns money, and then THAT money earns money. Started early, small amounts become huge. Einstein supposedly called it the eighth wonder of the world.", task:"Use the 'Rule of 72': divide 72 by an interest rate to see how many years money takes to double. At 8% per year, how many times does $1,000 double between age 15 and 63? What's it worth?"},
         {title:"Saving vs Investing", explanation:"Savings accounts keep money safe but barely grow it. Investing (like index funds that own a tiny slice of hundreds of companies) is how normal people actually build wealth over decades — accepting ups and downs along the way.", task:"Look up what an 'index fund' is and write a 2-sentence explanation a friend your age would understand."},
         {title:"Time Beats Timing", explanation:"The biggest advantage you have isn't money — it's time. Someone who invests $100/month starting at 18 usually ends up richer than someone who starts with much more at 35.", task:"Search 'compound interest calculator'. Compare $100/month from age 18 to 65 vs $300/month from 35 to 65, both at 8%. Write down both totals. Who wins?"},
+      ], quiz:[
+        {q:"Compound interest means…", a:["Your earnings start earning their own earnings","Interest paid only in coins","The bank doubles your fees"], c:0},
+        {q:"The Rule of 72 estimates…", a:["Your credit score","How many years money takes to double","The best retirement age"], c:1},
+        {q:"A young person's biggest investing advantage is…", a:["Luck","Secret stock tips","Time"], c:2},
       ]},
     ]
   },
@@ -243,31 +277,55 @@ const TRACKS = [
         {title:"Problems Are Money", explanation:"Every successful business exists because it solves a problem someone will pay to make go away. Learning to SEE problems is the first business skill — most people just complain about them.", task:"Carry a note today and write down 5 things that annoyed you or someone around you. Circle the one people would most likely pay to fix."},
         {title:"Who Has This Problem?", explanation:"A problem only matters as a business if enough people have it and feel it strongly. 'Mildly annoying to everyone' loses to 'painful for a specific group'.", task:"Take your best problem from before (or a new one). Write down exactly WHO has it worst — age, situation, where you'd find them."},
         {title:"What Do They Do Now?", explanation:"People already cope with their problems somehow — badly, expensively, or slowly. Your opportunity is being better, cheaper, or faster than the current workaround.", task:"For your problem, find out what people currently do about it. Ask one real person if you can. Write down the current 'solution' and its weakness."},
+      ], quiz:[
+        {q:"Businesses exist to…", a:["Solve problems people will pay to fix","Make cool logos","Give people job titles"], c:0},
+        {q:"The best problem to build a business on is…", a:["One nobody actually has","Painful for a specific group of people","Mildly annoying to everyone on Earth"], c:1},
+        {q:"The first business skill is…", a:["Renting an office","Printing business cards","Noticing problems around you"], c:2},
       ]},
       { id:"idea", icon:"💡", name:"Your First Idea", desc:"Turn a problem into something you could offer", bank:[
         {title:"Skills × Problems", explanation:"The best first business sits where something you CAN do meets something people NEED done. You don't need a revolutionary idea — you need a useful one.", task:"Draw two lists: things you can do (or could learn fast) and problems you've spotted. Draw lines between matches. Pick the strongest connection."},
         {title:"One Sentence Pitch", explanation:"If you can't explain your idea in one sentence, it's not clear enough yet. The formula: 'I help [WHO] do [WHAT] so they get [RESULT].'", task:"Write your idea in that exact formula. Then say it out loud to one person and watch their face. Confused = rewrite it."},
         {title:"Smallest Version", explanation:"Big ideas die from being too big to start. The winning move is finding the smallest version you could actually deliver this week — no website, no logo, no LLC. Just the core service or product.", task:"Write down the absolute smallest version of your idea you could deliver in 7 days with what you already have."},
+      ], quiz:[
+        {q:"The best first business idea sits between…", a:["What you can do and what people need","Two words picked at random","Whatever is trending today"], c:0},
+        {q:"If people look confused at your one-sentence pitch…", a:["Say it again but louder","Rewrite it until it's clear","Add more buzzwords"], c:1},
+        {q:"The smallest version of your idea should take about…", a:["A year and a bank loan","A full team of ten","A week, using what you already have"], c:2},
       ]},
       { id:"validate", icon:"🧪", name:"Test It", desc:"Find out if anyone actually wants it — before building", bank:[
         {title:"Talk to Real Humans", explanation:"The #1 startup killer is building something nobody wants. Before you build ANYTHING, talk to the people you think would buy. Ask about their problem — not your idea — so they can't just be polite.", task:"Ask 3 people about the problem your idea solves: 'When did this last happen to you? What did you do? What did it cost you?' Write down what they actually said."},
         {title:"The Pre-Sale Test", explanation:"People lie to be nice. The only true test is asking for real commitment: money, a deposit, a signup, a scheduled time. 'That's cool' means no. Pulling out a wallet means yes.", task:"Design your commitment test: what's the smallest real YES you could ask for? (A $5 deposit? A booked slot?) Write down exactly how you'd ask."},
         {title:"Kill It or Commit", explanation:"Most ideas should die quickly and cheaply — that's success, not failure, because it frees you for a better one. Set a clear pass/fail line before you test.", task:"Write your pass/fail rule: 'If fewer than __ out of __ people [commit], I move on to the next idea.' Then follow it."},
+      ], quiz:[
+        {q:"Why ask people about their PROBLEM instead of your idea?", a:["People are too polite about ideas — problems get honest answers","Problems are more fun to discuss","It's rude to mention your idea"], c:0},
+        {q:"The only real proof someone wants your thing is…", a:["They say 'that's cool'","They commit — money, a signup, a booked time","They follow you online"], c:1},
+        {q:"If your idea fails the test…", a:["Build it anyway — they're wrong","Quit business forever","Move on cheap and fast — that's a win"], c:2},
       ]},
       { id:"sale", icon:"🤝", name:"First Sale", desc:"Nothing is real until someone pays you", bank:[
         {title:"The Ask", explanation:"The difference between a hobby and a business is one uncomfortable moment: asking someone to pay. Everyone feels weird the first time. Do it anyway — the feeling never kills anyone.", task:"Write your exact ask, word for word: what you'll offer, the price, and the question at the end ('Want me to start Saturday?'). Practice saying it out loud 3 times."},
         {title:"Deliver Like a Pro", explanation:"Your first customer is your most important one ever — they're your proof, your review, and your referral. Overdeliver on purpose: show up early, do extra, follow up after.", task:"List 3 specific ways you could overdeliver on your first job so the customer tells someone else about you."},
         {title:"Get Paid Properly", explanation:"Agree on price BEFORE the work, get paid promptly after (or half up front for bigger jobs), and keep a record of every dollar in and out — that habit separates real operators from hobbyists.", task:"Set up your money tracking: a simple note or sheet with columns for date, customer, what you did, charged, costs, profit. Add a practice row."},
+      ], quiz:[
+        {q:"You agree on the price…", a:["Before the work starts","After the work is done","You never bring up price"], c:0},
+        {q:"Your first customer matters most because…", a:["They're probably the richest","They become your proof, review, and referral","The first sale is legally special"], c:1},
+        {q:"A business becomes real when…", a:["The logo is finished","You file paperwork","Someone actually pays you"], c:2},
       ]},
       { id:"profit", icon:"🧮", name:"Price & Profit", desc:"Charging right and knowing your real numbers", bank:[
         {title:"Profit ≠ Revenue", explanation:"Getting paid $100 doesn't mean you MADE $100. Materials, gas, fees, your time — real businesses know their costs. Profit is what's left, and it's the only number that matters.", task:"Take one thing you could sell (product or service). List every cost involved, then calculate actual profit at your planned price. Surprised?"},
         {title:"Stop Undercharging", explanation:"Beginners always price too low — it feels safer but attracts the worst customers and burns you out. Price on the VALUE to the customer, not just your time.", task:"Find 3 real prices for what others charge for something like your offer. Set your price in the middle or higher, and write one sentence justifying it with value."},
         {title:"The Math of Your Goal", explanation:"Work backwards from a money goal and business gets concrete fast: want $500/month? At $50 profit per job that's 10 jobs — about 2-3 a week. Suddenly it's not a dream, it's a schedule.", task:"Pick a monthly income goal. Work backwards: how many sales at your price and profit? How many asks does that take if 1 in 3 says yes? Write the weekly numbers."},
+      ], quiz:[
+        {q:"Profit is…", a:["Revenue minus all your costs","Whatever lands in your pocket","The same thing as revenue"], c:0},
+        {q:"Beginners usually price their work…", a:["Too high","Too low","Exactly right"], c:1},
+        {q:"The smartest base for your price is…", a:["A coin flip","Whatever your friend charges","The value it creates for the customer"], c:2},
       ]},
       { id:"growth", icon:"📣", name:"Grow It", desc:"Repeat customers, referrals, and simple marketing", bank:[
         {title:"Repeat > New", explanation:"Getting a new customer is 5x harder than keeping one. The fastest growth move is turning one-time buyers into regulars: follow up, remind them, make rebooking effortless.", task:"Write the follow-up message you'd send a customer 2 weeks after a job. Make it helpful, not desperate — offer something, don't beg."},
         {title:"The Referral Engine", explanation:"Happy customers will recommend you — but usually only if you ASK. A simple 'know anyone else who needs this?' at the moment they're happiest doubles many small businesses.", task:"Script your referral ask, and decide what you'd give as a thank-you (discount? freebie?). When exactly would you say it?"},
         {title:"Show Your Work", explanation:"Posting what you do — before/after photos, results, happy customers — is free marketing that compounds. You don't need to go viral; you need the RIGHT 50 local people to know you exist.", task:"Draft one post showing off a (real or practice) job: photo idea, 2-3 sentences, where you'd post it so your actual customers see it."},
+      ], quiz:[
+        {q:"Which is cheaper and easier?", a:["Keeping a happy customer","Finding a brand new customer","They're identical"], c:0},
+        {q:"Referrals mostly happen when…", a:["You wait quietly and hope","You ask happy customers directly","You pay strangers"], c:1},
+        {q:"A small business's marketing goal is…", a:["Going viral worldwide","A celebrity endorsement","The right local people knowing you exist"], c:2},
       ]},
     ]
   },
@@ -279,55 +337,102 @@ const TRACKS = [
         {title:"What Even Is AI?", explanation:"AI is a computer program that learned patterns from enormous amounts of examples — kind of like how you learned to recognize dogs by seeing lots of them. It predicts, it doesn't 'know'.", task:"Write down 3 things you think AI is great at and 3 things it's bad at. Keep the list — you'll check it against reality as you level up."},
         {title:"Catch It Being Wrong", explanation:"AI sounds confident even when it's wrong ('hallucinating'). The most important AI skill is healthy suspicion: trust, but verify anything that matters.", task:"Ask any AI chatbot a question about something you know really well (your town, your hobby). Find at least one thing it gets wrong or oversimplifies."},
         {title:"AI All Around You", explanation:"You already use AI dozens of times a day without noticing: your feed, autocorrect, music recommendations, photo search, navigation. Knowing where it hides makes you sharper about what it's doing with your attention.", task:"Spot 5 places AI touched your day today. For each, write what it was trying to predict or decide for you."},
+      ], quiz:[
+        {q:"AI 'learns' by…", a:["Finding patterns in tons of examples","Magic","Copying the internet word for word"], c:0},
+        {q:"When AI states something confidently, you should…", a:["Always trust it — it's a computer","Verify anything that actually matters","Never use AI again"], c:1},
+        {q:"Which of these uses AI?", a:["A hammer","A candle","Your video feed's recommendations"], c:2},
       ]},
       { id:"prompt", icon:"✍️", name:"Prompting", desc:"Get AI to do exactly what you want", bank:[
         {title:"Garbage In, Garbage Out", explanation:"Vague prompts get vague answers. The formula for a strong prompt: give it a ROLE, a TASK, CONTEXT, and the FORMAT you want back. Specific beats clever every time.", task:"Take a lazy prompt like 'help me with my room' and rewrite it with role + task + context + format. Run both in a free AI chat and compare the results."},
         {title:"Iterate Like a Pro", explanation:"Pros never accept the first answer. They push: 'make it shorter', 'more casual', 'give me 3 options', 'you missed X'. The conversation is the tool.", task:"Ask an AI to write something (a text, a plan, a story). Then improve it with at least 4 follow-up instructions. Save the before and after."},
         {title:"Make It Think Step by Step", explanation:"For hard problems, telling AI to 'think step by step' or 'ask me questions first' dramatically improves answers. You're not just asking — you're directing how it works.", task:"Give an AI a genuinely hard question for your life (schedule, decision, plan). First normally, then again with 'ask me 3 clarifying questions before answering'. Compare."},
+      ], quiz:[
+        {q:"A strong prompt includes…", a:["Role, task, context, and format","The word 'please' 100 times","ALL CAPS"], c:0},
+        {q:"If the AI's first answer is mediocre…", a:["Accept it — that's the best it can do","Push it with specific follow-ups","Restart your phone"], c:1},
+        {q:"'Think step by step' works because it…", a:["Is a magic password","Makes the AI type faster","Directs HOW the AI works the problem"], c:2},
       ]},
       { id:"image", icon:"🎨", name:"AI Images & Media", desc:"Create images, and spot fakes", bank:[
         {title:"Paint With Words", explanation:"Image AI turns descriptions into pictures. The skill is the same as prompting: subject + style + mood + details. 'A dog' is boring; 'a golden retriever astronaut, oil painting, dramatic lighting' is art direction.", task:"Use any free AI image tool and generate the same subject in 3 completely different styles. Save your favorite and the prompt that made it."},
         {title:"Spot the Fake", explanation:"If you can make AI images, so can scammers and liars. Classic tells: weird hands, melted text, impossible reflections, too-perfect skin. This skill protects you and people you love.", task:"Search 'AI image vs real quiz' and take one. Write down your score and the 3 tells that helped you most."},
         {title:"Design Something Real", explanation:"AI media isn't just for fun — it's logos, flyers, thumbnails, product mockups. Real business value from a text box.", task:"Design something useful with AI: a logo for your business idea, a flyer, a banner. Generate at least 3 versions and pick the winner."},
+      ], quiz:[
+        {q:"The better image prompt is…", a:["Subject + style + mood + details","'a dog'","One emoji"], c:0},
+        {q:"A classic tell of an AI-generated image is…", a:["It contains trees","Weird hands or melted text","It uses the color blue"], c:1},
+        {q:"AI images are useful in business for…", a:["Nothing serious","Only memes","Logos, flyers, and product mockups"], c:2},
       ]},
       { id:"code", icon:"💻", name:"Code with AI", desc:"Your first real code, with AI as tutor", bank:[
         {title:"AI Is Your Tutor", explanation:"You don't need to memorize code anymore — you need to understand it. AI can write code AND explain every line like a patient teacher who never judges.", task:"Ask an AI: 'Write a simple Python program that asks my name and age, then tells me what year I turn 100. Explain every line like I'm brand new.' Read the whole explanation."},
         {title:"Run Real Code", explanation:"Reading code isn't coding — running it is. Free browser tools (like replit.com or an online Python runner) let you run real code with zero setup.", task:"Take the program from before, run it in a free online Python runner, then change TWO things about it (the message, the math) and run again."},
         {title:"Debug Like a Detective", explanation:"All code breaks. The pro move: paste the error message into AI and ask 'what does this mean and how do I fix it?' Errors go from scary to just... information.", task:"Break your program on purpose (delete a quote, misspell a command). Read the error, then use AI to understand and fix it."},
+      ], quiz:[
+        {q:"When your code throws an error, a smart first move is…", a:["Paste the error into AI and ask what it means","Delete everything and cry","Buy a new laptop"], c:0},
+        {q:"You learn more from…", a:["Only reading code","Running and changing code","Printing code on paper"], c:1},
+        {q:"With AI writing code, YOUR key skill becomes…", a:["Typing speed","Memorizing syntax","Understanding and directing what the code does"], c:2},
       ]},
       { id:"web", icon:"🌐", name:"Build a Website", desc:"Put a real page on the actual internet", bank:[
         {title:"Your First Page", explanation:"Websites are just files a browser reads. With AI writing the HTML and you directing it, you can have a real page in minutes — about you, your business, your team, anything.", task:"Ask AI to 'create a single-file HTML page about [your topic] with a dark theme'. Save it as page.html and open it in your browser. That's YOUR website."},
         {title:"Make It Yours", explanation:"Copy-paste isn't building — changing things is. Colors, layout, sections, images: every edit teaches you how the web actually works.", task:"Take your page and make 5 specific changes via AI ('make the header bigger', 'add a photo section', 'change to blue theme'). Reload after each one."},
         {title:"Put It Online — Free", explanation:"Free services (GitHub Pages, Netlify Drop, Vercel) will host your page on the real internet at a real URL. Sharing that link the first time feels like magic because it is.", task:"Search 'Netlify Drop', drag your HTML file in, and get your live URL. Send it to one person you like."},
+      ], quiz:[
+        {q:"A website is basically…", a:["Files that a browser reads and displays","Something only companies can have","Magic"], c:0},
+        {q:"Which of these hosts a page online for free?", a:["Only expensive private servers","Netlify, GitHub Pages, or Vercel","Nothing — hosting is always paid"], c:1},
+        {q:"The best way to learn from an AI-built page is…", a:["Never touch it","Print it out","Change things and reload to see what happens"], c:2},
       ]},
       { id:"ship", icon:"🔨", name:"Ship Something Real", desc:"Combine everything into a real project", bank:[
         {title:"Pick Your Build", explanation:"Time to combine it all: a real project for a real purpose. A site for your business idea, a tool that solves one of the problems you spotted, a game — something that didn't exist before you.", task:"Write a one-page plan: what you're building, who it's for, the 3 features version 1 needs (and nothing more)."},
         {title:"Build in Passes", explanation:"Real builders don't build everything at once — they get an ugly version working, then improve in passes. Working-but-ugly always beats perfect-but-imaginary.", task:"Build pass 1 with AI's help: the smallest working version of your project. It should DO the main thing, even if it's ugly."},
         {title:"Ship It & Show It", explanation:"Done means someone else can use it. Ship your project, show 3 people, and watch what they do — their confusion is your next to-do list. Congratulations: you're officially a builder.", task:"Put your project online, show it to 3 people, and write down: what confused them, what they liked, and the 1 thing you'd improve next."},
+      ], quiz:[
+        {q:"Version 1 of your project should be…", a:["The smallest thing that works","Absolutely perfect","Every feature you can imagine"], c:0},
+        {q:"'Done' really means…", a:["The code compiles","Someone else can actually use it","You got tired"], c:1},
+        {q:"Watching someone get confused using your project gives you…", a:["An insult","Nothing useful","Your next to-do list"], c:2},
       ]},
     ]
   },
 ];
 
-// ── MENTOR ──────────────────────────────────────────────────────────────────
+// ── PSYCHOLOGY-BASED INTAKE ─────────────────────────────────────────────────
+// Scenario questions that never say what they measure. Answers quietly map to
+// a psych read (money instinct, builder archetype, grit) which sets starting
+// heat per track and the mentor's coaching voice.
 const AGE_BANDS = ["8-11","12-15","16-18","Adult"];
 const GOALS = [
   {id:"money", label:"💵 Understand money"},{id:"credit", label:"📈 Credit & adulting"},
   {id:"business", label:"🚀 Start a business"},{id:"ai", label:"🧠 Learn AI"},
   {id:"code", label:"💻 Learn to code"},{id:"build", label:"🌐 Build websites"},
 ];
-const STYLES = [
-  {id:"hype", label:"🔥 Hype me up"},{id:"chill", label:"😌 Calm & patient"},
-  {id:"straight", label:"🎯 Straight to the point"},{id:"fun", label:"🎮 Make it fun"},
+const SCENARIOS = [
+  { id:"money", q:"Real talk — $100 lands in your hands. What actually happens to it?",
+    a:[
+      {label:"Honestly? Gone by Friday 💸", money:"impulse", heat:1},
+      {label:"Spend some, stash some", money:"balanced", heat:1},
+      {label:"Most of it goes into savings", money:"saver", heat:2},
+      {label:"I'd try to flip it into more money", money:"flipper", heat:2},
+    ]},
+  { id:"fix", q:"Your friend's bike breaks and they're bummed. What are you most likely to do?",
+    a:[
+      {label:"Grab tools and just try stuff", archetype:"hands-on builder"},
+      {label:"Find a video and follow along", archetype:"self-taught learner"},
+      {label:"I know exactly who to call", archetype:"connector"},
+      {label:"Offer to buy it cheap, fix it, resell it", archetype:"natural hustler"},
+    ]},
+  { id:"hard", q:"Something gets genuinely hard. Honestly — what do you do?",
+    a:[
+      {label:"Lock in. I kind of like hard", grit:"high", style:"straight"},
+      {label:"I try, but I get frustrated fast", grit:"developing", style:"chill"},
+      {label:"I usually bounce to something else", grit:"needs momentum", style:"fun"},
+      {label:"I find someone to figure it out with", grit:"social", style:"hype"},
+    ]},
 ];
 
 function mentorSystemPrompt(profile) {
-  const p = profile || {};
+  const p = profile || {}; const psych = p.psych || {};
   return `You are ${p.mentorName || "Forge"}, a personal mentor inside the Forge app, teaching real-life skills: money, credit, business, and AI/coding.
 Student: ${p.name || "a student"}, age band ${p.ageBand || "unknown"}.
 Their goals: ${(p.goals || []).join(", ") || "general life skills"}. Interests: ${p.interests || "unknown"}.
-Coaching style they chose: ${p.style || "encouraging"}.
-Rules: Adapt every explanation to their age band. Use their interests for examples. Be warm and real, never babyish or condescending. Short paragraphs. Concrete examples over theory. If they're stuck, break it smaller. Celebrate real effort. Never make up facts; if unsure, say so. For money topics, teach the lesson their school skipped: credit scores, interest, budgeting are life-changing knowledge.`;
+Psych read (inferred from indirect scenario answers during setup — NEVER mention they were assessed): money instinct: ${psych.money || "unknown"}; learning archetype: ${psych.archetype || "unknown"}; grit: ${psych.grit || "unknown"}. Coaching voice: ${p.style || "encouraging"}.
+Adaptive difficulty: the app tracks a per-track "heat" from 1 (gentle) to 3 (advanced) based on their check-in quiz results. Match your explanations and challenge difficulty to the heat you're given. If they aced recent check-ins, stretch them; if they struggled, slow down, use smaller steps and more familiar examples — without ever making them feel dumb.
+Rules: Adapt every explanation to their age band. Use their interests for examples. Be warm and real, never babyish or condescending. Short paragraphs. Concrete examples over theory. Celebrate real effort. Never make up facts; if unsure, say so. For money topics, teach the lessons school skips: credit scores, interest, budgeting are life-changing knowledge.`;
 }
 
 // AI call goes through YOUR serverless proxy (never expose an API key in the
@@ -353,14 +458,16 @@ function bankChallenge(track, levelIdx) {
   return lvl.bank[seed % lvl.bank.length];
 }
 
-async function getChallenge(profile, track, levelIdx) {
+async function getChallenge(profile, track, levelIdx, heat) {
   const lvl = track.levels[levelIdx];
   const sys = mentorSystemPrompt(profile);
   const text = await callAI(sys, [{ role: "user", content:
-    `Generate a fresh daily challenge for the skill "${lvl.name}" (${lvl.desc}) in the "${track.name}" track. It must be achievable in 10-20 minutes with no money spent. Respond ONLY with JSON, no markdown: {"title":"max 6 words","explanation":"2-3 sentences, warm, specific to their age and interests","task":"one specific concrete task"}` }]);
+    `Generate a fresh daily challenge for the skill "${lvl.name}" (${lvl.desc}) in the "${track.name}" track at heat ${heat}/3 (1=gentle first steps, 3=stretch them hard). It must be achievable in 10-20 minutes with no money spent. Respond ONLY with JSON, no markdown: {"title":"max 6 words","explanation":"2-3 sentences, warm, specific to their age and interests","task":"one specific concrete task"}` }]);
   if (text) { try { return JSON.parse(text.replace(/```json|```/g, "").trim()); } catch {} }
   return bankChallenge(track, levelIdx);
 }
+
+const HEAT_LABELS = {1:"Warming up", 2:"Standard", 3:"Turned up"};
 
 // ── APP ─────────────────────────────────────────────────────────────────────
 function ForgeApp() {
@@ -373,8 +480,8 @@ function ForgeApp() {
     <div className="root">
       {mode === "welcome"  && <Welcome onStart={() => setMode("onboarding")} />}
       {mode === "onboarding" && <Onboarding onDone={(p) => { saveProfile(p); setMode("student"); }} />}
-      {mode === "student"  && <StudentApp profile={profile} onProfile={saveProfile} onExit={() => setMode("welcome")} onParent={() => setMode("pin")} />}
-      {mode === "pin"      && <PinScreen pin={(profile && profile.parentPin) || "1234"} onSuccess={() => setMode("parent")} onBack={() => setMode("student")} />}
+      {mode === "student"  && <StudentApp profile={profile} onProfile={saveProfile} onParent={() => setMode("pin")} />}
+      {mode === "pin"      && <PinScreen profile={profile} onProfile={saveProfile} onSuccess={() => setMode("parent")} onBack={() => setMode("student")} />}
       {mode === "parent"   && <ParentPortal profile={profile} onProfile={saveProfile} onExit={() => setMode("student")} />}
     </div>
   );
@@ -394,8 +501,9 @@ function Welcome({ onStart }) {
   );
 }
 
-// Optional-but-easy mentor setup: 4 taps and a name. Skippable at every step;
-// skipping still produces a usable default profile.
+// Intake: name + age (needed for tone/safety), goals (preference), then three
+// indirect scenario questions that build the psych profile. Skippable — skips
+// get sensible defaults.
 function Onboarding({ onDone }) {
   const existing = store.get("profile", null);
   const [step, setStep] = useState(existing ? 99 : 0);
@@ -403,40 +511,55 @@ function Onboarding({ onDone }) {
   const [ageBand, setAgeBand] = useState(existing?.ageBand || null);
   const [goals, setGoals] = useState(existing?.goals || []);
   const [interests, setInterests] = useState(existing?.interests || "");
-  const [style, setStyle] = useState(existing?.style || null);
+  const [scen, setScen] = useState({});
 
   useEffect(() => { if (step === 99 && existing) onDone(existing); }, []);
 
-  const finish = (skip) => {
+  const finish = () => {
+    const money = scen.money || {};
+    const fix = scen.fix || {};
+    const hard = scen.hard || {};
     const p = {
       name: name.trim() || "Builder",
       ageBand: ageBand || "12-15",
       goals: goals.length ? goals : ["money", "ai"],
       interests: interests.trim(),
-      style: style || "hype",
+      style: hard.style || "hype",
+      psych: { money: money.money || "unknown", archetype: fix.archetype || "unknown", grit: hard.grit || "unknown" },
       mentorName: "Forge",
       parentPin: existing?.parentPin || "1234",
+      recoveryWord: existing?.recoveryWord || "",
       created: todayStr(),
     };
+    // Starting heat derived from the psych read, never announced
+    const prog = loadProgress();
+    prog.heat = {
+      money: money.heat || 1,
+      business: (fix.archetype === "natural hustler" || money.money === "flipper") ? 2 : 1,
+      ai: 1,
+      ...((existing && loadProgress().heat) || {})
+    };
+    store.set("progress", prog);
     onDone(p);
   };
   const toggleGoal = (id) => setGoals(g => g.includes(id) ? g.filter(x => x !== id) : [...g, id]);
+  const pickScenario = (sId, ans, nextStep) => { setScen(s => ({ ...s, [sId]: ans })); setStep(nextStep); };
 
   return (
     <div className="screen" style={{paddingTop: 48}}>
       <div className="wordmark" style={{marginBottom: 32}}>FORGE</div>
 
       {step === 0 && (<>
-        <div className="ob-step">Step 1 of 5 · Meet your mentor</div>
+        <div className="ob-step">Step 1 of 6 · Meet your mentor</div>
         <div className="ob-q">What should your mentor call you?</div>
-        <div className="ob-sub">Forge builds a mentor around you — how you learn, what you're into, what you want. Takes 30 seconds. You can skip any step.</div>
+        <div className="ob-sub">Forge builds a mentor around you — how you think, what you're into, what you want. A few quick questions, no wrong answers. Skip any step.</div>
         <div className="field"><input className="field-input" aria-label="Your first name" placeholder="Your first name..." value={name} autoComplete="off" onChange={e => setName(e.target.value)} onKeyDown={e => e.key === "Enter" && setStep(1)} /></div>
         <button className="btn-main" onClick={() => setStep(1)}>Next →</button>
-        <button className="btn-secondary" onClick={() => finish(true)}>Skip setup — use defaults</button>
+        <button className="btn-secondary" onClick={finish}>Skip setup — use defaults</button>
       </>)}
 
       {step === 1 && (<>
-        <div className="ob-step">Step 2 of 5 · Age</div>
+        <div className="ob-step">Step 2 of 6 · Age</div>
         <div className="ob-q">How old are you?</div>
         <div className="ob-sub">Your mentor adjusts every explanation to fit — never babyish, never over your head.</div>
         <div className="chips">{AGE_BANDS.map(a => <button key={a} className={`chip ${ageBand === a ? "on" : ""}`} onClick={() => setAgeBand(a)}>{a}</button>)}</div>
@@ -445,74 +568,116 @@ function Onboarding({ onDone }) {
       </>)}
 
       {step === 2 && (<>
-        <div className="ob-step">Step 3 of 5 · Goals</div>
+        <div className="ob-step">Step 3 of 6 · Goals</div>
         <div className="ob-q">What do you want to get good at?</div>
-        <div className="ob-sub">Pick as many as you want — this decides which tracks your mentor pushes first.</div>
+        <div className="ob-sub">Pick as many as you want.</div>
         <div className="chips">{GOALS.map(g => <button key={g.id} className={`chip ${goals.includes(g.id) ? "on" : ""}`} onClick={() => toggleGoal(g.id)}>{g.label}</button>)}</div>
         <button className="btn-main" onClick={() => setStep(3)} disabled={goals.length === 0}>Next →</button>
         <button className="btn-secondary" onClick={() => setStep(3)}>Skip</button>
       </>)}
 
       {step === 3 && (<>
-        <div className="ob-step">Step 4 of 5 · Interests</div>
-        <div className="ob-q">What are you into?</div>
-        <div className="ob-sub">Games, sports, music, animals, cars — your mentor uses YOUR world for examples. Money lessons hit different when they're about sneakers you actually want.</div>
-        <div className="field"><input className="field-input" aria-label="Your interests" placeholder="e.g. Minecraft, soccer, drawing..." value={interests} autoComplete="off" onChange={e => setInterests(e.target.value)} onKeyDown={e => e.key === "Enter" && setStep(4)} /></div>
-        <button className="btn-main" onClick={() => setStep(4)}>Next →</button>
+        <div className="ob-step">Step 4 of 6 · Quick one</div>
+        <div className="ob-q">{SCENARIOS[0].q}</div>
+        <div className="ob-sub">No wrong answers — be honest, your mentor can take it.</div>
+        <div className="chips stack">{SCENARIOS[0].a.map((a, i) => <button key={i} className="chip" onClick={() => pickScenario("money", a, 4)}>{a.label}</button>)}</div>
         <button className="btn-secondary" onClick={() => setStep(4)}>Skip</button>
       </>)}
 
       {step === 4 && (<>
-        <div className="ob-step">Step 5 of 5 · Style</div>
-        <div className="ob-q">How should your mentor coach you?</div>
-        <div className="chips">{STYLES.map(s => <button key={s.id} className={`chip ${style === s.id ? "on" : ""}`} onClick={() => setStyle(s.id)}>{s.label}</button>)}</div>
-        <button className="btn-main" onClick={() => finish(false)}>Build my mentor ⚡</button>
+        <div className="ob-step">Step 5 of 6 · Another one</div>
+        <div className="ob-q">{SCENARIOS[1].q}</div>
+        <div className="chips stack">{SCENARIOS[1].a.map((a, i) => <button key={i} className="chip" onClick={() => pickScenario("fix", a, 5)}>{a.label}</button>)}</div>
+        <button className="btn-secondary" onClick={() => setStep(5)}>Skip</button>
+      </>)}
+
+      {step === 5 && (<>
+        <div className="ob-step">Step 6 of 6 · Last one</div>
+        <div className="ob-q">{SCENARIOS[2].q}</div>
+        <div className="chips stack">{SCENARIOS[2].a.map((a, i) => <button key={i} className="chip" onClick={() => pickScenario("hard", a, 6)}>{a.label}</button>)}</div>
+        <button className="btn-secondary" onClick={() => setStep(6)}>Skip</button>
+      </>)}
+
+      {step === 6 && (<>
+        <div className="ob-step">Bonus · Interests</div>
+        <div className="ob-q">What are you into?</div>
+        <div className="ob-sub">Games, sports, music, animals, cars — your mentor uses YOUR world for examples.</div>
+        <div className="field"><input className="field-input" aria-label="Your interests" placeholder="e.g. Minecraft, soccer, drawing..." value={interests} autoComplete="off" onChange={e => setInterests(e.target.value)} onKeyDown={e => e.key === "Enter" && finish()} /></div>
+        <button className="btn-main" onClick={finish}>Build my mentor ⚡</button>
       </>)}
     </div>
   );
 }
 
-function StudentApp({ profile, onProfile, onExit, onParent }) {
+function StudentApp({ profile, onProfile, onParent }) {
   const [tab, setTab] = useState("home");
-  const [progress, setProgress] = useState(() => store.get("progress", { levels: {}, streak: 0, lastDay: null, history: [] }));
+  const [progress, setProgress] = useState(loadProgress);
   const [trackId, setTrackId] = useState(() => store.get("track", (profile?.goals?.includes("business") ? "business" : profile?.goals?.some(g => ["ai","code","build"].includes(g)) ? "ai" : "money")));
   const [challenge, setChallenge] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState(false);
+  // phase: challenge → quiz → result
+  const [phase, setPhase] = useState("challenge");
+  const [qIdx, setQIdx] = useState(0);
+  const [qScore, setQScore] = useState(0);
+  const [qPicked, setQPicked] = useState(null);
+  const [result, setResult] = useState(null);
 
   const track = TRACKS.find(t => t.id === trackId) || TRACKS[0];
   const level = progress.levels[trackId] || 0;
+  const heat = progress.heat[trackId] || 1;
 
   const saveProgress = (p) => { store.set("progress", p); setProgress(p); };
-  const switchTrack = (id) => { store.set("track", id); setTrackId(id); setChallenge(null); setDone(false); };
+  const switchTrack = (id) => { store.set("track", id); setTrackId(id); setChallenge(null); setPhase("challenge"); };
 
   useEffect(() => { loadChallenge(); }, [trackId]);
 
   const loadChallenge = async () => {
-    setLoading(true); setDone(false);
+    setLoading(true); setPhase("challenge"); setResult(null);
     const t = TRACKS.find(x => x.id === trackId) || TRACKS[0];
-    const c = await getChallenge(profile, t, (store.get("progress", progress).levels[trackId] || 0));
+    const prog = loadProgress();
+    const c = await getChallenge(profile, t, (prog.levels[trackId] || 0), (prog.heat[trackId] || 1));
     setChallenge(c); setLoading(false);
   };
 
   const handleComplete = () => {
+    // Streak + history recorded on completion; the check-in decides progression
     const today = todayStr();
     const alreadyToday = progress.lastDay === today;
-    // Streak: +1 if yesterday was last completion, reset to 1 if gap, unchanged if already done today
     let streak = progress.streak;
-    if (!alreadyToday) {
-      streak = progress.lastDay && daysBetween(progress.lastDay, today) === 1 ? streak + 1 : 1;
-    }
+    if (!alreadyToday) streak = progress.lastDay && daysBetween(progress.lastDay, today) === 1 ? streak + 1 : 1;
     const history = [{ track: track.name, skill: track.levels[level].name, title: challenge?.title || "", date: today }, ...progress.history].slice(0, 200);
     saveProgress({ ...progress, streak, lastDay: today, history });
-    setDone(true);
+    setQIdx(0); setQScore(0); setQPicked(null); setPhase("quiz");
   };
 
-  const advanceLevel = () => {
-    const nl = Math.min(level + 1, track.levels.length - 1);
-    saveProgress({ ...progress, levels: { ...progress.levels, [trackId]: nl } });
-    setDone(false); setChallenge(null);
-    setTimeout(loadChallenge, 50);
+  const answerQuiz = (i) => {
+    if (qPicked !== null) return;
+    const correct = track.levels[level].quiz[qIdx].c === i;
+    setQPicked(i);
+    setTimeout(() => {
+      const score = qScore + (correct ? 1 : 0);
+      setQScore(score); setQPicked(null);
+      if (qIdx < 2) { setQIdx(qIdx + 1); return; }
+      // ── Adaptive engine ──
+      const prog = loadProgress();
+      const h = prog.heat[trackId] || 1;
+      let newHeat = h, advanced = false, msg;
+      if (score === 3) {
+        newHeat = Math.min(3, h + 1); advanced = true;
+        msg = newHeat > h ? "3/3 — you're ahead of this. Turning up the heat. 🔥" : "3/3 — flawless. You've mastered this level.";
+      } else if (score === 2) {
+        advanced = true;
+        msg = "2/3 — solid. You've got this, moving on.";
+      } else {
+        newHeat = Math.max(1, h - 1);
+        msg = "This one hasn't clicked yet — no stress, that's what mentors are for. We'll come at it from a fresh angle. Same level, new challenge tomorrow.";
+      }
+      prog.heat = { ...prog.heat, [trackId]: newHeat };
+      if (advanced) prog.levels = { ...prog.levels, [trackId]: Math.min(level + 1, track.levels.length - 1) };
+      saveProgress(prog);
+      setResult({ score, msg, advanced, mastered: advanced && level >= track.levels.length - 1 });
+      setPhase("result");
+    }, 750);
   };
 
   const completedCount = progress.history.length;
@@ -557,13 +722,13 @@ function StudentApp({ profile, onProfile, onExit, onParent }) {
           <div className="track-pills">
             {TRACKS.map(t => (
               <button key={t.id} className={`track-pill ${t.id === trackId ? "on" : ""}`} style={{"--c": t.color}} onClick={() => switchTrack(t.id)}>
-                <span className="tp-icon">{t.icon}</span>{t.name}
+                <span className="tp-icon" aria-hidden="true">{t.icon}</span>{t.name}
               </button>
             ))}
           </div>
 
           <div className="skill-item active" style={{marginBottom:0}}>
-            <div className="skill-emoji">{track.levels[level].icon}</div>
+            <div className="skill-emoji" aria-hidden="true">{track.levels[level].icon}</div>
             <div className="skill-info"><div className="skill-name">{track.levels[level].name}</div><div className="skill-desc">{track.levels[level].desc}</div></div>
             <button className="skill-badge badge-active" onClick={() => setTab("challenge")}>Go →</button>
           </div>
@@ -575,38 +740,59 @@ function StudentApp({ profile, onProfile, onExit, onParent }) {
           <div className="topbar"><div className="wordmark">FORGE</div><div className="avatar">{initial}</div></div>
           <div className="ccard">
             {loading && <div className="loading"><div className="spinner"/>building your challenge...</div>}
-            {!loading && done && (
-              <div className="done-state">
-                <div className="done-icon">⚡</div>
-                <div className="done-title">Challenge Complete!</div>
-                <div className="done-sub">Day streak: {progress.streak} 🔥</div>
-                {level < track.levels.length - 1
-                  ? <button className="btn-next" onClick={advanceLevel}>Next Level: {track.levels[level+1].name} →</button>
-                  : <div className="done-sub" style={{color:"var(--green)"}}>Track mastered — pick another track and keep building 🏆</div>}
-              </div>
-            )}
-            {!loading && !done && challenge && (
+
+            {!loading && phase === "challenge" && challenge && (
               <>
                 <div className="ccard-head">
-                  <div><div className="ccard-skill">{track.name} · {track.levels[level].name}</div><div className="ccard-title">{challenge.title}</div></div>
-                  <div className="ccard-icon">{track.levels[level].icon}</div>
+                  <div>
+                    <div className="ccard-skill">{track.name} · {track.levels[level].name}</div>
+                    <div className="ccard-title">{challenge.title}</div>
+                    <div className="heat-chip" title="Your mentor's difficulty setting">🔥 {HEAT_LABELS[heat]}</div>
+                  </div>
+                  <div className="ccard-icon" aria-hidden="true">{track.levels[level].icon}</div>
                 </div>
                 <div className="ccard-body">
                   <div className="ccard-text">{challenge.explanation}</div>
                   <div className="task-box"><div className="task-lbl">Your task today</div><div className="task-text">{challenge.task}</div></div>
                   <div className="ccard-actions">
-                    <button className="btn-complete" onClick={handleComplete}>Mark Complete ✓</button>
+                    <button className="btn-complete" onClick={handleComplete}>Done — Check Me ✓</button>
                     <button className="btn-skip" onClick={loadChallenge} disabled={loading} aria-label="Get a different challenge" title="Different challenge">↺</button>
                   </div>
                   {track.id !== "ai" && <p className="legal">Educational only — not financial advice. Results depend on you.</p>}
                 </div>
               </>
             )}
+
+            {!loading && phase === "quiz" && (
+              <div className="ccard-body">
+                <div className="quiz-meta">Mentor check-in · {qIdx + 1} of 3</div>
+                <div className="quiz-q">{track.levels[level].quiz[qIdx].q}</div>
+                <div className="quiz-opts">
+                  {track.levels[level].quiz[qIdx].a.map((opt, i) => {
+                    const cls = qPicked === null ? "" : i === track.levels[level].quiz[qIdx].c ? "correct" : i === qPicked ? "wrong" : "";
+                    return <button key={i} className={`quiz-opt ${cls}`} onClick={() => answerQuiz(i)}>{opt}</button>;
+                  })}
+                </div>
+              </div>
+            )}
+
+            {!loading && phase === "result" && result && (
+              <div className="done-state">
+                <div className="done-icon" aria-hidden="true">{result.score === 3 ? "🔥" : result.advanced ? "⚡" : "🧭"}</div>
+                <div className="done-title">{result.advanced ? "Level Up!" : "Locked In"}</div>
+                <div className="done-sub">{result.msg}<br/>Day streak: {progress.streak} 🔥</div>
+                {result.mastered
+                  ? <div className="done-sub" style={{color:"var(--green)"}}>Track mastered — pick another track and keep building 🏆</div>
+                  : result.advanced
+                    ? <button className="btn-next" onClick={loadChallenge}>Next: {track.levels[Math.min(level, track.levels.length - 1)].name} →</button>
+                    : <button className="btn-next" onClick={() => setTab("home")}>Done for today →</button>}
+              </div>
+            )}
           </div>
         </div>
       )}
 
-      {tab === "mentor" && <MentorChat profile={profile} track={track} level={level} initial={initial} />}
+      {tab === "mentor" && <MentorChat profile={profile} track={track} level={level} heat={heat} initial={initial} />}
 
       {tab === "skills" && (
         <div className="screen">
@@ -622,7 +808,7 @@ function StudentApp({ profile, onProfile, onExit, onParent }) {
                     return (
                       <div key={sk.id} className={`skill-item ${isActive ? "active" : ""} ${isLocked ? "locked" : ""}`}
                         onClick={() => { if (!isLocked) { switchTrack(t.id); setTab("challenge"); } }}>
-                        <div className="skill-emoji">{sk.icon}</div>
+                        <div className="skill-emoji" aria-hidden="true">{sk.icon}</div>
                         <div className="skill-info"><div className="skill-name">{sk.name}</div><div className="skill-desc">{sk.desc}</div></div>
                         <span className={`skill-badge ${isDone ? "badge-done" : isActive ? "badge-active" : "badge-locked"}`}>{isDone ? "done" : isActive ? "active" : "locked"}</span>
                       </div>
@@ -657,7 +843,7 @@ function StudentApp({ profile, onProfile, onExit, onParent }) {
   );
 }
 
-function MentorChat({ profile, track, level, initial }) {
+function MentorChat({ profile, track, level, heat, initial }) {
   const greeting = AI_ENDPOINT
     ? `Hey ${profile?.name}! I'm your mentor. Ask me anything — today's challenge, money stuff, business ideas, AI, whatever you're stuck on or curious about.`
     : `Hey ${profile?.name}! I'm your mentor. Live chat needs the AI connection set up (a grown-up can do it in 5 minutes — see the setup guide). Until then, your daily challenges below still work 100%.`;
@@ -672,7 +858,7 @@ function MentorChat({ profile, track, level, initial }) {
     const msg = input.trim(); setInput("");
     const next = [...messages, { role: "user", content: msg }];
     setMessages(next); setBusy(true);
-    const sys = mentorSystemPrompt(profile) + `\nThey are currently on the "${track.name}" track, level "${track.levels[level].name}".`;
+    const sys = mentorSystemPrompt(profile) + `\nThey are currently on the "${track.name}" track, level "${track.levels[level].name}", heat ${heat}/3.`;
     const text = await callAI(sys, next.filter((m, i) => i > 0).map(m => ({ role: m.role, content: m.content })), 500);
     setMessages(m => [...m, { role: "assistant", content: text || "I can't connect right now — but your challenges still work! Ask a parent to check the AI setup when they get a chance." }]);
     setBusy(false);
@@ -681,9 +867,9 @@ function MentorChat({ profile, track, level, initial }) {
   return (
     <div className="screen">
       <div className="topbar"><div className="wordmark">FORGE</div><div className="avatar">{initial}</div></div>
-      <div className="mentor-card"><div className="mentor-face">🧭</div><div>
+      <div className="mentor-card"><div className="mentor-face" aria-hidden="true">🧭</div><div>
         <div className="mentor-name">Your Mentor</div>
-        <div className="mentor-line">Tuned to you: {profile?.ageBand} · {(profile?.goals || []).join(", ")}{profile?.interests ? ` · loves ${profile.interests}` : ""}</div>
+        <div className="mentor-line">Tuned to you: {profile?.ageBand}{profile?.psych?.archetype && profile.psych.archetype !== "unknown" ? ` · ${profile.psych.archetype}` : ""}{profile?.interests ? ` · loves ${profile.interests}` : ""} · 🔥 {HEAT_LABELS[heat]}</div>
       </div></div>
       <div className="ai-messages" style={{maxHeight: "none", flex: 1}}>
         {messages.map((m, i) => <div key={i} className={`ai-msg ${m.role}`}>{m.content}</div>)}
@@ -698,9 +884,14 @@ function MentorChat({ profile, track, level, initial }) {
   );
 }
 
-function PinScreen({ pin, onSuccess, onBack }) {
+function PinScreen({ profile, onProfile, onSuccess, onBack }) {
+  const pin = (profile && profile.parentPin) || "1234";
   const [entered, setEntered] = useState("");
   const [err, setErr] = useState(false);
+  const [forgot, setForgot] = useState(false);
+  const [word, setWord] = useState("");
+  const [wordErr, setWordErr] = useState("");
+
   const press = (k) => {
     if (k === "del") { setEntered(p => p.slice(0, -1)); setErr(false); return; }
     if (entered.length >= 4) return;
@@ -710,6 +901,15 @@ function PinScreen({ pin, onSuccess, onBack }) {
       else setTimeout(() => { setEntered(""); setErr(true); }, 300);
     }
   };
+
+  const tryRecover = () => {
+    if (!profile?.recoveryWord) { setWordErr("No recovery word was set. Reset it from the parent portal next time you're in."); return; }
+    if (word.trim().toLowerCase() === profile.recoveryWord.toLowerCase()) {
+      onProfile({ ...profile, parentPin: "1234" });
+      onSuccess();
+    } else setWordErr("That's not the recovery word.");
+  };
+
   return (
     <div className="pin-screen">
       <div className="pin-title">Parent Access</div>
@@ -717,18 +917,36 @@ function PinScreen({ pin, onSuccess, onBack }) {
       <div className="pin-dots">{[0,1,2,3].map(i => <div key={i} className={`pin-dot ${i < entered.length ? "filled" : ""}`}/>)}</div>
       <div className="pin-pad">
         {["1","2","3","4","5","6","7","8","9","","0","del"].map((k, i) => (
-          k === "" ? <div key={i}/> : <button key={i} className={`pin-key ${k === "del" ? "del" : ""}`} onClick={() => press(k)}>{k === "del" ? "⌫" : k}</button>
+          k === "" ? <div key={i}/> : <button key={i} className={`pin-key ${k === "del" ? "del" : ""}`} onClick={() => press(k)} aria-label={k === "del" ? "Delete digit" : k}>{k === "del" ? "⌫" : k}</button>
         ))}
       </div>
-      <button className="btn-ghost-sm" style={{marginTop: 28}} onClick={onBack}>← Back</button>
+      {!forgot
+        ? <button className="btn-ghost-sm" style={{marginTop: 26}} onClick={() => setForgot(true)}>Forgot PIN?</button>
+        : (
+          <div className="forgot-box">
+            <div style={{fontSize:14, color:"var(--muted)"}}>Enter your recovery word to reset the PIN to 1234.</div>
+            <div className="row">
+              <input className="ai-input" aria-label="Recovery word" placeholder="Recovery word" value={word} onChange={e => { setWord(e.target.value); setWordErr(""); }} onKeyDown={e => e.key === "Enter" && tryRecover()} />
+              <button className="btn-send" style={{fontSize:14, fontWeight:600}} onClick={tryRecover}>Reset</button>
+            </div>
+            {wordErr && <div className="err">{wordErr}</div>}
+          </div>
+        )}
+      <button className="btn-ghost-sm" style={{marginTop: 20}} onClick={onBack}>← Back</button>
     </div>
   );
 }
 
 function ParentPortal({ profile, onProfile, onExit }) {
-  const progress = store.get("progress", { levels: {}, streak: 0, history: [] });
+  const [progress, setProgress] = useState(loadProgress);
   const [newPin, setNewPin] = useState("");
   const [pinSaved, setPinSaved] = useState(false);
+  const [recWord, setRecWord] = useState(profile?.recoveryWord || "");
+  const [recSaved, setRecSaved] = useState(false);
+  // Admin test mode
+  const [tTrack, setTTrack] = useState("money");
+  const [tLevel, setTLevel] = useState(0);
+  const [confirmReset, setConfirmReset] = useState(false);
   const [aiMessages, setAiMessages] = useState([
     { role: "assistant", content: `Hi! I'm here to help you support ${profile?.name || "your learner"}. Ask what they should work on next, how to explain something (credit scores, budgeting, AI), or for custom challenge ideas.${AI_ENDPOINT ? "" : "\n\n(Live AI chat is off — set AI_ENDPOINT in the app config to enable it. The rest of the portal works.)"}` }
   ]);
@@ -737,10 +955,28 @@ function ParentPortal({ profile, onProfile, onExit }) {
   const endRef = useRef(null);
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [aiMessages]);
 
+  const previewTrack = TRACKS.find(t => t.id === tTrack);
+  const previewLvl = previewTrack.levels[tLevel];
+  const previewChallenge = bankChallenge(previewTrack, tLevel);
+
   const savePin = () => {
     if (!/^\d{4}$/.test(newPin)) return;
     onProfile({ ...profile, parentPin: newPin });
     setNewPin(""); setPinSaved(true); setTimeout(() => setPinSaved(false), 2000);
+  };
+  const saveRec = () => {
+    onProfile({ ...profile, recoveryWord: recWord.trim() });
+    setRecSaved(true); setTimeout(() => setRecSaved(false), 2000);
+  };
+  const setHeat = (h) => {
+    const prog = loadProgress();
+    prog.heat = { ...prog.heat, [tTrack]: h };
+    store.set("progress", prog); setProgress(prog);
+  };
+  const resetAll = () => {
+    if (!confirmReset) { setConfirmReset(true); setTimeout(() => setConfirmReset(false), 4000); return; }
+    try { localStorage.removeItem("forge_progress"); localStorage.removeItem("forge_track"); localStorage.removeItem("forge_profile"); } catch {}
+    location.reload();
   };
 
   const sendAi = async () => {
@@ -748,7 +984,7 @@ function ParentPortal({ profile, onProfile, onExit }) {
     const msg = aiInput.trim(); setAiInput("");
     const next = [...aiMessages, { role: "user", content: msg }];
     setAiMessages(next); setAiLoading(true);
-    const sys = `You are an assistant for a parent supporting ${profile?.name || "their child"} (age band ${profile?.ageBand}) learning life skills in the Forge app (tracks: Money & Credit, Business, AI Skills). They have completed ${progress.history.length} challenges, current streak ${progress.streak}. Goals: ${(profile?.goals || []).join(", ")}. Give practical, specific, concise parent-friendly advice.`;
+    const sys = `You are an assistant for a parent supporting ${profile?.name || "their child"} (age band ${profile?.ageBand}) learning life skills in the Forge app (tracks: Money & Credit, Business, AI Skills). They have completed ${progress.history.length} challenges, current streak ${progress.streak}. Goals: ${(profile?.goals || []).join(", ")}. Psych read: ${JSON.stringify(profile?.psych || {})}. Give practical, specific, concise parent-friendly advice.`;
     const text = await callAI(sys, next.filter((m, i) => i > 0).map(m => ({ role: m.role, content: m.content })), 500);
     setAiMessages(m => [...m, { role: "assistant", content: text || "AI isn't connected yet. Set AI_ENDPOINT in the app (see docs/FORGE-V2-PLAN.md) to enable live help." }]);
     setAiLoading(false);
@@ -768,7 +1004,7 @@ function ParentPortal({ profile, onProfile, onExit }) {
           <div className="p-stat"><div className="p-stat-val">{progress.history.length}</div><div className="p-stat-lbl">Done</div></div>
           <div className="p-stat"><div className="p-stat-val">{Object.keys(progress.levels).length || 1}</div><div className="p-stat-lbl">Tracks</div></div>
         </div>
-        <div style={{fontSize:14,color:"var(--muted)"}}>Mentor profile: {profile?.ageBand} · {(profile?.goals || []).join(", ")}{profile?.interests ? ` · ${profile.interests}` : ""}</div>
+        <div style={{fontSize:14,color:"var(--muted)"}}>Mentor profile: {profile?.ageBand} · {(profile?.goals || []).join(", ")}{profile?.psych?.archetype && profile.psych.archetype !== "unknown" ? ` · reads as: ${profile.psych.archetype}, grit ${profile.psych.grit}` : ""}</div>
       </div>
 
       <div className="p-card">
@@ -785,11 +1021,34 @@ function ParentPortal({ profile, onProfile, onExit }) {
       </div>
 
       <div className="p-card">
-        <div className="p-card-title">🔐 Change Parent PIN</div>
-        <div style={{display:"flex",gap:10}}>
-          <input className="ai-input" placeholder="New 4-digit PIN" inputMode="numeric" maxLength={4} value={newPin} onChange={e => setNewPin(e.target.value.replace(/\D/g, ""))}/>
+        <div className="p-card-title">🧪 Admin · Test Mode</div>
+        <div className="mini-chips">{TRACKS.map(t => <button key={t.id} className={`mini-chip ${tTrack === t.id ? "on" : ""}`} onClick={() => { setTTrack(t.id); setTLevel(0); }}>{t.icon} {t.name}</button>)}</div>
+        <div className="mini-chips">{previewTrack.levels.map((l, i) => <button key={l.id} className={`mini-chip ${tLevel === i ? "on" : ""}`} onClick={() => setTLevel(i)}>L{i + 1}</button>)}</div>
+        <div className="preview-box">
+          <div className="pv-lbl">{previewLvl.name} — today's bank challenge</div>
+          <b>{previewChallenge.title}</b> — {previewChallenge.task}
+          <div className="pv-lbl" style={{marginTop:10}}>Check-in Q1</div>
+          {previewLvl.quiz[0].q} <span style={{color:"var(--green)"}}>✓ {previewLvl.quiz[0].a[previewLvl.quiz[0].c]}</span>
+        </div>
+        <div className="pv-lbl" style={{margin:"12px 0 6px",fontSize:10,letterSpacing:".1em",textTransform:"uppercase",color:"var(--blue)"}}>Mentor heat for {previewTrack.name}: {HEAT_LABELS[progress.heat[tTrack] || 1]}</div>
+        <div className="mini-chips">{[1,2,3].map(h => <button key={h} className={`mini-chip ${(progress.heat[tTrack] || 1) === h ? "on" : ""}`} onClick={() => setHeat(h)}>🔥 {HEAT_LABELS[h]}</button>)}</div>
+        <div className="admin-note">Test mode previews any level's content and overrides the adaptive difficulty. In the multi-user version this becomes your admin dashboard — aggregate stats and synthetic test users only, no browsing real users' data (privacy/COPPA).</div>
+        <button className="btn-danger" style={{marginTop:12}} onClick={resetAll}>{confirmReset ? "Tap again to erase EVERYTHING" : "Reset all app data…"}</button>
+      </div>
+
+      <div className="p-card">
+        <div className="p-card-title">🔐 Security</div>
+        <div className="field-label" style={{marginBottom:6}}>Change parent PIN</div>
+        <div style={{display:"flex",gap:10,marginBottom:16}}>
+          <input className="ai-input" aria-label="New 4-digit PIN" placeholder="New 4-digit PIN" inputMode="numeric" maxLength={4} value={newPin} onChange={e => setNewPin(e.target.value.replace(/\D/g, ""))}/>
           <button className="btn-send" style={{fontSize:14,fontWeight:600}} onClick={savePin} disabled={!/^\d{4}$/.test(newPin)}>{pinSaved ? "✓" : "Save"}</button>
         </div>
+        <div className="field-label" style={{marginBottom:6}}>Recovery word (unlocks a forgotten PIN)</div>
+        <div style={{display:"flex",gap:10}}>
+          <input className="ai-input" aria-label="Recovery word" placeholder="e.g. your first pet's name" value={recWord} onChange={e => setRecWord(e.target.value)}/>
+          <button className="btn-send" style={{fontSize:14,fontWeight:600}} onClick={saveRec} disabled={!recWord.trim()}>{recSaved ? "✓" : "Save"}</button>
+        </div>
+        <div className="admin-note">Full password accounts + email reset arrive with Supabase Auth in forge-next (see docs/FORGE-V2-PLAN.md §2).</div>
       </div>
 
       <div className="p-card">
@@ -800,8 +1059,8 @@ function ParentPortal({ profile, onProfile, onExit }) {
           <div ref={endRef}/>
         </div>
         <div className="ai-input-row">
-          <input className="ai-input" placeholder={`Ask about ${profile?.name}'s learning...`} value={aiInput} onChange={e => setAiInput(e.target.value)} onKeyDown={e => e.key === "Enter" && sendAi()}/>
-          <button className="btn-send" onClick={sendAi} disabled={!aiInput.trim() || aiLoading}>→</button>
+          <input className="ai-input" aria-label="Ask the AI assistant" placeholder={`Ask about ${profile?.name}'s learning...`} value={aiInput} onChange={e => setAiInput(e.target.value)} onKeyDown={e => e.key === "Enter" && sendAi()}/>
+          <button className="btn-send" aria-label="Send message" onClick={sendAi} disabled={!aiInput.trim() || aiLoading}>→</button>
         </div>
       </div>
     </div>
