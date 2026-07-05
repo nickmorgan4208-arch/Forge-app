@@ -139,10 +139,17 @@ const crownArt = svg(260, 140, `
   <circle cx="14" cy="42" r="10" fill="#ffd968"/><circle cx="130" cy="10" r="11" fill="#ffd968"/><circle cx="246" cy="42" r="10" fill="#ffd968"/>
   <circle cx="76" cy="112" r="8" fill="#e14848"/><circle cx="130" cy="116" r="9" fill="#47c8ff"/><circle cx="184" cy="112" r="8" fill="#3fae5a"/>`);
 
-document.querySelector('#leafL img').src = leaf(false);
-document.querySelector('#leafR img').src = leaf(true);
-document.querySelector('#shield img').src = shieldArt;
-document.querySelector('#crown img').src = crownArt;
+// YOUR LOGO: drop PNG pieces into demo/assets/ with these exact names and
+// they're used automatically; the generated art is only the fallback.
+const setPiece = (id, file, fallback) => {
+  const img = document.querySelector('#' + id + ' img');
+  img.onerror = () => { img.onerror = null; img.src = fallback; };
+  img.src = 'assets/' + file;
+};
+setPiece('leafL', 'leaves-left.png', leaf(false));
+setPiece('leafR', 'leaves-right.png', leaf(true));
+setPiece('shield', 'shield.png', shieldArt);
+setPiece('crown', 'crown.png', crownArt);
 
 // ── NAME ────────────────────────────────────────────────────────────────────
 const NAME = 'FORGE';
