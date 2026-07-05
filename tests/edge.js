@@ -19,6 +19,20 @@ const server = http.createServer((req, res) => {
   res.setHeader('Content-Type', 'text/html'); res.end(html);
 });
 
+const getProgOf = (pg) => pg.evaluate(() => {
+  const sid = JSON.parse(localStorage.getItem('forge_session'));
+  const us = JSON.parse(localStorage.getItem('forge_users')) || [];
+  const id = sid || (us[0] && us[0].id);
+  return JSON.parse(localStorage.getItem('forge_prog_' + id));
+});
+const seedUser = (pg, name, extraProfile, prog) => pg.evaluate(([n, xp, pr]) => {
+  const id = 'u_seed';
+  localStorage.setItem('forge_users', JSON.stringify([{id, name: n, passHash: '', profile: Object.assign({name: n, ageBand: 'Adult', goals: ['money'], interests: '', style: 'straight', psych: {}, mentorName: 'Forge', created: '2026-07-04'}, xp)}]));
+  localStorage.setItem('forge_session', JSON.stringify(id));
+  localStorage.setItem('forge_parent', JSON.stringify({pin: '1234', recoveryWord: ''}));
+  if (pr) localStorage.setItem('forge_prog_' + id, JSON.stringify(pr));
+}, [name, extraProfile || {}, prog || null]);
+
 (async () => {
   await new Promise(r => server.listen(8935, r));
   const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', args: ['--no-sandbox'] });
@@ -29,13 +43,15 @@ const server = http.createServer((req, res) => {
   const pa = await browser.newPage({ viewport: { width: 390, height: 844 } });
   const errA = []; pa.on('pageerror', e => errA.push(e.message));
   await pa.goto('http://localhost:8935', { waitUntil: 'load' }); await pa.waitForTimeout(2200);
-  await step('A: skip entire setup → app works with defaults', async () => {
-    await pa.click('text=Get Started');
-    await pa.waitForSelector('text=What should your mentor call you?');
+  await step('A: signup then skip setup → app works with defaults', async () => {
+    await pa.fill('input[aria-label="Your name"]', 'Sky');
+    await pa.fill('input[aria-label="New password"]', 'pass1234');
+    await pa.click('text=Create Account →');
+    await pa.waitForSelector('text=How old are you?');
     await pa.click('text=Skip setup — use defaults');
     await pa.waitForSelector('text=Your mentor', { timeout: 8000 });
-    const prof = await pa.evaluate(() => JSON.parse(localStorage.getItem('forge_profile')));
-    if (prof.name !== 'Builder' || !prof.goals.length) throw new Error('bad defaults: ' + JSON.stringify(prof));
+    const users = await pa.evaluate(() => JSON.parse(localStorage.getItem('forge_users')));
+    if (users[0].profile.name !== 'Sky' || !users[0].profile.goals.length) throw new Error('bad defaults: ' + JSON.stringify(users[0].profile));
   });
   await step('A: challenge + quiz still work with default profile', async () => {
     await pa.click('.bnav >> text=Today');
@@ -48,7 +64,7 @@ const server = http.createServer((req, res) => {
   const pb = await browser.newPage({ viewport: { width: 390, height: 844 } });
   const errB = []; pb.on('pageerror', e => errB.push(e.message));
   await pb.goto('http://localhost:8935', { waitUntil: 'load' });
-  await pb.evaluate(() => localStorage.setItem('forge_profile', JSON.stringify({name:'Max',ageBand:'Adult',goals:['money'],interests:'',style:'straight',psych:{},mentorName:'Forge',parentPin:'1234',recoveryWord:'',created:'2026-07-04'})));
+  await seedUser(pb, 'Max');
   await pb.reload({ waitUntil: 'load' }); await pb.waitForTimeout(2200);
   await step('B: 3 completions same day = streak 1, history 3', async () => {
     for (let i = 0; i < 3; i++) {
@@ -66,13 +82,13 @@ const server = http.createServer((req, res) => {
       await pb.waitForSelector('.done-title', { timeout: 6000 });
       if (i < 2) { const btn = await pb.$('.btn-next'); if (btn) await btn.click(); await pb.waitForTimeout(600); }
     }
-    const prog = await pb.evaluate(() => JSON.parse(localStorage.getItem('forge_progress')));
+    const prog = await getProgOf(pb);
     if (prog.streak !== 1) throw new Error('streak farmable! streak=' + prog.streak);
     if (prog.history.length !== 3) throw new Error('history=' + prog.history.length);
     if (prog.levels.money !== 3) throw new Error('should be L4 now: ' + prog.levels.money);
   });
   await step('B: heat capped at 3 despite repeated 3/3', async () => {
-    const prog = await pb.evaluate(() => JSON.parse(localStorage.getItem('forge_progress')));
+    const prog = await getProgOf(pb);
     if (prog.heat.money !== 3) throw new Error('heat=' + prog.heat.money);
   });
 
@@ -83,27 +99,24 @@ const server = http.createServer((req, res) => {
     const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
     const threeDaysAgo = new Date(Date.now() - 3 * 86400000).toISOString().split('T')[0];
     // seed: completed yesterday, streak 5
-    await pc.evaluate(([y]) => {
-      localStorage.setItem('forge_profile', JSON.stringify({name:'T',ageBand:'Adult',goals:['money'],interests:'',style:'straight',psych:{},mentorName:'Forge',parentPin:'1234',recoveryWord:'',created:'2026-01-01'}));
-      localStorage.setItem('forge_progress', JSON.stringify({levels:{},heat:{},streak:5,lastDay:y,history:[]}));
-    }, [yesterday]);
+    await seedUser(pc, 'T', {}, {levels:{},heat:{},streak:5,lastDay:yesterday,history:[]});
     await pc.reload({ waitUntil: 'load' }); await pc.waitForTimeout(2200);
     await pc.click('.bnav >> text=Today');
     await pc.waitForSelector('.task-box', { timeout: 8000 });
     await pc.click('text=Done — Check Me ✓');
     await pc.waitForSelector('.quiz-q');
-    let prog = await pc.evaluate(() => JSON.parse(localStorage.getItem('forge_progress')));
+    let prog = await getProgOf(pc);
     if (prog.streak !== 6) throw new Error('consecutive day should be 6, got ' + prog.streak);
     // reseed: last completed 3 days ago
     await pc.evaluate(([t]) => {
-      localStorage.setItem('forge_progress', JSON.stringify({levels:{},heat:{},streak:9,lastDay:t,history:[]}));
+      localStorage.setItem('forge_prog_u_seed', JSON.stringify({levels:{},heat:{},streak:9,lastDay:t,history:[]}));
     }, [threeDaysAgo]);
     await pc.reload({ waitUntil: 'load' }); await pc.waitForTimeout(2200);
     await pc.click('.bnav >> text=Today');
     await pc.waitForSelector('.task-box', { timeout: 8000 });
     await pc.click('text=Done — Check Me ✓');
     await pc.waitForSelector('.quiz-q');
-    prog = await pc.evaluate(() => JSON.parse(localStorage.getItem('forge_progress')));
+    prog = await getProgOf(pc);
     if (prog.streak !== 1) throw new Error('gap should reset to 1, got ' + prog.streak);
   });
 
@@ -112,9 +125,9 @@ const server = http.createServer((req, res) => {
   const errD = []; pd.on('pageerror', e => errD.push(e.message));
   await pd.goto('http://localhost:8935', { waitUntil: 'load' });
   await step('D: corrupted storage → app falls back to welcome, no crash', async () => {
-    await pd.evaluate(() => { localStorage.setItem('forge_profile', '{corrupt!!!'); localStorage.setItem('forge_progress', 'also broken'); });
+    await pd.evaluate(() => { localStorage.setItem('forge_users', '{corrupt!!!'); localStorage.setItem('forge_session', 'also broken'); localStorage.setItem('forge_profile', '{nope'); });
     await pd.reload({ waitUntil: 'load' }); await pd.waitForTimeout(2200);
-    await pd.waitForSelector('text=Get Started', { timeout: 8000 });
+    await pd.waitForSelector('text=Create Account →', { timeout: 8000 });
     if (errD.length) throw new Error('page errors: ' + errD[0]);
   });
 
@@ -123,7 +136,7 @@ const server = http.createServer((req, res) => {
   const errE = []; pe.on('pageerror', e => errE.push(e.message));
   await pe.goto('http://localhost:8935', { waitUntil: 'load' });
   await step('E: switching tracks mid-quiz resets cleanly', async () => {
-    await pe.evaluate(() => localStorage.setItem('forge_profile', JSON.stringify({name:'Z',ageBand:'12-15',goals:['money'],interests:'',style:'fun',psych:{},mentorName:'Forge',parentPin:'1234',recoveryWord:'',created:'2026-07-04'})));
+    await seedUser(pe, 'Z', {ageBand: '12-15', style: 'fun'});
     await pe.reload({ waitUntil: 'load' }); await pe.waitForTimeout(2200);
     await pe.click('.bnav >> text=Today');
     await pe.waitForSelector('.task-box', { timeout: 8000 });

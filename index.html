@@ -175,6 +175,15 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus
 .mentor-name{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:2px;}
 .mentor-line{font-size:13px;color:var(--muted);line-height:1.5;}
 .legal{font-size:11px;color:var(--muted);text-align:center;line-height:1.7;margin-top:18px;}
+.pw-wrap{position:relative;}
+.pw-wrap .field-input{padding-right:58px;}
+.eye-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:20px;padding:8px 10px;line-height:1;color:var(--muted);}
+.user-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.user-item{display:flex;align-items:center;gap:12px;background:var(--s1);border:1.5px solid var(--border);border-radius:14px;padding:13px 16px;font-size:16px;color:var(--text);text-align:left;transition:all .15s;box-shadow:0 8px 22px rgba(0,0,0,.3);}
+.user-item.on{border-color:var(--accent);background:rgba(232,255,71,.05);}
+.user-item:active{transform:scale(.98);}
+.user-item .u-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:#080810;flex-shrink:0;}
+.auth-link{background:none;border:none;color:var(--muted);font-size:14px;text-decoration:underline;padding:10px;margin-top:14px;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
@@ -202,7 +211,42 @@ const store = {
 const todayStr = () => new Date().toISOString().split("T")[0];
 const daysBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
 const defaultProgress = () => ({ levels: {}, heat: {}, streak: 0, lastDay: null, history: [] });
-const loadProgress = () => ({ ...defaultProgress(), ...store.get("progress", {}) });
+const loadProgress = (uid) => ({ ...defaultProgress(), ...store.get("prog_" + uid, {}) });
+const saveProgressFor = (uid, p) => store.set("prog_" + uid, p);
+
+// ── ACCOUNTS (multi-user on this device; passwords stored as salted hashes,
+// never plaintext — the exact mistake that caused the Supabase advisories) ──
+async function sha256(text) {
+  try {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+  } catch { // non-secure-context fallback: still never store plaintext
+    let h = 5381; for (let i = 0; i < text.length; i++) h = ((h << 5) + h + text.charCodeAt(i)) >>> 0;
+    return "djb2_" + h.toString(16);
+  }
+}
+const hashPassword = (name, pw) => sha256("forge:" + name.trim().toLowerCase() + ":" + pw);
+const userStore = {
+  list() { return store.get("users", []); },
+  save(users) { store.set("users", users); },
+  byId(id) { return this.list().find(u => u.id === id) || null; },
+  upsert(user) { const us = this.list(); const i = us.findIndex(u => u.id === user.id); if (i >= 0) us[i] = user; else us.push(user); this.save(us); },
+};
+const deviceParent = () => store.get("parent", { pin: "1234", recoveryWord: "" });
+
+// One-time migration from the single-profile era: becomes an account with no
+// password (tap name to enter; parent can set a password in the portal).
+(function migrate() {
+  const legacy = store.get("profile", null);
+  if (legacy && !store.get("users", null)) {
+    const id = "u_" + Date.now();
+    store.set("users", [{ id, name: legacy.name || "Builder", passHash: "", profile: legacy }]);
+    const prog = store.get("progress", null); if (prog) store.set("prog_" + id, prog);
+    store.set("parent", { pin: legacy.parentPin || "1234", recoveryWord: legacy.recoveryWord || "" });
+    store.set("session", id);
+    try { localStorage.removeItem("forge_profile"); localStorage.removeItem("forge_progress"); localStorage.removeItem("forge_track"); } catch {}
+  }
+})();
 
 // ── TRACKS & CURRICULUM ─────────────────────────────────────────────────────
 // Each level ships a challenge bank (zero AI cost) AND a 3-question mentor
@@ -471,76 +515,153 @@ const HEAT_LABELS = {1:"Warming up", 2:"Standard", 3:"Turned up"};
 
 // ── APP ─────────────────────────────────────────────────────────────────────
 function ForgeApp() {
-  const [profile, setProfile] = useState(() => store.get("profile", null));
-  const [mode, setMode] = useState(profile ? "student" : "welcome");
+  const [session, setSession] = useState(() => {
+    const s = store.get("session", null);
+    return s && userStore.byId(s) ? s : null;
+  });
+  const [mode, setMode] = useState(session ? "student" : "auth");
+  const [pending, setPending] = useState(null); // {name, pass} during signup
+  const [, forceRender] = useState(0);
+  const user = session ? userStore.byId(session) : null;
 
-  const saveProfile = (p) => { store.set("profile", p); setProfile(p); };
+  const signIn = (u) => { store.set("session", u.id); setSession(u.id); setMode("student"); };
+  const signOut = () => { store.set("session", null); setSession(null); setMode("auth"); };
+  const startSignup = (name, pass) => { setPending({ name, pass }); setMode("onboarding"); };
+  const finishSignup = async ({ profile, heat }) => {
+    const id = "u_" + Date.now();
+    const passHash = await hashPassword(pending.name, pending.pass);
+    userStore.upsert({ id, name: profile.name, passHash, profile });
+    saveProgressFor(id, { ...defaultProgress(), heat });
+    store.set("session", id); setSession(id); setPending(null); setMode("student");
+  };
+  const updateProfile = (p) => { userStore.upsert({ ...user, name: p.name, profile: p }); forceRender(n => n + 1); };
 
   return (
     <div className="root">
-      {mode === "welcome"  && <Welcome onStart={() => setMode("onboarding")} />}
-      {mode === "onboarding" && <Onboarding onDone={(p) => { saveProfile(p); setMode("student"); }} />}
-      {mode === "student"  && <StudentApp profile={profile} onProfile={saveProfile} onParent={() => setMode("pin")} />}
-      {mode === "pin"      && <PinScreen profile={profile} onProfile={saveProfile} onSuccess={() => setMode("parent")} onBack={() => setMode("student")} />}
-      {mode === "parent"   && <ParentPortal profile={profile} onProfile={saveProfile} onExit={() => setMode("student")} />}
+      {mode === "auth"     && <AuthScreen onSignIn={signIn} onStartSignup={startSignup} />}
+      {mode === "onboarding" && <Onboarding name={pending?.name || ""} onDone={finishSignup} />}
+      {mode === "student" && user && <StudentApp user={user} onProfile={updateProfile} onParent={() => setMode("pin")} onSignOut={signOut} />}
+      {mode === "pin"      && <PinScreen onSuccess={() => setMode("parent")} onBack={() => setMode("student")} />}
+      {mode === "parent" && user && <ParentPortal user={user} onProfile={updateProfile} onExit={() => setMode("student")} />}
     </div>
   );
 }
 
-function Welcome({ onStart }) {
-  const hasProfile = !!store.get("profile", null);
+// Password field with the show/hide eye
+function PasswordField({ value, onChange, onEnter, placeholder, ariaLabel }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="pw-wrap">
+      <input className="field-input" type={show ? "text" : "password"} aria-label={ariaLabel || "Password"}
+        placeholder={placeholder || "Password"} value={value} autoComplete="off"
+        onChange={e => onChange(e.target.value)} onKeyDown={e => e.key === "Enter" && onEnter && onEnter()} />
+      <button type="button" className="eye-btn" aria-label={show ? "Hide password" : "Show password"} aria-pressed={show}
+        onClick={() => setShow(s => !s)}>{show ? "🙈" : "👁️"}</button>
+    </div>
+  );
+}
+
+function AuthScreen({ onSignIn, onStartSignup }) {
+  const users = userStore.list();
+  const [view, setView] = useState(users.length ? "pick" : "signup");
+  const [selected, setSelected] = useState(users.length === 1 ? users[0].id : null);
+  const [pass, setPass] = useState("");
+  const [name, setName] = useState("");
+  const [pw, setPw] = useState("");
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+  const sel = users.find(u => u.id === selected);
+
+  const trySignIn = async () => {
+    if (!sel || busy) return;
+    setBusy(true);
+    const h = await hashPassword(sel.name, pass);
+    if (h === sel.passHash || (!sel.passHash && !pass)) { onSignIn(sel); return; }
+    setErr("Wrong password. A parent can reset it from the parent portal."); setBusy(false);
+  };
+  const trySignup = () => {
+    if (!name.trim()) { setErr("Pick a name first."); return; }
+    if (users.some(u => u.name.toLowerCase() === name.trim().toLowerCase())) { setErr("That name already has an account on this device — sign in instead."); return; }
+    if (pw.length < 4) { setErr("Password needs at least 4 characters."); return; }
+    onStartSignup(name.trim(), pw);
+  };
+
   return (
     <div className="login-screen">
       <div className="login-logo">FORGE</div>
       <div className="login-tag">Real skills for real life — money, business, AI</div>
       <div className="login-box">
-        <button className="btn-main" onClick={onStart}>{hasProfile ? "Continue →" : "Get Started →"}</button>
-        <p className="legal">Forge teaches skills for learning purposes only. It never promises income and is not financial, legal, or investment advice.</p>
+        {view === "pick" && (<>
+          <div className="field-label" style={{marginBottom:10}}>Who's forging today?</div>
+          <div className="user-list">
+            {users.map(u => (
+              <button key={u.id} className={`user-item ${selected === u.id ? "on" : ""}`} onClick={() => { setSelected(u.id); setErr(""); setPass(""); }}>
+                <span className="u-avatar" aria-hidden="true">{u.name[0].toUpperCase()}</span>{u.name}
+              </button>
+            ))}
+          </div>
+          {sel && (
+            <div className="field" style={{animation:"fadeUp .3s ease both"}}>
+              <PasswordField value={pass} onChange={v => { setPass(v); setErr(""); }} onEnter={trySignIn}
+                placeholder={sel.passHash ? "Password" : "No password set — just enter"} ariaLabel={`Password for ${sel.name}`} />
+            </div>
+          )}
+          {err && <div className="err">{err}</div>}
+          {sel && <button className="btn-main" onClick={trySignIn} disabled={busy}>{busy ? "Checking..." : "Enter Forge →"}</button>}
+          <div style={{textAlign:"center"}}><button className="auth-link" onClick={() => { setView("signup"); setErr(""); }}>+ New account</button></div>
+        </>)}
+
+        {view === "signup" && (<>
+          <div className="field">
+            <label className="field-label">Your name</label>
+            <input className="field-input" aria-label="Your name" placeholder="Type your name..." value={name} autoComplete="off"
+              onChange={e => { setName(e.target.value); setErr(""); }} />
+          </div>
+          <div className="field">
+            <label className="field-label">Make a password (4+ characters)</label>
+            <PasswordField value={pw} onChange={v => { setPw(v); setErr(""); }} onEnter={trySignup} placeholder="Make a password" ariaLabel="New password" />
+          </div>
+          {err && <div className="err">{err}</div>}
+          <button className="btn-main" onClick={trySignup}>Create Account →</button>
+          {users.length > 0 && <div style={{textAlign:"center"}}><button className="auth-link" onClick={() => { setView("pick"); setErr(""); }}>← Back to sign in</button></div>}
+          <p className="legal">Forge teaches skills for learning purposes only. It never promises income and is not financial, legal, or investment advice.</p>
+        </>)}
       </div>
     </div>
   );
 }
 
-// Intake: name + age (needed for tone/safety), goals (preference), then three
-// indirect scenario questions that build the psych profile. Skippable — skips
-// get sensible defaults.
-function Onboarding({ onDone }) {
-  const existing = store.get("profile", null);
-  const [step, setStep] = useState(existing ? 99 : 0);
-  const [name, setName] = useState(existing?.name || "");
-  const [ageBand, setAgeBand] = useState(existing?.ageBand || null);
-  const [goals, setGoals] = useState(existing?.goals || []);
-  const [interests, setInterests] = useState(existing?.interests || "");
+// Intake after signup: age (needed for tone/safety), goals (preference), then
+// three indirect scenario questions that build the psych profile. Skippable —
+// skips get sensible defaults. Name arrives from the signup screen.
+function Onboarding({ name, onDone }) {
+  const [step, setStep] = useState(1);
+  const [ageBand, setAgeBand] = useState(null);
+  const [goals, setGoals] = useState([]);
+  const [interests, setInterests] = useState("");
   const [scen, setScen] = useState({});
-
-  useEffect(() => { if (step === 99 && existing) onDone(existing); }, []);
 
   const finish = () => {
     const money = scen.money || {};
     const fix = scen.fix || {};
     const hard = scen.hard || {};
-    const p = {
-      name: name.trim() || "Builder",
+    const profile = {
+      name: (name || "Builder").trim(),
       ageBand: ageBand || "12-15",
       goals: goals.length ? goals : ["money", "ai"],
       interests: interests.trim(),
       style: hard.style || "hype",
       psych: { money: money.money || "unknown", archetype: fix.archetype || "unknown", grit: hard.grit || "unknown" },
       mentorName: "Forge",
-      parentPin: existing?.parentPin || "1234",
-      recoveryWord: existing?.recoveryWord || "",
       created: todayStr(),
     };
     // Starting heat derived from the psych read, never announced
-    const prog = loadProgress();
-    prog.heat = {
+    const heat = {
       money: money.heat || 1,
       business: (fix.archetype === "natural hustler" || money.money === "flipper") ? 2 : 1,
       ai: 1,
-      ...((existing && loadProgress().heat) || {})
     };
-    store.set("progress", prog);
-    onDone(p);
+    onDone({ profile, heat });
   };
   const toggleGoal = (id) => setGoals(g => g.includes(id) ? g.filter(x => x !== id) : [...g, id]);
   const pickScenario = (sId, ans, nextStep) => { setScen(s => ({ ...s, [sId]: ans })); setStep(nextStep); };
@@ -549,26 +670,17 @@ function Onboarding({ onDone }) {
     <div className="screen" style={{paddingTop: 48}}>
       <div className="wordmark" style={{marginBottom: 32}}>FORGE</div>
 
-      {step === 0 && (<>
-        <div className="ob-step">Step 1 of 6 · Meet your mentor</div>
-        <div className="ob-q">What should your mentor call you?</div>
-        <div className="ob-sub">Forge builds a mentor around you — how you think, what you're into, what you want. A few quick questions, no wrong answers. Skip any step.</div>
-        <div className="field"><input className="field-input" aria-label="Your first name" placeholder="Your first name..." value={name} autoComplete="off" onChange={e => setName(e.target.value)} onKeyDown={e => e.key === "Enter" && setStep(1)} /></div>
-        <button className="btn-main" onClick={() => setStep(1)}>Next →</button>
-        <button className="btn-secondary" onClick={finish}>Skip setup — use defaults</button>
-      </>)}
-
       {step === 1 && (<>
-        <div className="ob-step">Step 2 of 6 · Age</div>
+        <div className="ob-step">Step 1 of 5 · Meet your mentor, {name}</div>
         <div className="ob-q">How old are you?</div>
         <div className="ob-sub">Your mentor adjusts every explanation to fit — never babyish, never over your head.</div>
         <div className="chips">{AGE_BANDS.map(a => <button key={a} className={`chip ${ageBand === a ? "on" : ""}`} onClick={() => setAgeBand(a)}>{a}</button>)}</div>
         <button className="btn-main" onClick={() => setStep(2)} disabled={!ageBand}>Next →</button>
-        <button className="btn-secondary" onClick={() => setStep(2)}>Skip</button>
+        <button className="btn-secondary" onClick={finish}>Skip setup — use defaults</button>
       </>)}
 
       {step === 2 && (<>
-        <div className="ob-step">Step 3 of 6 · Goals</div>
+        <div className="ob-step">Step 2 of 5 · Goals</div>
         <div className="ob-q">What do you want to get good at?</div>
         <div className="ob-sub">Pick as many as you want.</div>
         <div className="chips">{GOALS.map(g => <button key={g.id} className={`chip ${goals.includes(g.id) ? "on" : ""}`} onClick={() => toggleGoal(g.id)}>{g.label}</button>)}</div>
@@ -577,7 +689,7 @@ function Onboarding({ onDone }) {
       </>)}
 
       {step === 3 && (<>
-        <div className="ob-step">Step 4 of 6 · Quick one</div>
+        <div className="ob-step">Step 3 of 5 · Quick one</div>
         <div className="ob-q">{SCENARIOS[0].q}</div>
         <div className="ob-sub">No wrong answers — be honest, your mentor can take it.</div>
         <div className="chips stack">{SCENARIOS[0].a.map((a, i) => <button key={i} className="chip" onClick={() => pickScenario("money", a, 4)}>{a.label}</button>)}</div>
@@ -585,14 +697,14 @@ function Onboarding({ onDone }) {
       </>)}
 
       {step === 4 && (<>
-        <div className="ob-step">Step 5 of 6 · Another one</div>
+        <div className="ob-step">Step 4 of 5 · Another one</div>
         <div className="ob-q">{SCENARIOS[1].q}</div>
         <div className="chips stack">{SCENARIOS[1].a.map((a, i) => <button key={i} className="chip" onClick={() => pickScenario("fix", a, 5)}>{a.label}</button>)}</div>
         <button className="btn-secondary" onClick={() => setStep(5)}>Skip</button>
       </>)}
 
       {step === 5 && (<>
-        <div className="ob-step">Step 6 of 6 · Last one</div>
+        <div className="ob-step">Step 5 of 5 · Last one</div>
         <div className="ob-q">{SCENARIOS[2].q}</div>
         <div className="chips stack">{SCENARIOS[2].a.map((a, i) => <button key={i} className="chip" onClick={() => pickScenario("hard", a, 6)}>{a.label}</button>)}</div>
         <button className="btn-secondary" onClick={() => setStep(6)}>Skip</button>
@@ -609,10 +721,12 @@ function Onboarding({ onDone }) {
   );
 }
 
-function StudentApp({ profile, onProfile, onParent }) {
+function StudentApp({ user, onProfile, onParent, onSignOut }) {
+  const profile = user.profile;
+  const uid = user.id;
   const [tab, setTab] = useState("home");
-  const [progress, setProgress] = useState(loadProgress);
-  const [trackId, setTrackId] = useState(() => store.get("track", (profile?.goals?.includes("business") ? "business" : profile?.goals?.some(g => ["ai","code","build"].includes(g)) ? "ai" : "money")));
+  const [progress, setProgress] = useState(() => loadProgress(uid));
+  const [trackId, setTrackId] = useState(() => store.get("track_" + uid, (profile?.goals?.includes("business") ? "business" : profile?.goals?.some(g => ["ai","code","build"].includes(g)) ? "ai" : "money")));
   const [challenge, setChallenge] = useState(null);
   const [loading, setLoading] = useState(false);
   // phase: challenge → quiz → result
@@ -626,15 +740,15 @@ function StudentApp({ profile, onProfile, onParent }) {
   const level = progress.levels[trackId] || 0;
   const heat = progress.heat[trackId] || 1;
 
-  const saveProgress = (p) => { store.set("progress", p); setProgress(p); };
-  const switchTrack = (id) => { store.set("track", id); setTrackId(id); setChallenge(null); setPhase("challenge"); };
+  const saveProgress = (p) => { saveProgressFor(uid, p); setProgress(p); };
+  const switchTrack = (id) => { store.set("track_" + uid, id); setTrackId(id); setChallenge(null); setPhase("challenge"); };
 
   useEffect(() => { loadChallenge(); }, [trackId]);
 
   const loadChallenge = async () => {
     setLoading(true); setPhase("challenge"); setResult(null);
     const t = TRACKS.find(x => x.id === trackId) || TRACKS[0];
-    const prog = loadProgress();
+    const prog = loadProgress(uid);
     const c = await getChallenge(profile, t, (prog.levels[trackId] || 0), (prog.heat[trackId] || 1));
     setChallenge(c); setLoading(false);
   };
@@ -659,7 +773,7 @@ function StudentApp({ profile, onProfile, onParent }) {
       setQScore(score); setQPicked(null);
       if (qIdx < 2) { setQIdx(qIdx + 1); return; }
       // ── Adaptive engine ──
-      const prog = loadProgress();
+      const prog = loadProgress(uid);
       const h = prog.heat[trackId] || 1;
       let newHeat = h, advanced = false, msg;
       if (score === 3) {
@@ -698,6 +812,7 @@ function StudentApp({ profile, onProfile, onParent }) {
             <div style={{display:"flex",alignItems:"center",gap:10}}>
               <div className="avatar">{initial}</div>
               <button className="btn-ghost-sm" onClick={onParent}>parent</button>
+              <button className="btn-ghost-sm" onClick={onSignOut} aria-label="Switch user">⇄</button>
             </div>
           </div>
 
@@ -884,8 +999,9 @@ function MentorChat({ profile, track, level, heat, initial }) {
   );
 }
 
-function PinScreen({ profile, onProfile, onSuccess, onBack }) {
-  const pin = (profile && profile.parentPin) || "1234";
+function PinScreen({ onSuccess, onBack }) {
+  const parent = deviceParent();
+  const pin = parent.pin || "1234";
   const [entered, setEntered] = useState("");
   const [err, setErr] = useState(false);
   const [forgot, setForgot] = useState(false);
@@ -903,9 +1019,9 @@ function PinScreen({ profile, onProfile, onSuccess, onBack }) {
   };
 
   const tryRecover = () => {
-    if (!profile?.recoveryWord) { setWordErr("No recovery word was set. Reset it from the parent portal next time you're in."); return; }
-    if (word.trim().toLowerCase() === profile.recoveryWord.toLowerCase()) {
-      onProfile({ ...profile, parentPin: "1234" });
+    if (!parent.recoveryWord) { setWordErr("No recovery word was set. Reset it from the parent portal next time you're in."); return; }
+    if (word.trim().toLowerCase() === parent.recoveryWord.toLowerCase()) {
+      store.set("parent", { ...parent, pin: "1234" });
       onSuccess();
     } else setWordErr("That's not the recovery word.");
   };
@@ -937,12 +1053,18 @@ function PinScreen({ profile, onProfile, onSuccess, onBack }) {
   );
 }
 
-function ParentPortal({ profile, onProfile, onExit }) {
-  const [progress, setProgress] = useState(loadProgress);
+function ParentPortal({ user, onProfile, onExit }) {
+  const profile = user.profile;
+  const uid = user.id;
+  const [progress, setProgress] = useState(() => loadProgress(uid));
   const [newPin, setNewPin] = useState("");
   const [pinSaved, setPinSaved] = useState(false);
-  const [recWord, setRecWord] = useState(profile?.recoveryWord || "");
+  const [recWord, setRecWord] = useState(() => deviceParent().recoveryWord || "");
   const [recSaved, setRecSaved] = useState(false);
+  // per-user password reset
+  const [pwUser, setPwUser] = useState(uid);
+  const [newPw, setNewPw] = useState("");
+  const [pwSaved, setPwSaved] = useState(false);
   // Admin test mode
   const [tTrack, setTTrack] = useState("money");
   const [tLevel, setTLevel] = useState(0);
@@ -961,21 +1083,27 @@ function ParentPortal({ profile, onProfile, onExit }) {
 
   const savePin = () => {
     if (!/^\d{4}$/.test(newPin)) return;
-    onProfile({ ...profile, parentPin: newPin });
+    store.set("parent", { ...deviceParent(), pin: newPin });
     setNewPin(""); setPinSaved(true); setTimeout(() => setPinSaved(false), 2000);
   };
   const saveRec = () => {
-    onProfile({ ...profile, recoveryWord: recWord.trim() });
+    store.set("parent", { ...deviceParent(), recoveryWord: recWord.trim() });
     setRecSaved(true); setTimeout(() => setRecSaved(false), 2000);
   };
+  const savePassword = async () => {
+    const target = userStore.byId(pwUser);
+    if (!target || newPw.length < 4) return;
+    userStore.upsert({ ...target, passHash: await hashPassword(target.name, newPw) });
+    setNewPw(""); setPwSaved(true); setTimeout(() => setPwSaved(false), 2000);
+  };
   const setHeat = (h) => {
-    const prog = loadProgress();
+    const prog = loadProgress(uid);
     prog.heat = { ...prog.heat, [tTrack]: h };
-    store.set("progress", prog); setProgress(prog);
+    saveProgressFor(uid, prog); setProgress(prog);
   };
   const resetAll = () => {
     if (!confirmReset) { setConfirmReset(true); setTimeout(() => setConfirmReset(false), 4000); return; }
-    try { localStorage.removeItem("forge_progress"); localStorage.removeItem("forge_track"); localStorage.removeItem("forge_profile"); } catch {}
+    try { Object.keys(localStorage).filter(k => k.startsWith("forge_")).forEach(k => localStorage.removeItem(k)); } catch {}
     location.reload();
   };
 
@@ -1038,17 +1166,23 @@ function ParentPortal({ profile, onProfile, onExit }) {
 
       <div className="p-card">
         <div className="p-card-title">🔐 Security</div>
-        <div className="field-label" style={{marginBottom:6}}>Change parent PIN</div>
+        <div className="field-label" style={{marginBottom:6}}>Change parent PIN (this device)</div>
         <div style={{display:"flex",gap:10,marginBottom:16}}>
           <input className="ai-input" aria-label="New 4-digit PIN" placeholder="New 4-digit PIN" inputMode="numeric" maxLength={4} value={newPin} onChange={e => setNewPin(e.target.value.replace(/\D/g, ""))}/>
           <button className="btn-send" style={{fontSize:14,fontWeight:600}} onClick={savePin} disabled={!/^\d{4}$/.test(newPin)}>{pinSaved ? "✓" : "Save"}</button>
         </div>
         <div className="field-label" style={{marginBottom:6}}>Recovery word (unlocks a forgotten PIN)</div>
-        <div style={{display:"flex",gap:10}}>
+        <div style={{display:"flex",gap:10,marginBottom:16}}>
           <input className="ai-input" aria-label="Recovery word" placeholder="e.g. your first pet's name" value={recWord} onChange={e => setRecWord(e.target.value)}/>
           <button className="btn-send" style={{fontSize:14,fontWeight:600}} onClick={saveRec} disabled={!recWord.trim()}>{recSaved ? "✓" : "Save"}</button>
         </div>
-        <div className="admin-note">Full password accounts + email reset arrive with Supabase Auth in forge-next (see docs/FORGE-V2-PLAN.md §2).</div>
+        <div className="field-label" style={{marginBottom:6}}>Set / reset an account password</div>
+        <div className="mini-chips">{userStore.list().map(u => <button key={u.id} className={`mini-chip ${pwUser === u.id ? "on" : ""}`} onClick={() => setPwUser(u.id)}>{u.name}</button>)}</div>
+        <div style={{display:"flex",gap:10}}>
+          <input className="ai-input" aria-label="New password" placeholder="New password (4+ chars)" value={newPw} onChange={e => setNewPw(e.target.value)}/>
+          <button className="btn-send" style={{fontSize:14,fontWeight:600}} onClick={savePassword} disabled={newPw.length < 4}>{pwSaved ? "✓" : "Save"}</button>
+        </div>
+        <div className="admin-note">Passwords are stored as salted hashes on this device only — never plaintext, never sent anywhere. Cloud accounts + email reset arrive with Supabase Auth in forge-next (see docs/FORGE-V2-PLAN.md §2).</div>
       </div>
 
       <div className="p-card">
