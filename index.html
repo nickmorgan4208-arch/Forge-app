@@ -159,11 +159,13 @@ button{cursor:pointer;}
     <p>Orthotic and prosthetic devices fabricated from scans produced by this app must be reviewed, verified, and fitted by a qualified, licensed practitioner. You accept full responsibility for verifying dimensional accuracy against physical measurements before fabrication or clinical use.</p>
     <h3>3. Accuracy Disclaimer</h3>
     <p>Capture quality depends on device hardware, lighting, subject movement, and operator technique. No warranty of dimensional accuracy, fitness for a particular purpose, or merchantability is given. All output is provided "as is".</p>
-    <h3>4. Assumption of Risk &amp; Release</h3>
+    <h3>4. Surface &amp; Marker Limitations</h3>
+    <p>Camera-based capture cannot reliably reconstruct reflective, transparent, very dark, or uniformly featureless surfaces. Such subjects may require tracking markers, matte scanning spray, or other preparation, and may still fail or distort. Printed marker/scale sheets must be verified with a physical ruler before any dimension derived from them is relied upon. Scanned dimensions are only trustworthy when a verified scale reference was visible during capture.</p>
+    <h3>5. Assumption of Risk &amp; Release</h3>
     <p>By accepting, you release Shapeshot, its developers, and affiliates from any and all claims, damages, or liabilities arising from use of this app or from devices fabricated using its output, to the maximum extent permitted by law.</p>
-    <h3>5. Data &amp; Privacy</h3>
+    <h3>6. Data &amp; Privacy</h3>
     <p>Photos captured during scanning are processed for reconstruction. If you scan another person, you confirm you have their informed consent (or that of their legal guardian). You are responsible for complying with applicable privacy and health-information regulations (e.g., HIPAA, GDPR) in your jurisdiction.</p>
-    <h3>6. Subscription</h3>
+    <h3>7. Subscription</h3>
     <p>Scanning requires an active subscription or trial. Exported files (STL / OBJ) are yours — export is unlimited and never token-metered. Subscriptions renew automatically until cancelled through your app store or account settings.</p>
   </div>
   <label class="check-row"><input type="checkbox" id="wv1"><span>I have read and accept the waiver and terms above.</span></label>
@@ -230,6 +232,28 @@ button{cursor:pointer;}
   <button class="btn-main" id="startScanBtn" style="margin-top:6px;">Start Guided Capture</button>
   <div class="err" id="homeErr"></div>
   <p class="muted" style="margin-top:10px;">Tip: use even lighting, keep the subject still, and orbit slowly in a full circle about 30–50&nbsp;cm away. The tracker fills the ring as you cover each angle.</p>
+</div>
+
+<!-- ============ SURFACE CHECK ============ -->
+<div class="screen" id="scr-surface">
+  <button class="back" id="surfBack">‹ Back</button>
+  <div class="hero" style="padding:12px 0 8px;">
+    <div class="hero-logo" style="font-size:30px;">Surface Check</div>
+    <div class="hero-tag">30 seconds now prevents a failed scan</div>
+  </div>
+  <div class="card" style="padding:14px 18px;">
+    <div class="dev-row"><span>🦶 Skin &amp; textured surfaces<div class="muted" style="font-size:11px;">Pores, creases and patterns track well</div></span><span class="dev-status ok">Good</span></div>
+    <div class="dev-row"><span>🎨 Single-color, smooth<div class="muted" style="font-size:11px;">Nothing to track — add 4–6 markers on/around it</div></span><span class="dev-status warn">Markers</span></div>
+    <div class="dev-row"><span>✨ Shiny / reflective<div class="muted" style="font-size:11px;">Reflections confuse tracking — matte spray or markers</div></span><span class="dev-status warn">Prep</span></div>
+    <div class="dev-row"><span>🖤 Very dark matte<div class="muted" style="font-size:11px;">Add strong even light plus markers</div></span><span class="dev-status warn">Light</span></div>
+    <div class="dev-row"><span>🫙 Transparent / glass<div class="muted" style="font-size:11px;">Camera capture can fail even with prep</div></span><span class="dev-status bad">Risky</span></div>
+  </div>
+  <div class="card">
+    <div style="font-size:13px;line-height:1.7;color:#c0c0d8;">The printable sheet gives you cut-out tracking markers <b>and</b> a scale reference — markers of known size are what pin your scan to real millimeters. <b style="color:var(--accent);">After printing, measure the check square with a ruler: exactly 50&nbsp;mm, or dimensions can't be trusted.</b> Keep at least 3 markers visible in every shot, and don't cover areas you need geometry of.</div>
+  </div>
+  <button class="btn-ghost" id="printTargets" style="margin-bottom:10px;">🖨 Print Marker &amp; Scale Sheet</button>
+  <button class="btn-main" id="surfGo">Open Camera</button>
+  <div class="err" id="surfErr"></div>
 </div>
 
 <!-- ============ LIBRARY TAB ============ -->
@@ -363,13 +387,14 @@ const idb = {
 /* =====================================================================
    WAIVER
 ===================================================================== */
-function waiverOk(){ try{ return !!JSON.parse(localStorage.getItem(LS.waiver)||'null'); }catch(e){ return false; } }
+const WAIVER_VERSION = 2;   // bump when waiver text changes -> forces re-acceptance
+function waiverOk(){ try{ const w=JSON.parse(localStorage.getItem(LS.waiver)||'null'); return !!w && w.version===WAIVER_VERSION; }catch(e){ return false; } }
 function initWaiver(){
   const upd = () => { $('wvBtn').disabled = !($('wv1').checked && $('wv2').checked && $('wvName').value.trim().length>=3); };
   ['wv1','wv2'].forEach(id=>$(id).addEventListener('change',upd));
   $('wvName').addEventListener('input',upd);
   $('wvBtn').addEventListener('click',()=>{
-    localStorage.setItem(LS.waiver, JSON.stringify({ name:$('wvName').value.trim(), ts:Date.now(), version:1 }));
+    localStorage.setItem(LS.waiver, JSON.stringify({ name:$('wvName').value.trim(), ts:Date.now(), version:WAIVER_VERSION }));
     show('scr-device'); runDeviceCheck();
   });
 }
@@ -451,8 +476,67 @@ function initHome(){
   $('startScanBtn').addEventListener('click',()=>{
     $('homeErr').textContent='';
     if(!hasSub()){ show('scr-plans'); return; }
-    startCapture().catch(err=>{ $('homeErr').textContent = 'Camera error: '+(err.message||err.name||err); });
+    $('surfErr').textContent='';
+    show('scr-surface');
   });
+  $('surfBack').addEventListener('click',()=>setTab('home'));
+  $('surfGo').addEventListener('click',()=>{
+    $('surfErr').textContent='';
+    startCapture().catch(err=>{ $('surfErr').textContent = 'Camera error: '+(err.message||err.name||err); });
+  });
+  $('printTargets').addEventListener('click',openTargetSheet);
+}
+
+/* =====================================================================
+   MARKER & SCALE SHEET — printable tracking targets + scale reference.
+   Sizes use CSS mm units; the 50mm check square must be ruler-verified
+   because browsers/printers can silently rescale ("fit to page").
+===================================================================== */
+function markerSVG(id){
+  // 6x6 coded square: solid black border ring + deterministic 4x4 inner pattern
+  let rng=(id*2654435761)>>>0;
+  const bit=()=>{ rng=(rng*1664525+1013904223)>>>0; return (rng>>>28)&1; };
+  let cells='';
+  for(let r=0;r<6;r++) for(let c=0;c<6;c++){
+    const border=(r===0||c===0||r===5||c===5);
+    if(border||bit()) cells+=`<rect x="${c}" y="${r}" width="1.02" height="1.02" fill="#000"/>`;
+  }
+  return `<svg viewBox="0 0 6 6" style="width:28mm;height:28mm;" shape-rendering="crispEdges">${cells}</svg>`;
+}
+function openTargetSheet(){
+  const w=window.open('','_blank');
+  if(!w){ toast('Allow pop-ups to open the print sheet'); return; }
+  let markers='';
+  for(let i=1;i<=8;i++) markers+=`<div class="mk">${markerSVG(i*7+3)}<span>M${i}</span></div>`;
+  w.document.write(`<!DOCTYPE html><html><head><title>Shapeshot — Marker &amp; Scale Sheet</title><style>
+    @page{size:A4;margin:12mm;}
+    body{font-family:Arial,Helvetica,sans-serif;color:#000;margin:0;}
+    h1{font-size:18px;margin:0 0 2mm;}
+    .warn{border:1mm solid #000;padding:3mm;font-size:12px;font-weight:bold;margin:4mm 0;}
+    ol{font-size:11px;line-height:1.6;margin:3mm 0;padding-left:5mm;}
+    .grid{display:flex;flex-wrap:wrap;gap:8mm;margin:5mm 0;}
+    .mk{display:flex;flex-direction:column;align-items:center;gap:1mm;font-size:9px;padding:3mm;border:.3mm dashed #999;}
+    .check{width:50mm;height:50mm;border:.6mm solid #000;display:flex;align-items:center;justify-content:center;font-size:10px;text-align:center;margin:4mm 0;}
+    .bar{width:100mm;height:8mm;background:repeating-linear-gradient(90deg,#000 0,#000 10mm,#fff 10mm,#fff 20mm);border:.4mm solid #000;}
+    .bar-lbl{font-size:9px;margin-top:1mm;}
+    footer{font-size:9px;color:#444;margin-top:5mm;}
+  </style></head><body>
+    <h1>Shapeshot — Tracking Markers &amp; Scale Reference</h1>
+    <div class="warn">PRINT AT 100% / "ACTUAL SIZE" — never "fit to page".<br>
+    Before use, measure the verification square below with a ruler. If it is not exactly 50 mm &times; 50 mm, reprint. Dimensions taken from a scan without a verified scale reference must not be trusted or used for fabrication.</div>
+    <div class="check">Verification square<br>must measure exactly<br>50 mm &times; 50 mm</div>
+    <div class="bar"></div><div class="bar-lbl">Scale bar — 100 mm total, 10 mm bands</div>
+    <ol>
+      <li>Cut out 4–8 markers along the dashed lines.</li>
+      <li>Place them on or around the subject — on featureless, shiny, or dark areas, but never covering surfaces you need geometry of.</li>
+      <li>Keep at least 3 markers visible in every capture frame.</li>
+      <li>Keep the scale bar or one uncut marker flat and visible in the scene for dimensional scale.</li>
+    </ol>
+    <div class="grid">${markers}</div>
+    <footer>Shapeshot markers are 28 mm coded squares. Reflective, transparent, or very dark subjects may still fail to reconstruct — see the in-app surface guide. Not a medical device; all output must be verified by a qualified practitioner.</footer>
+    <script>window.onload=()=>window.print();<\/script>
+  </body></html>`);
+  w.document.close();
 }
 
 /* =====================================================================
