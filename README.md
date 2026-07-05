@@ -1,4 +1,4 @@
-# Forge Scan
+# Formcast
 
 A 3D scanning app for **orthotics & prosthetics** (and general objects), built for ease of use, subscription pricing, and **free, unlimited STL/OBJ export** — no tokens, no per-export fees.
 
@@ -30,6 +30,10 @@ Serve over HTTPS (camera requires a secure context). Easiest: enable **GitHub Pa
 | Billing | Local simulated trial | RevenueCat (App Store + Play Store subscriptions) or Stripe for the web build |
 | Distribution | Web / PWA | Wrap with **Capacitor** for App Store & Play Store; same codebase |
 | Accounts | Device-local | Supabase auth + scan sync |
+
+## Accuracy positioning
+
+Phone-based capture (photogrammetry or LiDAR) realistically delivers **±1–2 mm** with good technique and a printed scale reference in frame — the same class as EM3D/HiTek-style competitors, and sufficient for insoles, AFOs, and sockets. Sub-millimetre accuracy requires structured-light hardware and should never be claimed in marketing. The current demo build's preview mesh carries no accuracy guarantee at all; real accuracy arrives with the reconstruction backend.
 
 ## Compliance notes
 
