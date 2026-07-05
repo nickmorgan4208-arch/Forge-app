@@ -579,7 +579,12 @@ function AuthScreen({ onSignIn, onStartSignup }) {
     if (h === sel.passHash || (!sel.passHash && !pass)) { onSignIn(sel); return; }
     setErr("Wrong password. A parent can reset it from the parent portal."); setBusy(false);
   };
+  // Device profiles work like streaming-service profiles: one family, capped
+  // list. Global scale uses email accounts (Supabase Auth) where sign-in
+  // lists nobody — see docs/FORGE-V2-PLAN.md §2.
+  const MAX_PROFILES = 6;
   const trySignup = () => {
+    if (users.length >= MAX_PROFILES) { setErr("This device is full (" + MAX_PROFILES + " profiles). The cloud version has unlimited accounts via email sign-in."); return; }
     if (!name.trim()) { setErr("Pick a name first."); return; }
     if (users.some(u => u.name.toLowerCase() === name.trim().toLowerCase())) { setErr("That name already has an account on this device — sign in instead."); return; }
     if (pw.length < 4) { setErr("Password needs at least 4 characters."); return; }
