@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Forge — Logo Intro</title>
+<style>
+/*
+  LOGO ASSEMBLY INTRO — each logo piece is a separate raster image that flies
+  in on its own choreography:
+    1. laurel leaves swoop in from the sides on curved paths
+    2. shield drops from above, spinning, lands with impact
+    3. crown falls, spins, lands on the shield
+    4. the name stamps in letter by letter
+  Swap the data-URI stand-ins for your real PNG pieces (leaves-l.png,
+  leaves-r.png, shield.png, crown.png) — the choreography doesn't change.
+*/
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:#050508;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+.bg{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 38%,#141833 0%,#0a0c1c 45%,#050508 100%);}
+.floor-glow{position:fixed;left:50%;top:64%;width:70vmin;height:16vmin;transform:translateX(-50%);background:radial-gradient(ellipse,rgba(232,255,71,.14),transparent 70%);filter:blur(10px);opacity:0;transition:opacity 1.2s ease;}
+.world{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;will-change:transform;}
+.logo{position:relative;width:64vmin;height:64vmin;}
+.piece{position:absolute;will-change:transform,opacity,filter;opacity:0;}
+img{width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none;}
+
+/* geometry of the assembled mark */
+.leaf-l{left:-6%;top:22%;width:38%;height:60%;}
+.leaf-r{right:-6%;top:22%;width:38%;height:60%;}
+.shield{left:26%;top:20%;width:48%;height:56%;}
+.crown{left:33%;top:2%;width:34%;height:22%;}
+
+/* 1 ─ laurel swoop: curved flight (arc via mid keyframes) + unfurl rotation */
+.leaf-l.go{animation:swoopL 1.05s cubic-bezier(.16,.9,.28,1.04) forwards;}
+.leaf-r.go{animation:swoopR 1.05s cubic-bezier(.16,.9,.28,1.04) forwards;}
+@keyframes swoopL{
+  0%  {opacity:0;transform:translate(-70vmin,26vmin) rotate(-110deg) scale(.55);filter:blur(6px);}
+  55% {opacity:1;transform:translate(-9vmin,-7vmin) rotate(18deg) scale(1.06);filter:blur(1px);}
+  78% {transform:translate(1.6vmin,1vmin) rotate(-7deg) scale(.99);}
+  100%{opacity:1;transform:translate(0,0) rotate(0) scale(1);filter:blur(0);}
+}
+@keyframes swoopR{
+  0%  {opacity:0;transform:translate(70vmin,26vmin) rotate(110deg) scale(.55);filter:blur(6px);}
+  55% {opacity:1;transform:translate(9vmin,-7vmin) rotate(-18deg) scale(1.06);filter:blur(1px);}
+  78% {transform:translate(-1.6vmin,1vmin) rotate(7deg) scale(.99);}
+  100%{opacity:1;transform:translate(0,0) rotate(0) scale(1);filter:blur(0);}
+}
+/* 2 ─ shield: drop from sky, spinning, slam + squash */
+.shield.go{animation:shieldDrop 1.15s cubic-bezier(.5,0,.9,.4) forwards;}
+@keyframes shieldDrop{
+  0%  {opacity:0;transform:translateY(-95vh) rotate(540deg) scale(.6);filter:blur(4px);}
+  12% {opacity:1;}
+  72% {transform:translateY(0) rotate(0deg) scale(1);filter:blur(0);}
+  80% {transform:translateY(1.8vmin) scaleY(.9) scaleX(1.08);}
+  90% {transform:translateY(-1vmin) scaleY(1.03) scaleX(.99);}
+  100%{opacity:1;transform:translateY(0) scale(1);}
+}
+/* 3 ─ crown: falls later, spins, bounces once on the shield crest */
+.crown.go{animation:crownDrop 1.05s cubic-bezier(.45,0,.85,.35) forwards;}
+@keyframes crownDrop{
+  0%  {opacity:0;transform:translateY(-88vh) rotate(-620deg) scale(.55);filter:blur(4px);}
+  14% {opacity:1;}
+  68% {transform:translateY(0) rotate(0) scale(1);filter:blur(0);}
+  78% {transform:translateY(-3.2vmin) rotate(8deg);}
+  90% {transform:translateY(.5vmin) rotate(-2deg) scaleY(.95);}
+  100%{opacity:1;transform:translateY(0) rotate(0) scale(1);}
+}
+/* 4 ─ name: stamped letter by letter */
+.name{position:fixed;left:0;right:0;top:71%;text-align:center;z-index:30;}
+.name span{display:inline-block;font-size:clamp(46px,11vmin,110px);font-weight:800;letter-spacing:.08em;color:#e8ff47;opacity:0;will-change:transform,opacity,filter;text-shadow:0 0 34px rgba(232,255,71,.4),0 0 90px rgba(232,255,71,.18);}
+.name span.go{animation:stamp .42s cubic-bezier(.2,.8,.3,1.15) forwards;}
+@keyframes stamp{
+  0%  {opacity:0;transform:scale(3.4) translateY(-1vmin);filter:blur(10px);}
+  60% {opacity:1;transform:scale(.94);filter:blur(0);}
+  100%{opacity:1;transform:scale(1);}
+}
+.tag{position:fixed;left:0;right:0;top:84%;text-align:center;font-size:clamp(10px,1.6vmin,14px);letter-spacing:.5em;text-indent:.5em;text-transform:uppercase;color:rgba(240,240,255,.65);opacity:0;transition:opacity 1.4s ease;z-index:30;}
+canvas.fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;}
+.vignette{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 50%,rgba(0,0,0,.55) 100%);}
+.flash{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 55%,rgba(232,255,71,.22),transparent 60%);opacity:0;pointer-events:none;}
+@media (prefers-reduced-motion:reduce){
+  .piece,.name span{animation:none !important;opacity:1 !important;transform:none !important;filter:none !important;}
+}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="floor-glow" id="floorGlow"></div>
+<div class="world" id="world">
+  <div class="logo">
+    <div class="piece leaf-l" id="leafL"><img alt="" src=""/></div>
+    <div class="piece leaf-r" id="leafR"><img alt="" src=""/></div>
+    <div class="piece shield" id="shield"><img alt="" src=""/></div>
+    <div class="piece crown" id="crown"><img alt="" src=""/></div>
+  </div>
+</div>
+<div class="name" id="name"></div>
+<div class="tag" id="tag">Real skills · Real life</div>
+<canvas class="fx" id="fx"></canvas>
+<div class="vignette"></div>
+<div class="flash" id="flash"></div>
+
+<script>
+// ── PIECE ART (stand-ins — swap each src for your PNG piece) ────────────────
+const svg = (w, h, body) => 'data:image/svg+xml;utf8,' + encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}">${body}</svg>`);
+
+const leaf = (flip) => svg(200, 320, `
+  <g ${flip ? 'transform="translate(200,0) scale(-1,1)"' : ''}>
+    <path d="M170 300 Q60 260 40 150 Q30 80 70 20" fill="none" stroke="#3fae5a" stroke-width="10" stroke-linecap="round"/>
+    ${Array.from({length: 9}, (_, i) => {
+      const t = i / 8, x = 170 - t * 118, y = 296 - t * 250 - Math.sin(t * 2.4) * 18;
+      const a = -34 - t * 46;
+      return `<ellipse cx="${x}" cy="${y}" rx="34" ry="13" fill="${i % 2 ? '#47c46a' : '#379952'}" transform="rotate(${a} ${x} ${y})"/>
+              <ellipse cx="${x + 16}" cy="${y + 14}" rx="30" ry="11" fill="${i % 2 ? '#2f8447' : '#3fae5a'}" transform="rotate(${a + 42} ${x + 16} ${y + 14})"/>`;
+    }).join('')}
+  </g>`);
+
+const shieldArt = svg(240, 280, `
+  <defs>
+    <linearGradient id="st" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a4258"/><stop offset="55%" stop-color="#222a3e"/><stop offset="100%" stop-color="#141a2a"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffd968"/><stop offset="50%" stop-color="#c99a2e"/><stop offset="100%" stop-color="#ffdf7e"/>
+    </linearGradient>
+  </defs>
+  <path d="M120 8 L228 44 L228 132 Q228 216 120 272 Q12 216 12 132 L12 44 Z" fill="url(#rim)"/>
+  <path d="M120 22 L214 52 L214 130 Q214 206 120 256 Q26 206 26 130 L26 52 Z" fill="url(#st)"/>
+  <path d="M120 22 L214 52 L214 130 Q214 206 120 256 Z" fill="white" opacity=".05"/>
+  <text x="120" y="172" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="120" fill="#e8ff47" style="filter:drop-shadow(0 0 14px rgba(232,255,71,.5))">F</text>`);
+
+const crownArt = svg(260, 140, `
+  <defs><linearGradient id="au" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffe89a"/><stop offset="55%" stop-color="#e3b53e"/><stop offset="100%" stop-color="#b58414"/>
+  </linearGradient></defs>
+  <path d="M18 118 L14 46 L64 84 L106 24 L130 12 L154 24 L196 84 L246 46 L242 118 Q130 138 18 118 Z" fill="url(#au)"/>
+  <rect x="18" y="106" width="224" height="22" rx="10" fill="#c99a2e"/>
+  <circle cx="14" cy="42" r="10" fill="#ffd968"/><circle cx="130" cy="10" r="11" fill="#ffd968"/><circle cx="246" cy="42" r="10" fill="#ffd968"/>
+  <circle cx="76" cy="112" r="8" fill="#e14848"/><circle cx="130" cy="116" r="9" fill="#47c8ff"/><circle cx="184" cy="112" r="8" fill="#3fae5a"/>`);
+
+document.querySelector('#leafL img').src = leaf(false);
+document.querySelector('#leafR img').src = leaf(true);
+document.querySelector('#shield img').src = shieldArt;
+document.querySelector('#crown img').src = crownArt;
+
+// ── NAME ────────────────────────────────────────────────────────────────────
+const NAME = 'FORGE';
+const nameEl = document.getElementById('name');
+NAME.split('').forEach(ch => { const s = document.createElement('span'); s.textContent = ch; nameEl.appendChild(s); });
+
+// ── IMPACT FX: camera shake + particle bursts + flash ───────────────────────
+const world = document.getElementById('world');
+const flash = document.getElementById('flash');
+const fx = document.getElementById('fx'), fc = fx.getContext('2d');
+const DPR = devicePixelRatio || 1;
+function size() { fx.width = innerWidth * DPR; fx.height = innerHeight * DPR; }
+size(); addEventListener('resize', size);
+const parts = [];
+function burst(nx, ny, n, power, hueA, hueB) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, v = (Math.random() * .6 + .4) * power;
+    parts.push({ x: nx * fx.width, y: ny * fx.height, vx: Math.cos(a) * v, vy: Math.sin(a) * v * .7 - power * .35,
+      r: (Math.random() * 2.6 + 1) * DPR, life: 1, hue: hueA + Math.random() * (hueB - hueA) });
+  }
+}
+(function loop() {
+  fc.clearRect(0, 0, fx.width, fx.height);
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const p = parts[i];
+    p.x += p.vx; p.y += p.vy; p.vy += .16 * DPR; p.life -= .018;
+    if (p.life <= 0) { parts.splice(i, 1); continue; }
+    fc.beginPath(); fc.arc(p.x, p.y, Math.max(0, p.r * p.life), 0, 7);
+    fc.fillStyle = `hsla(${p.hue},95%,62%,${p.life})`;
+    fc.shadowColor = `hsla(${p.hue},95%,60%,.8)`; fc.shadowBlur = 10 * p.life; fc.fill(); fc.shadowBlur = 0;
+  }
+  requestAnimationFrame(loop);
+})();
+let shakeT = 0, shakeAmp = 0;
+function shake(amp) { shakeAmp = Math.max(shakeAmp, amp); shakeT = performance.now(); }
+(function shakeLoop() {
+  const dt = (performance.now() - shakeT) / 1000;
+  const a = shakeAmp * Math.max(0, 1 - dt * 3.2);
+  world.style.transform = a > .1
+    ? `translate(${(Math.random() - .5) * a}px,${(Math.random() - .5) * a}px) rotate(${(Math.random() - .5) * a * .04}deg)`
+    : '';
+  requestAnimationFrame(shakeLoop);
+})();
+function pulse(op) { flash.style.transition = 'none'; flash.style.opacity = op; requestAnimationFrame(() => { flash.style.transition = 'opacity .5s ease'; flash.style.opacity = 0; }); }
+
+// ── TIMELINE ────────────────────────────────────────────────────────────────
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const at = (ms, fn) => setTimeout(fn, reduced ? 0 : ms);
+at(300,  () => document.getElementById('leafL').classList.add('go'));
+at(450,  () => document.getElementById('leafR').classList.add('go'));
+at(1500, () => document.getElementById('shield').classList.add('go'));
+at(2330, () => { // shield touchdown
+  if (!reduced) { shake(26); burst(.5, .58, 60, 7 * DPR, 40, 70); burst(.5, .60, 30, 4 * DPR, 20, 40); pulse(.55); }
+  document.getElementById('floorGlow').style.opacity = 1;
+});
+at(2750, () => document.getElementById('crown').classList.add('go'));
+at(3460, () => { if (!reduced) { shake(14); burst(.5, .28, 34, 4.5 * DPR, 44, 56); pulse(.3); } }); // crown lands
+// letters stamp one by one
+const spans = [...document.querySelectorAll('.name span')];
+spans.forEach((s, i) => at(4000 + i * 190, () => {
+  s.classList.add('go');
+  if (!reduced) { shake(9); burst((.5 - (spans.length - 1) * .045 / 2) + i * .045, .745, 10, 2.6 * DPR, 62, 70); }
+}));
+at(4000 + spans.length * 190 + 500, () => { document.getElementById('tag').style.opacity = 1; if (!reduced) burst(.5, .45, 40, 3 * DPR, 60, 70); });
+// gentle ambient embers forever after assembly
+at(5600, () => setInterval(() => { if (!reduced && parts.length < 160) burst(.35 + Math.random() * .3, .62, 2, 1.6 * DPR, 30, 60); }, 240));
+</script>
+</body>
+</html>
