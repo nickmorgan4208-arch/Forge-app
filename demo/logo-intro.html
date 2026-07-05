@@ -105,39 +105,82 @@ canvas.fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;}
 const svg = (w, h, body) => 'data:image/svg+xml;utf8,' + encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}">${body}</svg>`);
 
-const leaf = (flip) => svg(200, 320, `
-  <g ${flip ? 'transform="translate(200,0) scale(-1,1)"' : ''}>
-    <path d="M170 300 Q60 260 40 150 Q30 80 70 20" fill="none" stroke="#3fae5a" stroke-width="10" stroke-linecap="round"/>
-    ${Array.from({length: 9}, (_, i) => {
-      const t = i / 8, x = 170 - t * 118, y = 296 - t * 250 - Math.sin(t * 2.4) * 18;
-      const a = -34 - t * 46;
-      return `<ellipse cx="${x}" cy="${y}" rx="34" ry="13" fill="${i % 2 ? '#47c46a' : '#379952'}" transform="rotate(${a} ${x} ${y})"/>
-              <ellipse cx="${x + 16}" cy="${y + 14}" rx="30" ry="11" fill="${i % 2 ? '#2f8447' : '#3fae5a'}" transform="rotate(${a + 42} ${x + 16} ${y + 14})"/>`;
-    }).join('')}
-  </g>`);
+// Classical laurel half-wreath: paired teardrop leaves tapering along a
+// smooth arc — constructed geometrically for symmetry (emblem-style craft).
+function laurelHalf(flip) {
+  // Circle center sits far to the inside so the visible arc runs vertically:
+  // the branch starts at the bottom (near the shield's base) and sweeps up
+  // the outside edge — classic wreath posture.
+  const cx = 400, cy = 160, R = 370;
+  const G1 = '#3f9d58', G2 = '#2f7a44', STEM = '#2a6b3c';
+  const a0 = 152, a1 = 197;
+  const P = (deg, r) => { const a = deg * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; };
+  const [sx, sy] = P(a0, R), [ex, ey] = P(a1, R);
+  let out = `<path d="M ${sx} ${sy} A ${R} ${R} 0 0 1 ${ex} ${ey}" fill="none" stroke="${STEM}" stroke-width="8" stroke-linecap="round"/>`;
+  const leaf = (x, y, ang, L, col) => {
+    const W = L * .34;
+    return `<path transform="translate(${x} ${y}) rotate(${ang})" fill="${col}"
+      d="M0 0 C ${L * .18} ${-W}, ${L * .62} ${-W * .9}, ${L} 0 C ${L * .62} ${W * .9}, ${L * .18} ${W}, 0 0 Z"/>`;
+  };
+  const N = 8;
+  for (let i = 0; i < N; i++) {
+    const t = i / (N - 1);
+    const ang = a0 + (a1 - a0) * t;
+    const [x, y] = P(ang, R);
+    const grow = ang + 90;                  // tangent: direction of growth (up the arc)
+    const L = 64 - t * 28;                  // leaves taper toward the tip
+    out += leaf(x, y, grow - 26, L, G1);    // outer leaf of the pair
+    out += leaf(x, y, grow + 26, L * .9, G2); // inner leaf
+  }
+  out += leaf(ex, ey, a1 + 90, 34, G1);     // terminal leaf along the tip
+  return svg(260, 340, `<g ${flip ? 'transform="translate(260,0) scale(-1,1)"' : ''}>${out}</g>`);
+}
+const leaf = (flip) => laurelHalf(flip);
 
+// Heater shield on a grid: beveled gold rim, navy face with sheen, gold
+// hairline inset, anvil mark with a struck spark (Forge identity).
 const shieldArt = svg(240, 280, `
   <defs>
-    <linearGradient id="st" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#3a4258"/><stop offset="55%" stop-color="#222a3e"/><stop offset="100%" stop-color="#141a2a"/>
+    <linearGradient id="face" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1c2742"/><stop offset="60%" stop-color="#131c33"/><stop offset="100%" stop-color="#0d1425"/>
     </linearGradient>
     <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#ffd968"/><stop offset="50%" stop-color="#c99a2e"/><stop offset="100%" stop-color="#ffdf7e"/>
+      <stop offset="0%" stop-color="#f6d574"/><stop offset="45%" stop-color="#c9932b"/><stop offset="100%" stop-color="#f2c14e"/>
     </linearGradient>
   </defs>
-  <path d="M120 8 L228 44 L228 132 Q228 216 120 272 Q12 216 12 132 L12 44 Z" fill="url(#rim)"/>
-  <path d="M120 22 L214 52 L214 130 Q214 206 120 256 Q26 206 26 130 L26 52 Z" fill="url(#st)"/>
-  <path d="M120 22 L214 52 L214 130 Q214 206 120 256 Z" fill="white" opacity=".05"/>
-  <text x="120" y="172" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="120" fill="#e8ff47" style="filter:drop-shadow(0 0 14px rgba(232,255,71,.5))">F</text>`);
+  <path d="M120 6 C160 22 196 30 226 30 V132 C226 202 186 246 120 274 C54 246 14 202 14 132 V30 C44 30 80 22 120 6 Z" fill="url(#rim)"/>
+  <path d="M120 20 C154 33 184 40 212 41 V131 C212 194 177 233 120 259 C63 233 28 194 28 131 V41 C56 40 86 33 120 20 Z" fill="url(#face)"/>
+  <path d="M120 30 C151 42 178 48 202 49 V130 C202 187 171 222 120 246 C69 222 38 187 38 130 V49 C62 48 89 42 120 30 Z" fill="none" stroke="#c9932b" stroke-width="2.5" opacity=".85"/>
+  <path d="M120 20 C154 33 184 40 212 41 V131 C212 194 177 233 120 259 Z" fill="white" opacity=".045"/>
+  <g transform="translate(52 108)" fill="#e8ff47" style="filter:drop-shadow(0 0 12px rgba(232,255,71,.55))">
+    <path d="M10 6 H98 C110 6 122 2 130 -6 C138 -8 148 -6 156 0 C148 10 134 18 118 20 H92 V40 H44 V20 H30 C20 18 13 13 10 6 Z"/>
+    <path d="M38 40 H98 V50 H38 Z"/>
+    <path d="M30 50 H106 L116 66 H20 Z"/>
+  </g>
+  <path d="M186 76 l5 13 13 5 -13 5 -5 13 -5 -13 -13 -5 13 -5 z" fill="#e8ff47" style="filter:drop-shadow(0 0 10px rgba(232,255,71,.8))"/>`);
 
-const crownArt = svg(260, 140, `
+// Geometric three-point crown: concave-sided points, sphere finials, banded
+// base with inset facets — flat luxury, one shading tone per surface.
+const crownArt = svg(260, 150, `
   <defs><linearGradient id="au" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#ffe89a"/><stop offset="55%" stop-color="#e3b53e"/><stop offset="100%" stop-color="#b58414"/>
+    <stop offset="0%" stop-color="#f6d574"/><stop offset="100%" stop-color="#d5a437"/>
   </linearGradient></defs>
-  <path d="M18 118 L14 46 L64 84 L106 24 L130 12 L154 24 L196 84 L246 46 L242 118 Q130 138 18 118 Z" fill="url(#au)"/>
-  <rect x="18" y="106" width="224" height="22" rx="10" fill="#c99a2e"/>
-  <circle cx="14" cy="42" r="10" fill="#ffd968"/><circle cx="130" cy="10" r="11" fill="#ffd968"/><circle cx="246" cy="42" r="10" fill="#ffd968"/>
-  <circle cx="76" cy="112" r="8" fill="#e14848"/><circle cx="130" cy="116" r="9" fill="#47c8ff"/><circle cx="184" cy="112" r="8" fill="#3fae5a"/>`);
+  <g>
+    <path d="M52 100 C58 70 62 50 66 34 C76 56 84 76 92 100 Z" fill="url(#au)"/>
+    <path d="M66 34 C76 56 84 76 92 100 H72 Z" fill="#b98a20"/>
+    <path d="M112 100 C118 62 124 38 130 18 C136 38 142 62 148 100 Z" fill="url(#au)"/>
+    <path d="M130 18 C136 38 142 62 148 100 H130 Z" fill="#b98a20"/>
+    <path d="M168 100 C176 76 184 56 194 34 C198 50 202 70 208 100 Z" fill="url(#au)"/>
+    <path d="M194 34 C198 50 202 70 208 100 H188 Z" fill="#b98a20"/>
+    <circle cx="66" cy="26" r="8" fill="#f6d574" stroke="#b98a20" stroke-width="2"/>
+    <circle cx="130" cy="9" r="9" fill="#f6d574" stroke="#b98a20" stroke-width="2"/>
+    <circle cx="194" cy="26" r="8" fill="#f6d574" stroke="#b98a20" stroke-width="2"/>
+    <rect x="44" y="100" width="172" height="26" rx="9" fill="url(#au)"/>
+    <rect x="44" y="118" width="172" height="8" rx="4" fill="#b98a20"/>
+    <rect x="78" y="106" width="14" height="11" rx="3" fill="#8f6614"/>
+    <rect x="123" y="106" width="14" height="11" rx="3" fill="#8f6614"/>
+    <rect x="168" y="106" width="14" height="11" rx="3" fill="#8f6614"/>
+  </g>`);
 
 // YOUR LOGO: drop PNG pieces into demo/assets/ with these exact names and
 // they're used automatically; the generated art is only the fallback.
