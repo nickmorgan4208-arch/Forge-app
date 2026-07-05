@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="theme-color" content="#080810"/>
-<title>Formcast — 3D Scanning for O&amp;P</title>
+<title>Shapeshot — Scan anything. Export everything.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="three.min.js"></script>
@@ -148,19 +148,19 @@ button{cursor:pointer;}
 <!-- ============ WAIVER ============ -->
 <div class="screen" id="scr-waiver">
   <div class="hero">
-    <div class="hero-logo">FORM<span>CAST</span></div>
-    <div class="hero-tag">3D Scanning · Orthotics &amp; Prosthetics</div>
+    <div class="hero-logo">SHAPE<span>SHOT</span></div>
+    <div class="hero-tag">Scan Anything · Export Everything</div>
   </div>
   <div class="sec">Liability Waiver &amp; Terms of Use</div>
   <div class="waiver-box" id="waiverBox">
     <h3>1. Not a Medical Device</h3>
-    <p>Formcast is a measurement and 3D-capture utility. It is <b>not a medical device</b> and has not been evaluated or cleared by the FDA or any regulatory body. Scans, meshes, and measurements produced by this app are provided for reference and workflow convenience only and must not be the sole basis for clinical decisions, diagnosis, or treatment.</p>
+    <p>Shapeshot is a measurement and 3D-capture utility. It is <b>not a medical device</b> and has not been evaluated or cleared by the FDA or any regulatory body. Scans, meshes, and measurements produced by this app are provided for reference and workflow convenience only and must not be the sole basis for clinical decisions, diagnosis, or treatment.</p>
     <h3>2. Professional Judgment Required</h3>
     <p>Orthotic and prosthetic devices fabricated from scans produced by this app must be reviewed, verified, and fitted by a qualified, licensed practitioner. You accept full responsibility for verifying dimensional accuracy against physical measurements before fabrication or clinical use.</p>
     <h3>3. Accuracy Disclaimer</h3>
     <p>Capture quality depends on device hardware, lighting, subject movement, and operator technique. No warranty of dimensional accuracy, fitness for a particular purpose, or merchantability is given. All output is provided "as is".</p>
     <h3>4. Assumption of Risk &amp; Release</h3>
-    <p>By accepting, you release Formcast, its developers, and affiliates from any and all claims, damages, or liabilities arising from use of this app or from devices fabricated using its output, to the maximum extent permitted by law.</p>
+    <p>By accepting, you release Shapeshot, its developers, and affiliates from any and all claims, damages, or liabilities arising from use of this app or from devices fabricated using its output, to the maximum extent permitted by law.</p>
     <h3>5. Data &amp; Privacy</h3>
     <p>Photos captured during scanning are processed for reconstruction. If you scan another person, you confirm you have their informed consent (or that of their legal guardian). You are responsible for complying with applicable privacy and health-information regulations (e.g., HIPAA, GDPR) in your jurisdiction.</p>
     <h3>6. Subscription</h3>
@@ -217,7 +217,7 @@ button{cursor:pointer;}
 <!-- ============ HOME / SCAN TAB ============ -->
 <div class="screen" id="scr-home">
   <div class="topbar">
-    <div class="wordmark">FORM<span>CAST</span></div>
+    <div class="wordmark">SHAPE<span>SHOT</span></div>
     <div class="pill pro" id="subPill">Pro Trial</div>
   </div>
   <div class="sec">New Scan — choose a preset</div>
@@ -320,7 +320,7 @@ button{cursor:pointer;}
 
 <script>
 /* =====================================================================
-   Formcast — web prototype
+   Shapeshot — web prototype
    Guided rear-camera capture → mesh preview → free STL/OBJ export.
    Demo build generates the preview mesh on-device; the capture set is
    the input a production photogrammetry backend (or native ARKit/ARCore
@@ -349,7 +349,7 @@ function fmtDate(ts){ return new Date(ts).toLocaleDateString(undefined,{month:'s
 /* ---------- IndexedDB scan store ---------- */
 let db;
 function openDB(){ return new Promise((res,rej)=>{
-  const rq = indexedDB.open('formcast',1);
+  const rq = indexedDB.open('shapeshot',1);
   rq.onupgradeneeded = e => e.target.result.createObjectStore('scans',{keyPath:'id'});
   rq.onsuccess = e => { db=e.target.result; res(); };
   rq.onerror = () => rej(rq.error);
@@ -700,7 +700,7 @@ function exportSTL(scan){
 }
 function exportOBJ(scan){
   const {positions:P,indices:I}=scan;
-  let s='# Formcast export (mm)\no '+safeName(scan.label)+'\n';
+  let s='# Shapeshot export (mm)\no '+safeName(scan.label)+'\n';
   for(let i=0;i<P.length;i+=3) s+='v '+P[i].toFixed(3)+' '+P[i+1].toFixed(3)+' '+P[i+2].toFixed(3)+'\n';
   for(let i=0;i<I.length;i+=3) s+='f '+(I[i]+1)+' '+(I[i+1]+1)+' '+(I[i+2]+1)+'\n';
   download(new Blob([s],{type:'model/obj'}), safeName(scan.label)+'.obj');

@@ -1,6 +1,6 @@
-# Formcast
+# Shapeshot
 
-A 3D scanning app for **orthotics & prosthetics** (and general objects), built for ease of use, subscription pricing, and **free, unlimited STL/OBJ export** — no tokens, no per-export fees.
+A universal 3D scanning app — scan anything, export everything — built for ease of use, subscription pricing, and **free, unlimited STL/OBJ export**, no tokens, no per-export fees. **Orthotics & prosthetics** is the flagship workflow (dedicated capture presets and waiver), but the product is not limited to it.
 
 Positioned against EM3D, HiTek3D, Comb, and similar apps that are expensive, token-metered, or lock exports behind extra purchases.
 
