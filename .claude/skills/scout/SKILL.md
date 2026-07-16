@@ -63,8 +63,10 @@ requirements. When unclear, mark yellow and let the human decide.
 
 ## Step 4 — Output
 
-Append to `apply-kit/jobs-queue.csv`:
-`date,title,company,url,pay,leverage_score,risk,stack_or_primary,notes`
+Append to `apply-kit/jobs-queue.csv` (new rows get `status=queued`):
+`date,title,company,url,pay,leverage,risk,mode,status,notes`
+The pipeline board (`node apply-kit/pipeline.mjs`) and /apply both read and
+update this file — never change its header.
 
 Report the queue as: GREEN primaries, GREEN stackables, YELLOW (human
 decides), and how many were discarded and why. Green ones with leverage 4+

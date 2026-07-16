@@ -28,10 +28,16 @@
   likely in the private `nickmorgan4208-arch/brain` repo, front end possibly
   `forge-next`). Planned integrations, in order:
   1. Task watcher — monitor the inbox/ticket queue each job uses, ping TITAN
-     when a task arrives, have a draft deliverable ready fast.
-  2. Pipeline manager — desktop dashboard over `apply-kit/jobs-queue.csv`:
-     scraped → vetted → applied → interviewing → active, per-job task queues.
-  3. Deliverable factory — per-employer templates for estimates/docs.
+     when a task arrives, have a draft deliverable ready fast. (needs the
+     brain repo — not built yet)
+  2. Pipeline manager — DONE: `node apply-kit/pipeline.mjs` serves a local
+     board over `apply-kit/jobs-queue.csv` (queued → applied → interviewing
+     → active → dead) with write-back; the CSV is the single source of truth.
+  3. Deliverable factory — per-employer templates for estimates/docs. (not
+     built yet)
+- `apply-kit/jobs-queue.csv` ships pre-seeded with vetted remote listings
+  from the cloud session's scout sweeps (2026-07-16). Reds (defense, HIPAA,
+  govcon, DOE) were already discarded; yellows carry a verify-first note.
 - Cloud sessions cannot run the browser automation (no logged-in sessions,
   datacenter IPs, permission-blocked) — that's why everything here is built
   to run locally.

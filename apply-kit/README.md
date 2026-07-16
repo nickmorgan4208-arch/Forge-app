@@ -32,6 +32,19 @@ node apply.mjs "https://boards.greenhouse.io/..." --submit  # fill + submit
 Every run screenshots the filled form into `applications/` and appends to
 `applications/log.csv` so you have a record of where you applied.
 
+## Pipeline board
+
+```bash
+node pipeline.mjs        # → http://localhost:7777
+```
+
+A local dashboard over `jobs-queue.csv` (the scouted queue, seeded by
+`/scout`) and `applications/log.csv` (what apply.mjs actually did). Jobs are
+grouped queued → applied → interviewing → active → dead; changing a status in
+the browser writes straight back to `jobs-queue.csv`, so the CSV stays the
+single source of truth for `/apply`, TITAN, and this board. No dependencies —
+plain Node, binds to localhost only.
+
 ## Batch mode with Claude Code
 
 Install [Claude Code](https://claude.com/claude-code) locally, open this repo,
