@@ -1,0 +1,14 @@
+{
+  "name": "apply-kit",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local job-application copilot: drives your own logged-in Chrome to fill applications, pauses before submit.",
+  "scripts": {
+    "setup": "node apply.mjs --setup",
+    "apply": "node apply.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}

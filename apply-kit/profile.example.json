@@ -1,0 +1,35 @@
+{
+  "first_name": "Nicholas",
+  "last_name": "Morgan",
+  "email": "nickmorgan4208@gmail.com",
+  "phone": "FILL-IN (e.g. 555-555-5555)",
+  "address": "FILL-IN street address",
+  "city": "St Peters",
+  "state": "MO",
+  "zip": "FILL-IN",
+  "country": "United States",
+  "linkedin": "",
+  "website": "",
+  "resume_path": "./resume.pdf",
+
+  "answers": {
+    "authorized_to_work_in_us": "Yes",
+    "require_visa_sponsorship": "No",
+    "willing_to_relocate": "No",
+    "desired_salary": "$50/hour minimum ($100,000+/year)",
+    "notice_period": "2 weeks",
+    "veteran_status": "Decline to answer",
+    "disability_status": "Decline to answer",
+    "race_ethnicity": "Decline to answer",
+    "gender": "Decline to answer",
+    "how_did_you_hear": "Indeed",
+    "over_18": "Yes",
+    "felony": "FILL-IN honestly - lying here voids offers",
+    "drug_test": "Yes",
+    "background_check": "Yes",
+    "start_date": "Two weeks from offer",
+    "shift_availability": "8, 10, or 12 hour shifts, Monday-Friday"
+  },
+
+  "summary_notes": "Owner of Show Me Mechanical (2018-present). GM at HiTeK Fab, St Peters MO. 20+ years across plumbing/HVAC, industrial maintenance, CNC fabrication, and multi-unit operations management. Use these facts when a form asks for a summary - never invent credentials that are not in the resume."
+}
