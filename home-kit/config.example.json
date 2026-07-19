@@ -1,0 +1,32 @@
+{
+  "anchor": {
+    "label": "222 Turner Blvd, St. Peters, MO 63376",
+    "lat": 38.7876,
+    "lng": -90.6298,
+    "_note": "lat/lng are approximate — confirm once; used only for the drive-time filter"
+  },
+  "criteria": {
+    "minBeds": 3,
+    "minBaths": 2,
+    "basementRequired": true,
+    "maxPrice": 300000,
+    "maxDriveMinutes": 15,
+    "zips": ["63376", "63301", "63303", "63304", "63366", "63368"],
+    "includeStatuses": ["active", "coming_soon"]
+  },
+  "budget": {
+    "targetPayment": 2000,
+    "rate": 6.6,
+    "down": 25000,
+    "taxRate": 0.0133,
+    "insuranceMonthly": 230,
+    "pmiRate": 0.005
+  },
+  "sources": ["redfin"],
+  "supabase": {
+    "url": "FILL-IN e.g. https://ryhhxdobjjgkbtsrlqxf.supabase.co",
+    "serviceKey": "FILL-IN (service_role key, from Supabase project settings — keep secret, this file is gitignored)"
+  },
+  "chromeProfileDir": "./.chrome-profile",
+  "jsonFallback": "./listings.json"
+}

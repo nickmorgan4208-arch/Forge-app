@@ -1,0 +1,17 @@
+{
+  "name": "home-kit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local home-listing scraper for the St. Peters MO search. Runs on TITAN with a logged-in Chrome profile, writes to Supabase, and emits a change-only brief. Cloud sessions can't do this (datacenter IP + no login = 403s and no status); this is built to run locally, same pattern as apply-kit.",
+  "scripts": {
+    "setup": "node scrape.mjs --setup",
+    "scrape": "node scrape.mjs",
+    "brief": "node brief.mjs",
+    "run": "node scrape.mjs && node brief.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "playwright": "^1.47.0"
+  }
+}

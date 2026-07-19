@@ -1,0 +1,5 @@
+# secrets + local state — never commit these
+config.json
+listings.json
+.chrome-profile/
+node_modules/
