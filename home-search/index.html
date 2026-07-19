@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#080B10">
+</head>
+<body>
+<title>Mission Control — Home Acquisition</title>
+<style>
+  :root{
+    color-scheme: dark;
+    --void:#080B10; --panel:#0E141C; --panel2:#131B25; --raise:#18212D;
+    --line:#1F2A38; --grid:#132030; --ink:#C7D3E1; --dim:#6B7A8D; --faint:#42505F;
+    --amber:#EDA34A; --amber-lo:#8A6636; --cyan:#48C9D6; --cyan-lo:#2C6B72;
+    --go:#41CB8E; --go-bg:#0E2620; --hold:#E7C14A; --hold-bg:#26220E; --scrub:#E86A5A; --scrub-bg:#2A1310;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box;}
+  body{background:var(--void); color:var(--ink);
+    font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; margin:0; padding:0 12px 90px;
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:34px 34px; background-position:-1px -1px;}
+  .wrap{max-width:700px; margin:0 auto;}
+  a{color:var(--cyan);}
+  button{font:inherit; color:inherit; background:none; border:none; padding:0; cursor:pointer;}
+  button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
+  .mono{font-family:var(--mono); font-variant-numeric:tabular-nums;}
+  .lbl{font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim);}
+
+  /* header */
+  header.top{display:flex; align-items:center; gap:12px; padding:20px 4px 14px;}
+  .mark{color:var(--amber); flex:none;}
+  .mark svg{display:block;}
+  .mark .bg{opacity:.5;}
+  .title{font-family:var(--mono); font-size:17px; font-weight:700; letter-spacing:.16em; color:var(--amber);}
+  .title .slash{color:var(--dim); font-weight:400; letter-spacing:.1em; font-size:13px;}
+  .statusline{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; color:var(--dim); margin-top:4px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+  .dot{width:7px; height:7px; border-radius:50%; background:var(--go); box-shadow:0 0 8px var(--go); display:inline-block;}
+  .dot.live{animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:.35;}}
+  @media (prefers-reduced-motion:reduce){.dot.live{animation:none;}}
+
+  /* telemetry strip */
+  .auditbanner{background:var(--scrub-bg); border:1px solid var(--scrub); border-radius:9px; padding:11px 13px; margin-bottom:12px;
+    font-family:var(--mono); font-size:11px; line-height:1.55; letter-spacing:.02em; color:var(--scrub);}
+  .telem{display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; padding:2px 0 4px; margin-bottom:12px;}
+  .telem::-webkit-scrollbar{display:none;}
+  .ttile{flex:1 0 42%; min-width:150px; background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:11px 13px;}
+  .ttile .k{font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim);}
+  .ttile .v{font-family:var(--mono); font-size:22px; font-weight:700; font-variant-numeric:tabular-nums; margin-top:3px; color:var(--amber); line-height:1.1;}
+  .ttile .v.cyan{color:var(--cyan);}
+  .ttile .s{font-family:var(--mono); font-size:10.5px; color:var(--dim); margin-top:2px;}
+
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 15px; margin-bottom:12px;}
+  .panel-h{font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink); display:flex; align-items:center; gap:8px; margin-bottom:12px;}
+  .panel-h::before{content:""; width:6px; height:6px; background:var(--amber); border-radius:1px; box-shadow:0 0 6px var(--amber-lo);}
+  .panel-h .hint{color:var(--faint); letter-spacing:.06em; font-size:10px; margin-left:auto; text-transform:none;}
+
+  /* parameters console */
+  .params .envelope{display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    background:var(--panel2); border:1px solid var(--line); border-radius:9px; padding:12px 14px; margin-bottom:14px;}
+  .envelope .cap{font-family:var(--mono); font-size:34px; font-weight:700; color:var(--go); font-variant-numeric:tabular-nums; letter-spacing:-.01em; text-shadow:0 0 18px rgba(65,203,142,.25);}
+  .envelope .capr{text-align:right;}
+  .envelope .capr .l1{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--dim);}
+  .envelope .capr .l2{font-family:var(--mono); font-size:13px; color:var(--ink); margin-top:2px;}
+  .field{margin-bottom:12px;}
+  .field label{display:flex; justify-content:space-between; font-family:var(--mono); font-size:11px; letter-spacing:.06em; color:var(--dim); margin-bottom:5px;}
+  .field label output{color:var(--amber); font-weight:700;}
+  input[type=range]{width:100%; accent-color:var(--cyan); height:26px; margin:0;}
+  .params .note{font-family:var(--mono); font-size:10px; color:var(--faint); margin:2px 0 0; letter-spacing:.02em;}
+
+  /* radar */
+  #scope{width:100%; max-width:420px; aspect-ratio:1/1; display:block; margin:0 auto; touch-action:manipulation;}
+  .legend{display:flex; flex-wrap:wrap; gap:10px 16px; justify-content:center; margin-top:10px; font-family:var(--mono); font-size:10px; letter-spacing:.05em; color:var(--dim);}
+  .legend span{display:flex; align-items:center; gap:5px;}
+  .legend i{width:8px; height:8px; border-radius:50%; display:inline-block;}
+
+  /* board */
+  .board-h{margin:18px 4px 8px;}
+  .filters{position:sticky; top:0; z-index:5; background:var(--void); padding:6px 0 10px;}
+  .sectors{display:flex; gap:6px; overflow-x:auto; scrollbar-width:none;}
+  .sectors::-webkit-scrollbar{display:none;}
+  .sec{font-family:var(--mono); font-size:11.5px; letter-spacing:.06em; white-space:nowrap; padding:7px 12px; border:1px solid var(--line); border-radius:7px; color:var(--dim); background:var(--panel); text-transform:uppercase;}
+  .sec .n{opacity:.6; margin-left:4px;}
+  .sec.on{background:var(--amber); color:var(--void); border-color:var(--amber); font-weight:700;}
+  .sortrow{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:9px;}
+  .sortrow .c{font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--dim);}
+  select{font:12px var(--mono); color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:7px; padding:6px 8px;}
+
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:11px; margin-bottom:10px; overflow:hidden; scroll-margin-top:70px;}
+  .card.flag{border-color:var(--amber);}
+  .card.ping{animation:ping 1.4s ease-out;}
+  @keyframes ping{0%{box-shadow:0 0 0 0 rgba(72,201,214,.6);}100%{box-shadow:0 0 0 14px rgba(72,201,214,0);}}
+  @media (prefers-reduced-motion:reduce){.card.ping{animation:none;}}
+  .cbtn{display:block; width:100%; text-align:left; padding:12px 14px 11px;}
+  .crow1{display:flex; align-items:center; gap:9px;}
+  .slight{width:9px; height:9px; border-radius:50%; flex:none;}
+  .slight.go{background:var(--go); box-shadow:0 0 7px var(--go); animation:pulse 2.4s infinite;}
+  .slight.new{background:var(--cyan); box-shadow:0 0 7px var(--cyan);}
+  .slight.confirm{background:var(--hold); box-shadow:0 0 7px var(--hold);}
+  .slight.pre{background:var(--faint);}
+  @media (prefers-reduced-motion:reduce){.slight.go{animation:none;}}
+  .price{font-family:var(--mono); font-size:20px; font-weight:700; font-variant-numeric:tabular-nums;}
+  .price .was{font-size:11.5px; font-weight:400; color:var(--dim); text-decoration:line-through; margin-left:6px;}
+  .chip{font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; padding:3px 8px; border-radius:4px; white-space:nowrap; margin-left:auto;}
+  .chip.good{color:var(--go); background:var(--go-bg);}
+  .chip.info{color:var(--cyan); background:#0C2329;}
+  .chip.warn{color:var(--hold); background:var(--hold-bg);}
+  .chip.dim{color:var(--dim); background:var(--raise);}
+  .addr{font-size:15.5px; font-weight:700; margin:8px 0 1px; color:var(--ink);}
+  .addr .star{color:var(--amber); margin-right:3px;}
+  .locale{font-family:var(--mono); font-size:11px; color:var(--dim); margin:0 0 9px;}
+  .facts{display:flex; flex-wrap:wrap; font-family:var(--mono); font-size:11.5px; font-variant-numeric:tabular-nums; margin-bottom:9px; color:var(--ink);}
+  .facts span{white-space:nowrap;}
+  .facts span+span::before{content:"·"; margin:0 7px; color:var(--faint);}
+  .facts .dom{color:var(--go);}
+  .readout{display:flex; align-items:center; gap:10px; margin-bottom:8px;}
+  .pay{font-family:var(--mono); font-size:14px; font-weight:700; font-variant-numeric:tabular-nums;}
+  .tag{font-family:var(--mono); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; padding:2px 7px; border-radius:3px;}
+  .tag.GO{color:var(--go); background:var(--go-bg);} .pay.GO{color:var(--go);}
+  .tag.HOLD{color:var(--hold); background:var(--hold-bg);} .pay.HOLD{color:var(--hold);}
+  .tag.OVER{color:var(--scrub); background:var(--scrub-bg);} .pay.OVER{color:var(--scrub);}
+  .gapnote{font-family:var(--mono); font-size:10.5px; color:var(--dim);}
+  .signal{display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10.5px; letter-spacing:.05em; color:var(--dim);}
+  .bars{display:flex; align-items:flex-end; gap:2px; height:14px;}
+  .bars i{width:4px; background:var(--faint); border-radius:1px;}
+  .bars i.on{background:var(--cyan); box-shadow:0 0 4px var(--cyan-lo);}
+  .bars i:nth-child(1){height:5px;} .bars i:nth-child(2){height:7px;} .bars i:nth-child(3){height:9px;} .bars i:nth-child(4){height:11px;} .bars i:nth-child(5){height:14px;}
+  .chev{margin-left:auto; color:var(--faint); font-size:11px; transition:transform .15s;}
+  .card.open .chev{transform:rotate(180deg);}
+  @media (prefers-reduced-motion:reduce){.chev{transition:none;}}
+
+  .detail{display:none; padding:0 14px 13px; border-top:1px dashed var(--line);}
+  .card.open .detail{display:block;}
+  .detail .why{font-family:var(--mono); font-size:11px; color:var(--cyan); margin:11px 0 9px; letter-spacing:.02em;}
+  .detail .note{font-size:13.5px; margin:0 0 12px; color:var(--ink);}
+  .detail .note em{color:var(--dim);}
+  .links{display:flex; flex-wrap:wrap; gap:7px;}
+  .links a{font-family:var(--mono); font-size:12px; text-decoration:none; border:1px solid var(--line); border-radius:7px; padding:8px 13px; color:var(--cyan); background:var(--panel2);}
+  .links a:first-child{background:var(--cyan); color:var(--void); border-color:var(--cyan); font-weight:700;}
+  .src{font-family:var(--mono); font-size:9.5px; color:var(--faint); margin:10px 0 11px; letter-spacing:.03em;}
+  .actions{display:flex; gap:7px;}
+  .act{font-family:var(--mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase; border:1px solid var(--line); border-radius:7px; padding:8px 12px; color:var(--dim);}
+  .act.on{color:var(--amber); border-color:var(--amber);}
+
+  .scrubitem{background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:11px 14px; margin-bottom:9px;}
+  .scrubitem .a{font-size:13.5px; color:var(--dim); text-decoration:line-through;}
+  .scrubitem .w{font-family:var(--mono); font-size:10.5px; color:var(--faint); margin-top:3px; letter-spacing:.03em;}
+  .empty{text-align:center; color:var(--dim); font-family:var(--mono); font-size:12px; padding:36px 0; letter-spacing:.05em;}
+
+  /* activity log */
+  .log{position:relative;}
+  .logitem{display:flex; gap:11px; padding:9px 0; border-bottom:1px solid var(--line);}
+  .logitem:last-child{border-bottom:none;}
+  .logitem .when{font-family:var(--mono); font-size:10px; color:var(--faint); flex:none; width:44px; padding-top:2px; letter-spacing:.04em;}
+  .logitem .ico{width:8px; height:8px; border-radius:50%; flex:none; margin-top:5px;}
+  .logitem.go .ico{background:var(--go); box-shadow:0 0 6px var(--go);}
+  .logitem.scrub .ico{background:var(--scrub); box-shadow:0 0 6px var(--scrub);}
+  .logitem.info .ico{background:var(--cyan); box-shadow:0 0 6px var(--cyan);}
+  .logitem .txt{font-family:var(--mono); font-size:11.5px; color:var(--ink); letter-spacing:.01em; line-height:1.4;}
+
+  .foot{margin-top:22px; border-top:1px solid var(--line); padding-top:13px;}
+  .foot p{font-family:var(--mono); font-size:10.5px; color:var(--dim); margin:0 0 8px; letter-spacing:.02em; line-height:1.5;}
+  .foot .u{color:var(--cyan); text-decoration:underline; cursor:pointer;}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="mark" aria-hidden="true">
+      <svg width="38" height="42" viewBox="0 0 48 52" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 21 L24 5 L43 21"/><path d="M10 19 V36 M38 19 V36"/><path d="M2 36 H46"/>
+        <path class="bg" d="M13 36 V47 H35 V36" stroke-width="2.5" stroke-dasharray="4 4"/><path d="M20 36 V27 H28 V36"/>
+      </svg>
+    </div>
+    <div>
+      <div class="title">MISSION CONTROL <span class="slash">// HOME ACQUISITION</span></div>
+      <div class="statusline"><span class="dot live"></span> SYSTEMS NOMINAL · <span id="trackn">–</span> TARGETS TRACKED · SECTOR RADIUS 15 MIN OF 222 TURNER BLVD · LAST PING <span id="ping">–</span></div>
+    </div>
+  </header>
+
+  <div class="auditbanner">⚠ STATUS AUDIT IN PROGRESS — active/sold status is being re-verified against sale records. Several homes previously shown as active were already sold. Treat every listing below as UNCONFIRMED until this clears. Prices, beds/baths &amp; basements are reliable; for-sale status is not.</div>
+
+  <div class="telem" id="telem"></div>
+
+  <div class="panel params">
+    <div class="panel-h">Mission Parameters</div>
+    <div class="envelope">
+      <span class="cap mono" id="cap">—</span>
+      <div class="capr">
+        <div class="l1">Acquisition Envelope</div>
+        <div class="l2">max price @ $2,000/mo all-in</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Down payment <output id="downOut">$25,000</output></label>
+      <input type="range" id="down" min="15000" max="60000" step="1000" value="25000" aria-label="Down payment">
+    </div>
+    <div class="field">
+      <label>Interest rate <output id="rateOut">6.60%</output></label>
+      <input type="range" id="rate" min="5" max="8" step="0.05" value="6.6" aria-label="Interest rate">
+    </div>
+    <p class="note">ALL-IN = P&amp;I + 1.33% PROPERTY TAX + $230/MO INSURANCE + 0.5% PMI · PMI DROPS OFF UNDER 80% LTV</p>
+  </div>
+
+  <div class="panel">
+    <div class="panel-h">Proximity Scope <span class="hint">tap a blip →</span></div>
+    <canvas id="scope" aria-label="Radar plot of homes around 222 Turner Blvd"></canvas>
+    <div class="legend">
+      <span><i style="background:var(--go)"></i>Tracking</span>
+      <span><i style="background:var(--cyan)"></i>New</span>
+      <span><i style="background:var(--hold)"></i>Confirm</span>
+      <span><i style="background:var(--faint)"></i>Pre-launch</span>
+    </div>
+  </div>
+
+  <div class="panel-h board-h">Target Board</div>
+  <div class="filters">
+    <div class="sectors" id="sectors" role="tablist"></div>
+    <div class="sortrow">
+      <span class="c" id="countLbl"></span>
+      <select id="sort" aria-label="Sort targets">
+        <option value="odds">Sort · deal odds</option>
+        <option value="price">Sort · price ↑</option>
+        <option value="pay">Sort · payment ↑</option>
+        <option value="dom">Sort · days on market ↓</option>
+        <option value="ppsf">Sort · $/sqft ↑</option>
+      </select>
+    </div>
+  </div>
+  <div id="list"></div>
+
+  <div class="panel-h" style="margin:20px 4px 10px;">Activity Log</div>
+  <div class="log" id="log"></div>
+
+  <div class="foot">
+    <p>TELEMETRY VERIFIED ON 2+ INDEPENDENT SOURCES — NEVER ZILLOW ALONE (IT REPORTED ONE SOLD HOME AS ACTIVE AND ONE PRICE $75K OFF). PORTALS LAG THE MLS BY HOURS-TO-DAYS; CONFIRM WITH AN AGENT BEFORE SHOWINGS. AUTO RE-CHECK HOURLY.</p>
+    <p>NULL SECTORS: COTTLEVILLE · WELDON SPRING · DARDENNE PRAIRIE — ZERO SINGLE-FAMILY UNDER $300K.</p>
+    <p><span class="u" id="unhide"></span></p>
+  </div>
+</div>
+
+<script>
+const HOMES = [
+  { id:"saddlemaker", short:"Saddlemaker", addr:"1218 Saddlemaker Dr", locale:"ST. CHARLES 63304 · SADDLEBROOK · ~10-12 MIN", ang:155, drive:11,
+    price:269000, was:311000, beds:"3 bd / 2.5 ba", sqft:2080, sqftLbl:"2,080 sqft", dom:321, domLbl:"321 days on market",
+    status:"target", light:"go", chip:["good","Active · 321d"], odds:5, oddsCls:"strong", oddsLbl:"strong", oddsWhy:"SIX PRICE CUTS $311K→$269K — MOTIVATED SELLER",
+    note:"Biggest house in the leverage group and the clearest motivated seller on the board — cut six times over ten months. Basement partly finished; HOA $190/yr; Francis Howell schools. An offer in the $240s is a real conversation here.",
+    links:[["Coldwell Banker","https://www.coldwellbankerhomes.com/mo/saint-charles/1218-saddlemaker-dr/pid_66876940/"],["Zillow","https://www.zillow.com/homedetails/1218-Saddlemaker-Dr-Saint-Charles-MO-63304/2562788_zpid/"],["Homes.com","https://www.homes.com/property/1218-saddlemaker-dr-saint-charles-mo/k5l3vbe821pk8/"]],
+    src:"CONFIRMED: COLDWELL BANKER · ZILLOW · HOMES.COM · BHHS — MLS 25054240" },
+  { id:"deporres", short:"De Porres", addr:"1410 De Porres Ln", locale:"ST. CHARLES 63304 · MUEGGE RD / HWY 94 · ~8-10 MIN", ang:130, drive:9,
+    price:260000, was:null, beds:"3 bd / 2 full ba", sqft:1296, sqftLbl:"1,296 sqft + finished LL", dom:296, domLbl:"296 days on market",
+    status:"target", light:"go", chip:["good","Active · 296d"], odds:4, oddsCls:"strong", oddsLbl:"strong", oddsWhy:"10 MONTHS LISTED, NO CUTS YET — SELLER DUE FOR A RESET",
+    note:"Full basement, partly finished — rec room with wet bar, renovated full bath, laundry. Note: the 2nd full bath is in the lower level. Updated kitchen, wood-burning fireplace. Lowest list price of the verified-basement actives.",
+    links:[["Coldwell Banker","https://www.coldwellbankerhomes.com/mo/saint-charles/1410-de-porres-ln/pid_67583729/"],["Redfin","https://www.redfin.com/city/16428/MO/St-Charles/basements"]],
+    src:"CONFIRMED: COLDWELL BANKER · REDFIN · HOMES.COM — MLS 25065140" },
+  { id:"mound", short:"6 Mound", addr:"6 Mound Dr", locale:"ST. PETERS 63376 · OLD TOWN · ~5 MIN", ang:135, drive:5,
+    price:263000, was:null, beds:"3 bd / 2 full ba", sqft:1728, sqftLbl:"~1,728 sqft (864 up + 864 down)", dom:190, domLbl:"~6 mo since list",
+    status:"target", light:"go", chip:["good","Active · relist"], odds:4, oddsCls:"strong", oddsLbl:"strong", oddsWhy:"FLIP W/ $121K MARGIN + A BUSTED CONTRACT — THEY WANT OUT",
+    note:"Fully renovated flip — finished walkout basement (2nd full bath, laundry), new HVAC. Last contract fell through; investor paid $142K in Aug 2025, so there's real margin to negotiate against. Closest option to Turner Blvd.",
+    links:[["Zillow","https://www.zillow.com/homedetails/6-Mound-Dr-Saint-Peters-MO-63376/59945364_zpid/"],["Compass","https://www.compass.com/homedetails/6-Mound-Dr-St-Peters-MO-63376/HLBUD_pid/"],["Coldwell Banker","https://www.coldwellbankerhomes.com/mo/saint-peters/6-mound-dr/pid_66432733/"]],
+    src:"CONFIRMED: ZILLOW · COMPASS · COLDWELL BANKER · RE/MAX — MLS 25079706" },
+  { id:"goldenrod", short:"Goldenrod", addr:"1343 Goldenrod Dr", locale:"O'FALLON 63366 · SUNDANCE GARDENS · ~10-12 MIN", ang:260, drive:11,
+    price:264900, was:null, beds:"3 bd / 2 full ba", sqft:1022, sqftLbl:"1,022 sqft ranch + full LL", dom:560, domLbl:"18+ months on market",
+    status:"target", light:"go", chip:["good","Active · 18mo"], odds:4, oddsCls:"strong", oddsLbl:"strong", oddsWhy:"LONGEST-SITTING LISTING FOUND — BUT ASK WHY IT HASN'T SOLD",
+    note:"Full walkout basement (finish level unconfirmed — ask). 2-car garage, built 1989, Ft. Zumwalt North. No price cuts in 18 months is odd — confirm it's genuinely available and inspect hard, then negotiate harder.",
+    links:[["Coldwell Banker","https://www.coldwellbankerhomes.com/mo/o-fallon/1343-goldenrod-dr/pid_63027962/"],["Zillow","https://www.zillow.com/homedetails/1343-Goldenrod-Dr-O'Fallon-MO-63366/2508126_zpid/"],["RE/MAX","https://www.remax.com/mo/ofallon/home-details/1343-goldenrod-dr-o-fallon-mo-63366/7414078834253596740/M00000360/25000559"]],
+    src:"CONFIRMED: ZILLOW · COLDWELL BANKER · RE/MAX · REDFIN — MLS 25000559" },
+  { id:"canterbury", short:"Canterbury", addr:"3518 Canterbury Dr", locale:"ST. CHARLES 63303 · OFF ZUMBEHL RD · ~10-12 MIN", ang:110, drive:11,
+    price:295000, was:null, beds:"3 bd / 2 full ba", sqft:2080, sqftLbl:"2,080 sqft finished", dom:108, domLbl:"108 days on market",
+    status:"target", light:"go", chip:["warn","Needs cut"], odds:2, oddsCls:"slim", oddsLbl:"slim", oddsWhy:"SITTING 3+ MO BUT NO CUTS — $2K/MO NEEDS ~$45K OFF",
+    note:"1975 ranch, partly finished walkout basement, oversized 2-car garage, fenced yard, no HOA. Worth a lowball to test the seller, but don't count on it fitting the budget.",
+    links:[["RE/MAX","https://www.remax.com/mo/st-charles/home-details/3518-canterbury-dr-saint-charles-mo-63303/7402207012244943694/M00000360/26019272"],["Zillow","https://www.zillow.com/homedetails/3518-Canterbury-Dr-Saint-Charles-MO-63303/2549751_zpid/"]],
+    src:"CONFIRMED: RE/MAX · ZILLOW · RIVERS REALTY — MLS 26019272" },
+  { id:"tudor", short:"5 Tudor", addr:"5 Tudor Sq", locale:"ST. PETERS 63376 · OFF WILLOTT / JUNGERMANN · ~6 MIN", ang:190, drive:6,
+    price:264900, was:null, beds:"3 bd / 2 ba", sqft:1989, sqftLbl:"~1,989 sqft", dom:4, domLbl:"listed Jul 15",
+    status:"fresh", light:"new", chip:["info","Just listed"], odds:3, oddsCls:"fair", oddsLbl:"fair", oddsWhy:"PRICED $70K UNDER ST. PETERS MEDIAN — GET IT AT LIST BEFORE SOMEONE ELSE",
+    note:"Price confirmed at $264,900 on the re-check (an earlier $340K figure was bad data). Best price-per-foot in St. Peters proper if the basement checks out — square footage implies a finished lower level, not explicitly confirmed. Move fast.",
+    links:[["Redfin","https://www.redfin.com/MO/Saint-Peters/5-Tudor-Sq-63376/home/103287883"],["DRG Realty","https://www.drgstl.com/property-search/detail/238/26043742/5-tudor-square-st-peters-mo-63376/"]],
+    src:"CONFIRMED: REDFIN · DRG REALTY — MLS 26043742 · $340K FIGURE DISPROVEN" },
+  { id:"sprucefield", short:"Sprucefield", addr:"6432 Sprucefield Dr", locale:"O'FALLON 63368 · HWY N CORRIDOR · ~12-15 MIN", ang:245, drive:14,
+    price:275000, was:null, beds:"3 bd / 2 ba", sqft:1242, sqftLbl:"1,242 sqft", dom:4, domLbl:"listed Jul 15",
+    status:"fresh", light:"new", chip:["info","Fresh · as-is"], odds:2, oddsCls:"fair", oddsLbl:"fair", oddsWhy:"AS-IS SALES SCARE OFF RETAIL BUYERS — MAY SIT AND SOFTEN",
+    note:"Full unfinished basement (confirmed in listing remarks), 2-car garage, fenced yard. Sold as-is — priced for condition, budget for your own inspections. Your trade background is an edge here: you can price the repairs yourself.",
+    links:[["Zillow","https://www.zillow.com/homedetails/6432-Sprucefield-Dr-O'Fallon-MO-63368/2519535_zpid/"],["Movoto","https://www.movoto.com/mo/63368/"]],
+    src:"CONFIRMED: ZILLOW · MOVOTO (FRESH — LIGHT COVERAGE SO FAR)" },
+  { id:"countrylife", short:"Country Life", addr:"38 Country Life Dr", locale:"O'FALLON 63366 · COUNTRY LIFE ACRES · ~8-10 MIN", ang:285, drive:9,
+    price:279900, was:null, beds:"3 bd / 2 ba", sqft:1805, sqftLbl:"1,805 sqft", dom:1, domLbl:"live Jul 19",
+    status:"fresh", light:"new", chip:["info","Went live Jul 19"], odds:2, oddsCls:"fair", oddsLbl:"fair", oddsWhy:"BRAND NEW — NO LEVERAGE UNLESS IT SITS",
+    note:"Was coming-soon on the first sweep — now active. One-owner walkout ranch, 1,805 sqft, built 1955. The newest confirmed-basement option under $280K.",
+    links:[["Homes.com","https://www.homes.com/property/38-country-life-dr-o-fallon-mo/njxxdjgdl0gck/"],["Zillow","https://www.zillow.com/homedetails/38-Country-Life-Dr-O'Fallon-MO-63366/59945622_zpid"]],
+    src:"CONFIRMED: HOMES.COM · ZILLOW · DRG · REDFIN — MLS 26040219" },
+  { id:"queensboro", short:"Queensboro", addr:"9 Queensboro Dr", locale:"ST. PETERS 63376 · QUEENSBROOKE · ~7 MIN", ang:180, drive:7,
+    price:300000, was:null, beds:"4 bd / 3 full ba", sqft:1536, sqftLbl:"1,536 sqft finished", dom:13, domLbl:"listed Jul 6",
+    status:"fresh", light:"new", chip:["warn","Over cap"], odds:1, oddsCls:"slim", oddsLbl:"slim", oddsWhy:"FRESH AND PRICED RIGHT AT CAP — OVER BUDGET",
+    note:"Finished walkout basement with stone fireplace, 4th bed and 3rd bath down. The most house on the list — only relevant if it sits into September.",
+    links:[["DRG Realty","https://www.drgstl.com/property-search/detail/238/26042596/9-queensboro-dr-st-peters-mo-63376/"],["BHHS Select","https://bhhsselectstl.com/mo-real-estate/st-peters/9-queensboro-drive-mls-26042596"]],
+    src:"CONFIRMED: DRG REALTY · BHHS SELECT · ZILLOW — MLS 26042596" },
+  { id:"burch", short:"25 Burch", addr:"25 Burch Ln", locale:"O'FALLON 63366 · FT. ZUMWALT DISTRICT · ~10 MIN", ang:270, drive:10,
+    price:249900, was:260000, beds:"3 bd / 2 ba", sqft:1482, sqftLbl:"1,482 sqft ranch · 0.26 ac", dom:270, domLbl:"~9 mo if active",
+    status:"verify", light:"confirm", chip:["warn","Basement ?"], odds:3, oddsCls:"fair", oddsLbl:"fair", oddsWhy:"ONLY HOME ALREADY AT THE PAYMENT TARGET — IF IT HAS A BASEMENT",
+    note:"Cheapest candidate on the board, already cut from $260K — updated baths, granite kitchen. Four verification passes couldn't confirm a basement either way. One call to the listing agent (EXP Realty, MLS 25060189) settles it — if yes, best value on this page.",
+    links:[["Trulia","https://www.trulia.com/home/25-burch-ln-o-fallon-mo-63366-59945597"],["Zillow","https://www.zillow.com/homedetails/25-Burch-Ln-O-Fallon-MO-63366/59945597_zpid/"]],
+    src:"CONFIRMED: TRULIA · HOMES.COM · ZILLOW (PRICE CONFLICT $249.9K vs $260K — TRUST THE CUT)" },
+  { id:"birdiehills", short:"Birdie Hills", addr:"408 Birdie Hills Rd", locale:"ST. PETERS 63376 · SALT LICK / WILLOTT · ~5 MIN", ang:315, drive:5,
+    price:319900, was:null, beds:"4 bd / 3 ba", sqft:2208, sqftLbl:"2,208 sqft", dom:0, domLbl:"coming soon",
+    status:"coming", light:"pre", chip:["dim","Pre-launch · price TBC"], odds:2, oddsCls:"fair", oddsLbl:"watch", oddsWhy:"UNFINISHED BASEMENT W/ BATH ROUGH-IN — PRICE UNCONFIRMED, MAY BE OVER CAP",
+    note:"Still coming-soon. One source says $319,900 (over cap); public records show older $250K-era data. Verify price the day it goes live.",
+    links:[["Zillow","https://www.zillow.com/homedetails/408-Birdie-Hills-Rd-Saint-Peters-MO-63376/2515179_zpid/"]],
+    src:"MLS 26040990 — PRICE SINGLE-SOURCE, UNCONFIRMED" },
+  { id:"shoshone", short:"Shoshone", addr:"4540 Shoshone Trl", locale:"ST. CHARLES 63304 · INDIAN HILLS · ~12-15 MIN", ang:160, drive:14,
+    price:295000, was:null, beds:"4 bd / 2 ba", sqft:1644, sqftLbl:"1,644 sqft split", dom:0, domLbl:"coming soon",
+    status:"coming", light:"pre", chip:["dim","Pre-launch"], odds:2, oddsCls:"fair", oddsLbl:"watch", oddsWhy:"QUICK FLIP (BOUGHT $280K IN APRIL) — FLIP MARGIN = NEGOTIABLE IF IT SITS",
+    note:"'Stylishly updated' split, re-listing after an April 2026 purchase at $280K. Split lower level — decide if that counts as your basement.",
+    links:[["Zillow","https://www.zillow.com/homedetails/4540-Shoshone-Trl-Saint-Charles-MO-63304/2547454_zpid/"]],
+    src:"COMING-SOON PER HOMES.COM / COLDWELL BANKER CACHES" }
+];
+
+const SCRUBBED = [
+  ["934 Silverstone Dr, St. Charles","SOLD MAR 13, 2026 ($295K) — BROKER PAGES STILL LOOKED ACTIVE"],
+  ["905 Silverstone Dr, St. Charles","PENDING (WAS $325K, WALKOUT BASEMENT) — WATCHING FOR BACK-ON-MARKET"],
+  ["8 Elm Dr, St. Peters","PENDING AT $290K"],
+  ["3 Country Hill Rd, St. Peters","PENDING 3 DAYS AFTER LISTING ($265K)"],
+  ["58 Fawn Oaks Dr, O'Fallon","PENDING JUL 16 ($299,900)"],
+  ["43 Oxbow · 1351 Brandywine · 1708 Winter Hill · 422 Sunset","SOLD OR PENDING"]
+];
+
+const LOG = [
+  ["Jul 19","go","38 COUNTRY LIFE DR — LISTING WENT LIVE AT $279,900"],
+  ["Jul 19","scrub","8 ELM DR — MOVED TO PENDING, CLEARED FROM BOARD"],
+  ["Jul 19","scrub","905 SILVERSTONE DR — PENDING (WATCHING FOR BACK-ON-MARKET)"],
+  ["Jul 19","scrub","934 SILVERSTONE DR — CONFIRMED SOLD MAR 13 (WAS SHOWING ACTIVE)"],
+  ["Jul 19","info","5 TUDOR SQ — PRICE LOCKED AT $264,900 (BAD $340K DATA PURGED)"],
+  ["Jul 17","go","1218 SADDLEMAKER DR — 6TH PRICE CUT, NOW $269,000"],
+  ["Jul 17","info","INITIAL SWEEP COMPLETE — 12 TARGETS ACQUIRED ACROSS 3 SECTORS"]
+];
+
+const SECTORS = [["all","All"],["target","Deals"],["fresh","Fresh"],["verify","Verify"],["coming","Soon"],["scrub","Scrubbed"]];
+const MEDIAN = 339000;
+const $ = id => document.getElementById(id);
+const fmt = n => "$" + Math.round(n).toLocaleString("en-US");
+const fmtK = n => "$" + Math.round(n/1000) + "K";
+
+let S = { sector:"all", sort:"odds", down:25000, rate:6.6, open:new Set(),
+  favs:new Set(JSON.parse(localStorage.getItem("mc-favs")||"[]")),
+  hidden:new Set(JSON.parse(localStorage.getItem("mc-hidden")||"[]")) };
+function persist(){ localStorage.setItem("mc-favs",JSON.stringify([...S.favs])); localStorage.setItem("mc-hidden",JSON.stringify([...S.hidden])); }
+
+function payment(price){
+  const loan = Math.max(price - S.down, 0);
+  const r = S.rate/100/12;
+  const pi = r>0 ? loan*r/(1-Math.pow(1+r,-360)) : loan/360;
+  const tax = price*0.0133/12, ins = 230;
+  const pmi = (price>0 && loan/price>0.8) ? loan*0.005/12 : 0;
+  return pi + tax + ins + pmi;
+}
+function envelope(){ let lo=50000,hi=650000; for(let i=0;i<44;i++){const m=(lo+hi)/2; payment(m)>2000?hi=m:lo=m;} return lo; }
+function fitOf(p){ return p<=2000?"GO":(p<=2150?"HOLD":"OVER"); }
+
+const activeStatuses = ["target","fresh","verify"];
+function board(){ return HOMES.filter(h=>!S.hidden.has(h.id)); }
+
+/* ---- radar ---- */
+let blips = [];
+function drawRadar(sweep){
+  const c = $("scope"); if(!c) return;
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  const size = c.clientWidth || 360;
+  if(c.width !== size*dpr){ c.width=size*dpr; c.height=size*dpr; }
+  const ctx = c.getContext("2d");
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,size,size);
+  const cx=size/2, cy=size/2, R=size/2-16;
+  ctx.strokeStyle="rgba(72,201,214,.16)"; ctx.fillStyle="#6B7A8D"; ctx.lineWidth=1;
+  ctx.font='9px ui-monospace,monospace'; ctx.textAlign="left";
+  [5,10,15].forEach(mins=>{
+    const rr = mins/15*R;
+    ctx.beginPath(); ctx.arc(cx,cy,rr,0,Math.PI*2); ctx.stroke();
+    ctx.fillText(mins+"m", cx+4, cy-rr+11);
+  });
+  ctx.strokeStyle="rgba(72,201,214,.10)";
+  ctx.beginPath(); ctx.moveTo(cx-R,cy); ctx.lineTo(cx+R,cy); ctx.moveTo(cx,cy-R); ctx.lineTo(cx,cy+R); ctx.stroke();
+  // sweep
+  if(sweep!=null){
+    const g = ctx.createConicGradient ? ctx.createConicGradient(sweep,cx,cy) : null;
+    if(g){ g.addColorStop(0,"rgba(72,201,214,.22)"); g.addColorStop(0.08,"rgba(72,201,214,0)"); g.addColorStop(1,"rgba(72,201,214,0)");
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.fill(); }
+  }
+  // center
+  ctx.fillStyle="#EDA34A"; ctx.beginPath(); ctx.arc(cx,cy,3.5,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle="rgba(237,163,74,.5)"; ctx.beginPath(); ctx.arc(cx,cy,7,0,Math.PI*2); ctx.stroke();
+  ctx.fillStyle="#8A6636"; ctx.textAlign="center"; ctx.font='8px ui-monospace,monospace';
+  ctx.fillText("TURNER BLVD", cx, cy+20);
+  // blips
+  const col = {go:"#41CB8E", new:"#48C9D6", confirm:"#E7C14A", pre:"#5A6675"};
+  blips = [];
+  board().forEach(h=>{
+    const rr = Math.min(h.drive,15)/15*R;
+    const a = (h.ang-90)*Math.PI/180;
+    const x = cx+Math.cos(a)*rr, y = cy+Math.sin(a)*rr;
+    blips.push({id:h.id, x, y});
+    const fav = S.favs.has(h.id);
+    ctx.fillStyle = col[h.light]||"#5A6675";
+    ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 8;
+    ctx.beginPath(); ctx.arc(x,y, fav?5:3.6, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+    if(fav){ ctx.strokeStyle="#EDA34A"; ctx.lineWidth=1.4; ctx.beginPath(); ctx.arc(x,y,7.5,0,Math.PI*2); ctx.stroke(); }
+  });
+}
+let sweepAng = 0, reduce = window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+function tick(){ if(reduce){ drawRadar(null); return; } sweepAng=(sweepAng+0.045)%(Math.PI*2); drawRadar(sweepAng); }
+if(!reduce) setInterval(tick, 55);
+
+$("scope").addEventListener("click", e=>{
+  const c=$("scope"), rect=c.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  let best=null,bd=999; blips.forEach(b=>{const d=Math.hypot(b.x-mx,b.y-my); if(d<bd){bd=d;best=b;}});
+  if(best && bd<22){
+    const hh=HOMES.find(x=>x.id===best.id);
+    S.sector = hh && !activeStatuses.includes(hh.status) ? hh.status : "all";
+    render();
+    const el=document.querySelector('.card[data-id="'+best.id+'"]');
+    if(el){ if(!S.open.has(best.id)){S.open.add(best.id); render();}
+      const t=document.querySelector('.card[data-id="'+best.id+'"]');
+      t.scrollIntoView({behavior:reduce?"auto":"smooth", block:"center"});
+      t.classList.remove("ping"); void t.offsetWidth; t.classList.add("ping"); }
+  }
+});
+
+/* ---- render ---- */
+function meterBars(n){ let s='<span class="bars">'; for(let i=1;i<=5;i++) s+=`<i class="${i<=n?"on":""}"></i>`; return s+'</span>'; }
+
+function telemetry(){
+  const b = board();
+  const tracked = b.filter(h=>activeStatuses.includes(h.status));
+  const within = tracked.filter(h=>payment(h.price)<=2000).length;
+  const top = [...tracked].sort((a,b)=>b.odds-a.odds)[0];
+  const tiles = [
+    {k:"Within Envelope", v:within+" <span style='color:var(--dim);font-size:14px'>/ "+tracked.length+"</span>", cls:"cyan", s:"targets ≤ $2,000/mo"},
+    {k:"Top Target", v:top?top.short:"—", cls:"", s:top?("deal odds "+top.odds+"/5"):""},
+    {k:"Market Median", v:fmtK(MEDIAN), cls:"", s:"you're "+fmtK(MEDIAN-envelope())+" under"},
+    {k:"Active Sectors", v:"3", cls:"cyan", s:"St P · St C · O'Fallon"}
+  ];
+  $("telem").innerHTML = tiles.map(t=>`<div class="ttile"><div class="k">${t.k}</div><div class="v ${t.cls}">${t.v}</div><div class="s">${t.s}</div></div>`).join("");
+  $("trackn").textContent = tracked.length;
+}
+
+function cardHTML(h){
+  const p=payment(h.price), fit=fitOf(p), fav=S.favs.has(h.id), open=S.open.has(h.id);
+  const ppsf=Math.round(h.price/h.sqft);
+  const gap = p<=2000 ? "clears by "+fmt(2000-p)+"/mo" : "+"+fmt(p-2000)+"/mo over";
+  return `<div class="card ${open?"open":""} ${fav?"flag":""}" data-id="${h.id}">
+    <button class="cbtn" data-act="toggle" data-id="${h.id}" aria-expanded="${open}">
+      <div class="crow1"><span class="slight ${h.light}"></span><span class="price">${fmt(h.price)}${h.was?`<span class="was">${fmt(h.was)}</span>`:""}</span><span class="chip ${h.chip[0]}">${h.chip[1]}</span></div>
+      <p class="addr">${fav?'<span class="star">★</span>':""}${h.addr}</p>
+      <p class="locale">${h.locale}</p>
+      <div class="facts"><span>${h.beds}</span><span>${h.sqftLbl}</span><span>$${ppsf}/sqft</span><span class="dom">${h.domLbl}</span></div>
+      <div class="readout"><span class="pay ${fit}">≈ ${fmt(p)}/mo</span><span class="tag ${fit}">${fit}</span><span class="gapnote">${gap}</span></div>
+      <div class="signal">${meterBars(h.odds)}<span>DEAL ODDS · ${h.oddsLbl.toUpperCase()}</span><span class="chev">▼</span></div>
+    </button>
+    <div class="detail">
+      <p class="why">▸ ${h.oddsWhy}</p>
+      <p class="note">${h.note}</p>
+      <div class="links">${h.links.map(l=>`<a href="${l[1]}" target="_blank" rel="noopener">${l[0]}</a>`).join("")}</div>
+      <p class="src">${h.src}</p>
+      <div class="actions"><button class="act ${fav?"on":""}" data-act="fav" data-id="${h.id}">${fav?"★ Flagged":"☆ Flag target"}</button><button class="act" data-act="hide" data-id="${h.id}">Scrub</button></div>
+    </div>
+  </div>`;
+}
+
+function render(){
+  $("downOut").textContent=fmt(S.down);
+  $("rateOut").textContent=S.rate.toFixed(2)+"%";
+  $("cap").textContent="~"+fmt(Math.round(envelope()/1000)*1000);
+  telemetry();
+
+  $("sectors").innerHTML = SECTORS.map(([k,l])=>{
+    const n = k==="scrub" ? SCRUBBED.length : board().filter(h=> k==="all"?activeStatuses.includes(h.status):h.status===k).length;
+    return `<button class="sec ${S.sector===k?"on":""}" data-sec="${k}" role="tab">${l}<span class="n">${n}</span></button>`;
+  }).join("");
+
+  let out="";
+  if(S.sector==="scrub"){
+    out = SCRUBBED.map(s=>`<div class="scrubitem"><div class="a">${s[0]}</div><div class="w">${s[1]}</div></div>`).join("");
+    $("countLbl").textContent = SCRUBBED.length+" off the board";
+  } else {
+    let rows = board().filter(h=> S.sector==="all"?activeStatuses.includes(h.status):h.status===S.sector);
+    const by={ odds:(a,b)=>b.odds-a.odds||a.price-b.price, price:(a,b)=>a.price-b.price,
+      pay:(a,b)=>payment(a.price)-payment(b.price), dom:(a,b)=>b.dom-a.dom, ppsf:(a,b)=>a.price/a.sqft-b.price/b.sqft };
+    rows.sort(by[S.sort]);
+    rows.sort((a,b)=>(S.favs.has(b.id)?1:0)-(S.favs.has(a.id)?1:0));
+    $("countLbl").textContent = rows.length+" targets";
+    out = rows.length ? rows.map(cardHTML).join("") : `<div class="empty">NO TARGETS IN THIS SECTOR</div>`;
+  }
+  $("list").innerHTML = out;
+
+  $("log").innerHTML = LOG.map(l=>`<div class="logitem ${l[1]}"><span class="when">${l[0]}</span><span class="ico"></span><span class="txt">${l[2]}</span></div>`).join("");
+  $("unhide").textContent = S.hidden.size ? "◂ RESTORE "+S.hidden.size+" SCRUBBED TARGET"+(S.hidden.size>1?"S":"") : "";
+  drawRadar(reduce?null:sweepAng);
+}
+
+document.addEventListener("click", e=>{
+  const sec=e.target.closest("[data-sec]"); if(sec){ S.sector=sec.dataset.sec; render(); return; }
+  const b=e.target.closest("[data-act]"); if(!b) return;
+  const id=b.dataset.id, a=b.dataset.act;
+  if(a==="toggle") S.open.has(id)?S.open.delete(id):S.open.add(id);
+  if(a==="fav"){ S.favs.has(id)?S.favs.delete(id):S.favs.add(id); persist(); }
+  if(a==="hide"){ S.hidden.add(id); S.open.delete(id); persist(); }
+  render();
+});
+$("unhide").addEventListener("click",()=>{ S.hidden.clear(); persist(); render(); });
+$("sort").addEventListener("change",e=>{ S.sort=e.target.value; render(); });
+$("down").addEventListener("input",e=>{ S.down=+e.target.value; render(); });
+$("rate").addEventListener("input",e=>{ S.rate=+e.target.value; render(); });
+
+function stamp(){ const d=new Date(); const hh=d.getHours()%12||12; const mm=String(d.getMinutes()).padStart(2,"0");
+  const ap=d.getHours()<12?"AM":"PM"; $("ping").textContent = hh+":"+mm+" "+ap; }
+stamp(); setInterval(stamp, 30000);
+render();
+window.addEventListener("resize", ()=>drawRadar(reduce?null:sweepAng));
+</script>
+</body>
+</html>
