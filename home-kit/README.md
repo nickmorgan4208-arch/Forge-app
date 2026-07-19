@@ -48,10 +48,25 @@ npm run brief      # print the change-only brief
 npm run run        # both
 ```
 
-Schedule it on the box (cron / launchd / Task Scheduler), e.g. every 4 hours:
+### Hands-off / TITAN
+
+One entrypoint does everything (scrape → brief → save):
 ```
-0 */4 * * *  cd /path/to/home-kit && /usr/bin/node scrape.mjs && /usr/bin/node brief.mjs >> brief.log
+node run.mjs
 ```
+It writes the latest summary to `brief.latest.txt` (TITAN can read/surface that)
+and appends every run to `brief.log`. Hand TITAN that one command on a 4-hour loop
+and you never touch it again.
+
+Schedule it natively instead if you prefer:
+- **Windows** (Task Scheduler, every 4h):
+  ```
+  schtasks /create /tn "home-kit" /tr "%USERPROFILE%\Forge-app\home-kit\run.cmd" /sc hourly /mo 4 /f
+  ```
+- **macOS/Linux** (cron, every 4h):
+  ```
+  0 */4 * * *  cd /path/to/home-kit && /usr/bin/node run.mjs
+  ```
 
 ## Notes / first-run tuning
 
