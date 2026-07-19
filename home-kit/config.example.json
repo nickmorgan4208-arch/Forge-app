@@ -24,8 +24,8 @@
   },
   "sources": ["redfin"],
   "supabase": {
-    "url": "FILL-IN e.g. https://ryhhxdobjjgkbtsrlqxf.supabase.co",
-    "serviceKey": "FILL-IN (service_role key, from Supabase project settings — keep secret, this file is gitignored)"
+    "url": "FILL-IN (Supabase -> Settings -> API -> Project URL)",
+    "key": "FILL-IN (publishable key sb_publishable_... from Supabase -> Settings -> API; gitignored, stays local)"
   },
   "chromeProfileDir": "./.chrome-profile",
   "jsonFallback": "./listings.json"

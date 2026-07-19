@@ -1,5 +1,5 @@
--- home-kit schema — run once against the Supabase Postgres project
--- (project ref ryhhxdobjjgkbtsrlqxf). Safe to re-run: uses IF NOT EXISTS.
+-- home-kit schema — run once against your Supabase Postgres project.
+-- Safe to re-run: uses IF NOT EXISTS. (Already applied to the live DB via migration.)
 
 create table if not exists listings (
   mls_number      text primary key,

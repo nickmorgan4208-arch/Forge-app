@@ -5,13 +5,14 @@ import { createClient } from "@supabase/supabase-js";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
 export function makeStore(cfg) {
+  const key = cfg.supabase?.key || cfg.supabase?.serviceKey;
   const useSupabase = cfg.supabase?.url && !cfg.supabase.url.startsWith("FILL-IN") &&
-    cfg.supabase?.serviceKey && !cfg.supabase.serviceKey.startsWith("FILL-IN");
-  return useSupabase ? supabaseStore(cfg) : jsonStore(cfg);
+    key && !String(key).startsWith("FILL-IN");
+  return useSupabase ? supabaseStore(cfg, key) : jsonStore(cfg);
 }
 
-function supabaseStore(cfg) {
-  const sb = createClient(cfg.supabase.url, cfg.supabase.serviceKey, { auth: { persistSession: false } });
+function supabaseStore(cfg, key) {
+  const sb = createClient(cfg.supabase.url, key, { auth: { persistSession: false } });
   return {
     kind: "supabase",
     async loadPrior() {

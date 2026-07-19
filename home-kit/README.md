@@ -32,8 +32,8 @@ snippet-scraping is blind to.
 2. `cp config.example.json config.json` and fill in the FILL-IN values
    (Supabase URL + service key; the anchor lat/lng if you want to correct them).
    `config.json` is gitignored — secrets never get committed.
-3. Create the tables once: run `schema.sql` against the Supabase project
-   (SQL editor, or `psql`), project ref `ryhhxdobjjgkbtsrlqxf`.
+3. Tables are already created in the Supabase project (applied via migration).
+   If you ever need to recreate them, run `schema.sql` in the Supabase SQL editor.
 4. `npm run setup` → a Chrome window opens; log into Redfin (and Realtor if you
    use it), press Enter. The session is saved; you won't log in again.
 
